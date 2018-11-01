@@ -6,10 +6,10 @@ command -v mvn >/dev/null 2>&1 || { echo >&2 "Maven is required for setup. Abort
 
 mvn clean install
 
-mkdir -p server/
-cp tak-server/target/tak-server*.jar server/
+mkdir -p game-server/
+cp target/tak-server*.jar game-server/
 
-cd server
+cd game-server
 if [ ! -f keystore.p12 ]; then
     keytool -genkey -noprompt \
      -alias takserver \
