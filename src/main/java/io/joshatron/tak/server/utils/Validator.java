@@ -1,14 +1,13 @@
-package io.joshatron.tak.server.validation;
+package io.joshatron.tak.server.utils;
 
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.Auth;
 import io.joshatron.tak.server.request.Text;
-import io.joshatron.tak.server.utils.AccountUtils;
 
-public class AccountValidator {
+public class Validator {
 
-    private AccountValidator() {
+    private Validator() {
         throw new IllegalStateException("This is a utility class");
     }
 
@@ -20,20 +19,10 @@ public class AccountValidator {
         validatePassword(auth.getPassword());
     }
 
-    public static void validatePassChange(Auth auth, Text passChange) throws GameServerException {
-        if(passChange == null) {
+    public static void validateText(Text text) throws GameServerException {
+        if(text == null || text.getText() == null) {
             throw new GameServerException(ErrorCode.EMPTY_FIELD);
         }
-        validateAuth(auth);
-        validatePassword(passChange.getText());
-    }
-
-    public static void validateUserChange(Auth auth, Text userChange) throws GameServerException {
-        if(userChange == null) {
-            throw new GameServerException(ErrorCode.EMPTY_FIELD);
-        }
-        validateAuth(auth);
-        validateUsername(userChange.getText());
     }
 
     public static void validateUsername(String username) throws GameServerException {

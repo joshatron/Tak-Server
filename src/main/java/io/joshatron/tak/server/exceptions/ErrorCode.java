@@ -24,6 +24,7 @@ public enum ErrorCode {
 
     //Not Found
     USER_NOT_FOUND(HttpStatus.NOT_FOUND),
+    REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND),
 
     //Internal Error
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR);

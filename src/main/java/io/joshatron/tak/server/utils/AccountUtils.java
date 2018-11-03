@@ -6,7 +6,6 @@ import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.Auth;
 import io.joshatron.tak.server.request.Text;
 import io.joshatron.tak.server.response.User;
-import io.joshatron.tak.server.validation.AccountValidator;
 
 public class AccountUtils {
 
@@ -19,13 +18,13 @@ public class AccountUtils {
     }
 
     public boolean isAuthenticated(Auth auth) throws GameServerException {
-        AccountValidator.validateAuth(auth);
+        Validator.validateAuth(auth);
 
         return accountDAO.isAuthenticated(auth);
     }
 
     public void registerUser(Auth auth) throws GameServerException {
-        AccountValidator.validateAuth(auth);
+        Validator.validateAuth(auth);
         if(accountDAO.userExists(auth.getUsername())) {
             throw new GameServerException(ErrorCode.USERNAME_TAKEN);
         }
@@ -34,7 +33,9 @@ public class AccountUtils {
     }
 
     public void updatePassword(Auth auth, Text change) throws GameServerException {
-        AccountValidator.validatePassChange(auth, change);
+        Validator.validateAuth(auth);
+        Validator.validateText(change);
+        Validator.validatePassword(change.getText());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -46,7 +47,9 @@ public class AccountUtils {
     }
 
     public void updateUsername(Auth auth, Text change) throws GameServerException {
-        AccountValidator.validateUserChange(auth, change);
+        Validator.validateAuth(auth);
+        Validator.validateText(change);
+        Validator.validateUsername(change.getText());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -58,13 +61,13 @@ public class AccountUtils {
     }
 
     public User getUserFromId(String id) throws GameServerException {
-        AccountValidator.validateUserId(id);
+        Validator.validateUserId(id);
 
         return accountDAO.getUserFromId(id);
     }
 
     public User getUserFromUsername(String username) throws GameServerException {
-        AccountValidator.validateUsername(username);
+        Validator.validateUsername(username);
 
         return accountDAO.getUserFromUsername(username);
     }
