@@ -170,11 +170,11 @@ public class SocialController {
         }
     }
 
-    @PostMapping(value = "/message/send", consumes = "application/json", produces = "application/json")
-    public ResponseEntity sendMessage(@RequestHeader(value="Authorization") String auth, @RequestBody Text sendMessage) {
+    @PostMapping(value = "/message/send/{id}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity sendMessage(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String id, @RequestBody Text sendMessage) {
         try {
             logger.info("Sending a message");
-            socialUtils.sendMessage(new Auth(auth), sendMessage);
+            socialUtils.sendMessage(new Auth(auth), id, sendMessage);
             logger.info("Message successfully sent");
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         } catch (Exception e) {

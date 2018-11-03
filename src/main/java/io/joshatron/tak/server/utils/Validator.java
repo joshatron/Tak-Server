@@ -3,6 +3,8 @@ package io.joshatron.tak.server.utils;
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.Auth;
+import io.joshatron.tak.server.request.Answer;
+import io.joshatron.tak.server.request.MarkRead;
 import io.joshatron.tak.server.request.Text;
 
 public class Validator {
@@ -53,5 +55,20 @@ public class Validator {
         if(id.matches("^.*[^A-Z0-9 ].*$")) {
             throw new GameServerException(ErrorCode.ALPHANUMERIC_ONLY);
         }
+    }
+
+    public static Answer validateResponse(String response) throws GameServerException {
+        if(response == null || response.length() == 0) {
+            throw new GameServerException(ErrorCode.EMPTY_FIELD);
+        }
+
+        if(response.equalsIgnoreCase("accept")) {
+            return Answer.ACCEPT;
+        }
+        else if(response.equalsIgnoreCase("deny")) {
+            return Answer.DENY;
+        }
+
+        throw new GameServerException(ErrorCode.INVALID_FORMATTING);
     }
 }

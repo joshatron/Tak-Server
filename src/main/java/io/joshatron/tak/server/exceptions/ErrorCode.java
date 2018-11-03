@@ -7,10 +7,11 @@ public enum ErrorCode {
     //Bad Request
     INVALID_AUTH(HttpStatus.BAD_REQUEST),
     INVALID_LENGTH(HttpStatus.BAD_REQUEST),
+    INVALID_FORMATTING(HttpStatus.BAD_REQUEST),
+    INVALID_DATE(HttpStatus.BAD_REQUEST),
     EMPTY_AUTH(HttpStatus.BAD_REQUEST),
     EMPTY_FIELD(HttpStatus.BAD_REQUEST),
     ALPHANUMERIC_ONLY(HttpStatus.BAD_REQUEST),
-    INVALID_FORMATTING(HttpStatus.BAD_REQUEST),
     TOO_MANY_ARGUMENTS(HttpStatus.BAD_REQUEST),
 
     //Forbidden
@@ -18,6 +19,9 @@ public enum ErrorCode {
     SAME_USERNAME(HttpStatus.FORBIDDEN),
     SAME_PASSWORD(HttpStatus.FORBIDDEN),
     BLOCKED(HttpStatus.FORBIDDEN),
+    ALREADY_FRIENDS(HttpStatus.FORBIDDEN),
+    ALREADY_BLOCKED(HttpStatus.FORBIDDEN),
+    NOT_BLOCKED(HttpStatus.FORBIDDEN),
 
     //Bad Auth
     INCORRECT_AUTH(HttpStatus.UNAUTHORIZED),
