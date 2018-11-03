@@ -36,7 +36,7 @@ public class AccountDAOSqlite implements AccountDAO {
             return (rs.next() && auth.getUsername().equals(rs.getString("username")) &&
                     BCrypt.checkpw(auth.getPassword(), rs.getString("auth")));
         } catch (SQLException e) {
-            throw new ServerErrorException("The server encountered a SQL exception: " + e.getMessage());
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             DatabaseManager.closeStatement(stmt);
             DatabaseManager.closeResultSet(rs);
@@ -58,7 +58,7 @@ public class AccountDAOSqlite implements AccountDAO {
             stmt.setString(3, IdUtils.generateId(idLength));
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new ServerErrorException("The server encountered a SQL exception: " + e.getMessage());
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             DatabaseManager.closeStatement(stmt);
         }
@@ -78,7 +78,7 @@ public class AccountDAOSqlite implements AccountDAO {
             stmt.setString(2, username);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new ServerErrorException("The server encountered a SQL exception: " + e.getMessage());
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             DatabaseManager.closeStatement(stmt);
         }
@@ -98,7 +98,7 @@ public class AccountDAOSqlite implements AccountDAO {
             stmt.setString(2, oldUsername);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new ServerErrorException("The server encountered a SQL exception: " + e.getMessage());
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             DatabaseManager.closeStatement(stmt);
         }
@@ -120,7 +120,7 @@ public class AccountDAOSqlite implements AccountDAO {
 
             return rs.next();
         } catch (SQLException e) {
-            throw new ServerErrorException("The server encountered a SQL exception: " + e.getMessage());
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             DatabaseManager.closeStatement(stmt);
             DatabaseManager.closeResultSet(rs);
@@ -144,10 +144,10 @@ public class AccountDAOSqlite implements AccountDAO {
                 return new User(rs.getString("username"), rs.getString("id"));
             }
             else {
-                throw new ResourceNotFoundException("That user could not be found.");
+                throw new GameServerException(ErrorCode.USER_NOT_FOUND);
             }
         } catch (SQLException e) {
-            throw new ServerErrorException("The server encountered a SQL exception: " + e.getMessage());
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             DatabaseManager.closeStatement(stmt);
         }
@@ -170,10 +170,10 @@ public class AccountDAOSqlite implements AccountDAO {
                 return new User(rs.getString("username"), rs.getString("id"));
             }
             else {
-                throw new ResourceNotFoundException("That user could not be found.");
+                throw new GameServerException(ErrorCode.USER_NOT_FOUND);
             }
         } catch (SQLException e) {
-            throw new ServerErrorException("The server encountered a SQL exception: " + e.getMessage());
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             DatabaseManager.closeStatement(stmt);
         }

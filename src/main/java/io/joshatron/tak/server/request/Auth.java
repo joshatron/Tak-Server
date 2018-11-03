@@ -1,6 +1,7 @@
 package io.joshatron.tak.server.request;
 
-import io.joshatron.tak.server.exceptions.BadRequestException;
+import io.joshatron.tak.server.exceptions.ErrorCode;
+import io.joshatron.tak.server.exceptions.GameServerException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,12 +15,12 @@ public class Auth {
     private String password;
 
     //Constructor for basic auth
-    public Auth(String basicAuth) throws BadRequestException {
+    public Auth(String basicAuth) throws GameServerException {
         if(basicAuth == null) {
-            throw new BadRequestException("There is no content for the authorization.");
+            throw new GameServerException(ErrorCode.EMPTY_AUTH);
         }
         if(!basicAuth.startsWith("Basic ")) {
-            throw new BadRequestException("The authorization is not correctly formatted.");
+            throw new GameServerException(ErrorCode.INVALID_FORMATTING);
         }
         //Decode from base 64
         String decoded = new String(Base64.getDecoder().decode(basicAuth.replace("Basic ", "")));
@@ -27,13 +28,13 @@ public class Auth {
         if(decoded.length() - decoded.replace(":", "").length() >= 1) {
             String[] auth = decoded.split(":");
             if(auth.length < 2) {
-                throw new BadRequestException("The decoded authorization is not in the format username:password.");
+                throw new GameServerException(ErrorCode.INVALID_AUTH);
             }
             username = auth[0];
             password = decoded.substring(username.length() + 1);
 
             if(username.length() == 0 || password.length() == 0) {
-                throw new BadRequestException();
+                throw new GameServerException(ErrorCode.EMPTY_FIELD);
             }
         }
     }

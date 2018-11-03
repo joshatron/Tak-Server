@@ -1,7 +1,7 @@
 package io.joshatron.tak.server.database;
 
+import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
-import io.joshatron.tak.server.exceptions.ServerErrorException;
 
 import java.sql.*;
 
@@ -11,7 +11,7 @@ public class DatabaseManager {
         throw new IllegalStateException("This is a utility class");
     }
 
-    public static Connection getConnection() throws ServerErrorException {
+    public static Connection getConnection() throws GameServerException {
         String database = "server.db";
 
         try {
@@ -21,11 +21,11 @@ public class DatabaseManager {
             return conn;
         }
         catch(SQLException e) {
-            throw new ServerErrorException("The server encountered a SQL exception: " + e.getMessage());
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
         }
     }
 
-    private static void initializeDatabase(Connection conn) throws ServerErrorException {
+    private static void initializeDatabase(Connection conn) throws GameServerException {
         String userTable = "CREATE TABLE IF NOT EXISTS users (" +
                 "id text PRIMARY KEY COLLATE NOCASE," +
                 "username text UNIQUE NOT NULL COLLATE NOCASE," +
@@ -96,7 +96,7 @@ public class DatabaseManager {
             stmt.close();
 
         } catch (SQLException e) {
-            throw new ServerErrorException("The server encountered a SQL exception: " + e.getMessage());
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
         }
     }
 
@@ -105,7 +105,7 @@ public class DatabaseManager {
             try {
                 stmt.close();
             } catch (SQLException e) {
-                throw new ServerErrorException("The server encountered a SQL exception: " + e.getMessage());
+                throw new GameServerException(ErrorCode.DATABASE_ERROR);
             }
         }
     }
@@ -115,7 +115,7 @@ public class DatabaseManager {
             try {
                 rs.close();
             } catch (SQLException e) {
-                throw new ServerErrorException("The server encountered a SQL exception: " + e.getMessage());
+                throw new GameServerException(ErrorCode.DATABASE_ERROR);
             }
         }
     }

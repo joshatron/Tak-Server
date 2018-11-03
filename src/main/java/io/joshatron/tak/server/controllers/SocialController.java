@@ -1,7 +1,8 @@
 package io.joshatron.tak.server.controllers;
 
 import io.joshatron.tak.server.config.ApplicationConfig;
-import io.joshatron.tak.server.exceptions.ForbiddenException;
+import io.joshatron.tak.server.exceptions.ErrorCode;
+import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.*;
 import io.joshatron.tak.server.response.*;
 import io.joshatron.tak.server.utils.SocialUtils;
@@ -133,7 +134,7 @@ public class SocialController {
             logger.info("Checking if user is blocked");
             if(socialUtils.isBlocked(new Auth(auth), isBlocked)) {
                 logger.info("The user is blocked");
-                throw new ForbiddenException("You are blocked from interacting with this user");
+                throw new GameServerException(ErrorCode.BLOCKED);
             }
             else {
                 logger.info("The user is not blocked");

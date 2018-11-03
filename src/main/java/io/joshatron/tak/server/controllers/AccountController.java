@@ -76,7 +76,7 @@ public class AccountController {
                 return new ResponseEntity(HttpStatus.NO_CONTENT);
             }
             else {
-                throw new NoAuthException();
+                throw new GameServerException(ErrorCode.INCORRECT_AUTH);
             }
         } catch (Exception e) {
             return ControllerUtils.handleExceptions(e, logger);
@@ -97,7 +97,7 @@ public class AccountController {
                 user = accountUtils.getUserFromUsername(username);
             }
             else {
-                throw new BadRequestException("You can only specify the username or the ID.");
+                throw new GameServerException(ErrorCode.TOO_MANY_ARGUMENTS);
             }
             logger.info("User found, returning info");
             return new ResponseEntity<>(user, HttpStatus.OK);

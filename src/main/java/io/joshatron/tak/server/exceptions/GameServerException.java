@@ -1,16 +1,25 @@
 package io.joshatron.tak.server.exceptions;
 
+import org.springframework.http.HttpStatus;
+
 public class GameServerException extends Exception {
 
-    public GameServerException() {
-        super("The server encountered an error.");
+    private ErrorCode code;
+
+    public GameServerException(ErrorCode code) {
+        super("The server encountered an error of type: " + code.name());
+        this.code = code;
     }
 
-    public GameServerException(String message) {
-        super(message);
+    public ErrorCode getCode() {
+        return code;
+    }
+
+    public HttpStatus getHttpStatus() {
+        return code.getStatus();
     }
 
     public String getJsonMessage() {
-        return "{\"reason\": \"" + getMessage() + "\"}";
+        return "{\"reason\": \"" + code.name() + "\"}";
     }
 }

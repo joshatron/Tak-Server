@@ -1,9 +1,8 @@
 package io.joshatron.tak.server.utils;
 
 import io.joshatron.tak.server.database.AccountDAO;
-import io.joshatron.tak.server.exceptions.ForbiddenException;
+import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
-import io.joshatron.tak.server.exceptions.NoAuthException;
 import io.joshatron.tak.server.request.Auth;
 import io.joshatron.tak.server.request.Text;
 import io.joshatron.tak.server.response.User;
@@ -28,7 +27,7 @@ public class AccountUtils {
     public void registerUser(Auth auth) throws GameServerException {
         AccountValidator.validateAuth(auth);
         if(accountDAO.userExists(auth.getUsername())) {
-            throw new ForbiddenException("That username is already taken.");
+            throw new GameServerException(ErrorCode.USERNAME_TAKEN);
         }
 
         accountDAO.addUser(auth, ID_LENGTH);
@@ -37,10 +36,10 @@ public class AccountUtils {
     public void updatePassword(Auth auth, Text change) throws GameServerException {
         AccountValidator.validatePassChange(auth, change);
         if(!accountDAO.isAuthenticated(auth)) {
-            throw new NoAuthException();
+            throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         if(auth.getPassword().equals(change.getText())) {
-            throw new ForbiddenException("The password is the same as the previous one.");
+            throw new GameServerException(ErrorCode.SAME_PASSWORD);
         }
 
         accountDAO.updatePassword(auth.getUsername(), change.getText());
@@ -49,10 +48,10 @@ public class AccountUtils {
     public void updateUsername(Auth auth, Text change) throws GameServerException {
         AccountValidator.validateUserChange(auth, change);
         if(!accountDAO.isAuthenticated(auth)) {
-            throw new NoAuthException();
+            throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         if(auth.getUsername().equals(change.getText())) {
-            throw new ForbiddenException("The username is the same as the previous one.");
+            throw new GameServerException(ErrorCode.SAME_USERNAME);
         }
 
         accountDAO.updateUsername(auth.getUsername(), change.getText());
