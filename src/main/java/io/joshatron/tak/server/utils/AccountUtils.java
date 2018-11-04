@@ -9,7 +9,7 @@ import io.joshatron.tak.server.response.User;
 
 public class AccountUtils {
 
-    public static final int ID_LENGTH = 15;
+    public static final int USER_ID_LENGTH = 15;
 
     private AccountDAO accountDAO;
 
@@ -29,7 +29,7 @@ public class AccountUtils {
             throw new GameServerException(ErrorCode.USERNAME_TAKEN);
         }
 
-        accountDAO.addUser(auth, ID_LENGTH);
+        accountDAO.addUser(auth, USER_ID_LENGTH);
     }
 
     public void updatePassword(Auth auth, Text change) throws GameServerException {
@@ -61,7 +61,7 @@ public class AccountUtils {
     }
 
     public User getUserFromId(String id) throws GameServerException {
-        Validator.validateUserId(id);
+        Validator.validateId(id, USER_ID_LENGTH);
 
         return accountDAO.getUserFromId(id);
     }

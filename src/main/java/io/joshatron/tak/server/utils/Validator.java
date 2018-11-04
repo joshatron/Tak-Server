@@ -43,12 +43,12 @@ public class Validator {
         }
     }
 
-    public static void validateUserId(String id) throws GameServerException {
+    public static void validateId(String id, int length) throws GameServerException {
         if(id == null || id.length() == 0) {
             throw new GameServerException(ErrorCode.EMPTY_FIELD);
         }
 
-        if(id.length() != AccountUtils.ID_LENGTH) {
+        if(id.length() != length) {
             throw new GameServerException(ErrorCode.INVALID_LENGTH);
         }
 
@@ -57,7 +57,7 @@ public class Validator {
         }
     }
 
-    public static Answer validateResponse(String response) throws GameServerException {
+    public static Answer validateAnswer(String response) throws GameServerException {
         if(response == null || response.length() == 0) {
             throw new GameServerException(ErrorCode.EMPTY_FIELD);
         }
@@ -70,5 +70,21 @@ public class Validator {
         }
 
         throw new GameServerException(ErrorCode.INVALID_FORMATTING);
+    }
+
+    public static void validateMarkRead(MarkRead markRead) throws GameServerException {
+        if(markRead == null) {
+            throw new GameServerException(ErrorCode.EMPTY_FIELD);
+        }
+
+        if(markRead.getStart() != null && markRead.getIds() != null) {
+            throw new GameServerException(ErrorCode.TOO_MANY_ARGUMENTS);
+        }
+
+        if(markRead.getIds() != null) {
+            for (String id : markRead.getIds()) {
+                validateId(id, SocialUtils.MESSAGE_ID_LENGTH);
+            }
+        }
     }
 }

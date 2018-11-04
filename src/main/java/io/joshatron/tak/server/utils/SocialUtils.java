@@ -13,6 +13,8 @@ import java.util.Date;
 
 public class SocialUtils {
 
+    public static final int MESSAGE_ID_LENGTH = 20;
+
     private SocialDAO socialDAO;
     private AccountDAO accountDAO;
 
@@ -57,7 +59,7 @@ public class SocialUtils {
         Validator.validateAuth(auth);
         Validator.validateUsername(other);
         Validator.validateText(answer);
-        Answer response = Validator.validateResponse(answer.getText());
+        Answer response = Validator.validateAnswer(answer.getText());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -204,9 +206,41 @@ public class SocialUtils {
     }
 
     public void markMessagesRead(Auth auth, MarkRead markRead) throws GameServerException {
+        Validator.validateAuth(auth);
+        Validator.validateMarkRead(markRead);
+        if(!accountDAO.isAuthenticated(auth)) {
+            throw new GameServerException(ErrorCode.INCORRECT_AUTH);
+        }
+
+        if(markRead.getIds() != null) {
+            for(String id : markRead.getIds()) {
+                if(socialDAO.getMessage(id) != null) {
+                    socialDAO.markMessageRead(id);
+                }
+                else {
+                    throw new GameServerException(ErrorCode.MESSAGE_NOT_FOUND);
+                }
+            }
+        }
+
+        if(markRead.getStart() != null) {
+            Message[] messages = socialDAO.listMessage(auth.getUsername(), null, markRead.getStart(), null, false);
+            for(Message message : messages) {
+                socialDAO.markMessageRead(message.getId());
+            }
+        }
+
+        if(markRead.getIds() == null && markRead.getStart() == null) {
+            socialDAO.markAllRead(auth.getUsername());
+        }
     }
 
-    public SocialNotifications getNotifications(Auth auth) {
-        return null;
+    public SocialNotifications getNotifications(Auth auth) throws GameServerException {
+        Validator.validateAuth(auth);
+        if(!accountDAO.isAuthenticated(auth)) {
+            throw new GameServerException(ErrorCode.INCORRECT_AUTH);
+        }
+
+        return socialDAO.getSocialNotifications(auth.getUsername());
     }
 }
