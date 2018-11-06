@@ -70,7 +70,10 @@ public class SocialUtils {
             throw new GameServerException(ErrorCode.REQUEST_NOT_FOUND);
         }
 
-        socialDAO.responseToGameRequest(other, auth.getUsername(), response);
+        if(response == Answer.ACCEPT) {
+            socialDAO.makeFriends(other, auth.getUsername());
+        }
+        socialDAO.deleteGameRequest(other, auth.getUsername());
     }
 
     public User[] listIncomingFriendRequests(Auth auth) throws GameServerException {

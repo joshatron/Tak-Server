@@ -1,6 +1,17 @@
 package io.joshatron.tak.server.database;
 
+import io.joshatron.tak.server.exceptions.ErrorCode;
+import io.joshatron.tak.server.exceptions.GameServerException;
+import io.joshatron.tak.server.request.Answer;
+import io.joshatron.tak.server.response.Message;
+import io.joshatron.tak.server.response.SocialNotifications;
+import io.joshatron.tak.server.response.User;
+
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Date;
 
 public class SocialDAOSqlite implements SocialDAO {
 
@@ -8,6 +19,188 @@ public class SocialDAOSqlite implements SocialDAO {
 
     public SocialDAOSqlite(Connection conn) {
         this.conn = conn;
+    }
+
+    @Override
+    public boolean friendRequestExists(String requester, String other) throws GameServerException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String checkRequest = "SELECT requester, acceptor " +
+                "FROM friend_requests " +
+                "WHERE (requester = ? AND acceptor = ?) OR (requester = ? AND acceptor = ?);";
+
+        try {
+            stmt = conn.prepareStatement(checkRequest);
+            stmt.setString(1, requester);
+            stmt.setString(2, other);
+            stmt.setString(3, other);
+            stmt.setString(4, requester);
+            rs = stmt.executeQuery();
+
+            return rs.next();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+            DatabaseManager.closeResultSet(rs);
+        }
+    }
+
+    @Override
+    public boolean areFriends(String user1, String user2) throws GameServerException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String checkFriends = "SELECT requester, acceptor " +
+                "FROM friends " +
+                "WHERE (requester = ? AND acceptor = ?) OR (requester = ? AND acceptor = ?);";
+
+        try {
+            stmt = conn.prepareStatement(checkFriends);
+            stmt.setString(1, user1);
+            stmt.setString(2, user2);
+            rs = stmt.executeQuery();
+
+            return rs.next();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+            DatabaseManager.closeResultSet(rs);
+        }
+    }
+
+    @Override
+    public boolean isBlocked(String requester, String other) throws GameServerException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String checkBlocked = "SELECT requester " +
+                "FROM blocked " +
+                "WHERE (requester = ? AND blocked = ?);";
+
+        try {
+            stmt = conn.prepareStatement(checkBlocked);
+            stmt.setString(1, requester);
+            stmt.setString(2, other);
+            rs = stmt.executeQuery();
+
+            return rs.next();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+            DatabaseManager.closeResultSet(rs);
+        }
+    }
+
+    @Override
+    public void createGameRequest(String requester, String other) throws GameServerException {
+        PreparedStatement stmt = null;
+
+        String insertRequest = "INSERT INTO friend_requests (requester, acceptor) " +
+                "VALUES (?,?);";
+
+        try {
+            stmt = conn.prepareStatement(insertRequest);
+            stmt.setString(1, requester);
+            stmt.setString(2, other);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+        }
+    }
+
+    @Override
+    public void deleteGameRequest(String requester, String other) throws GameServerException {
+        PreparedStatement stmt = null;
+
+        String deleteRequest = "DELETE FROM friend_requests " +
+                "WHERE requester = ? AND acceptor = ?;";
+
+        try {
+            stmt = conn.prepareStatement(deleteRequest);
+            stmt.setString(1, requester);
+            stmt.setString(2, other);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+        }
+    }
+
+    @Override
+    public void makeFriends(String user1, String user2) throws GameServerException {
+
+    }
+
+    @Override
+    public void unfriend(String requester, String other) throws GameServerException {
+
+    }
+
+    @Override
+    public void block(String requester, String other) throws GameServerException {
+
+    }
+
+    @Override
+    public void unblock(String requester, String other) throws GameServerException {
+
+    }
+
+    @Override
+    public void sendMessage(String requester, String other, String text) throws GameServerException {
+
+    }
+
+    @Override
+    public void markMessageRead(String id) throws GameServerException {
+
+    }
+
+    @Override
+    public void markAllRead(String username) throws GameServerException {
+
+    }
+
+    @Override
+    public User[] getIncomingFriendRequests(String user) throws GameServerException {
+        return new User[0];
+    }
+
+    @Override
+    public User[] getOutgoingFriendRequests(String user) throws GameServerException {
+        return new User[0];
+    }
+
+    @Override
+    public User[] getFriends(String user) throws GameServerException {
+        return new User[0];
+    }
+
+    @Override
+    public User[] getBlocked(String user) throws GameServerException {
+        return new User[0];
+    }
+
+    @Override
+    public Message[] listMessage(String username, String[] users, Date start, Date end, boolean read) throws GameServerException {
+        return new Message[0];
+    }
+
+    @Override
+    public Message getMessage(String messageId) throws GameServerException {
+        return null;
+    }
+
+    @Override
+    public SocialNotifications getSocialNotifications(String username) throws GameServerException {
+        return null;
     }
 
     /*

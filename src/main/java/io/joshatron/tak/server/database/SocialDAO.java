@@ -1,7 +1,6 @@
 package io.joshatron.tak.server.database;
 
 import io.joshatron.tak.server.exceptions.GameServerException;
-import io.joshatron.tak.server.request.Answer;
 import io.joshatron.tak.server.response.Message;
 import io.joshatron.tak.server.response.SocialNotifications;
 import io.joshatron.tak.server.response.User;
@@ -15,7 +14,7 @@ public interface SocialDAO {
     boolean isBlocked(String requester, String other) throws GameServerException;
     void createGameRequest(String requester, String other) throws GameServerException;
     void deleteGameRequest(String requester, String other) throws GameServerException;
-    void responseToGameRequest(String requester, String other, Answer answer) throws GameServerException;
+    void makeFriends(String user1, String user2) throws GameServerException;
     void unfriend(String requester, String other) throws GameServerException;
     void block(String requester, String other) throws GameServerException;
     void unblock(String requester, String other) throws GameServerException;
