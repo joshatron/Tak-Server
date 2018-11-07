@@ -25,126 +25,138 @@ public class SocialUtils {
 
     public void createFriendRequest(Auth auth, String other) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateUsername(other);
+        Validator.validateId(other, AccountUtils.USER_ID_LENGTH);
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         if(!accountDAO.userExists(other)) {
             throw new GameServerException(ErrorCode.USER_NOT_FOUND);
         }
-        if(socialDAO.areFriends(auth.getUsername(), other)) {
+        if(socialDAO.areFriends(user.getUserId(), other)) {
             throw new GameServerException(ErrorCode.ALREADY_FRIENDS);
         }
 
-        socialDAO.createGameRequest(auth.getUsername(), other);
+        socialDAO.createGameRequest(user.getUserId(), other);
     }
 
     public void deleteFriendRequest(Auth auth, String other) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateUsername(other);
+        Validator.validateId(other, AccountUtils.USER_ID_LENGTH);
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         if(!accountDAO.userExists(other)) {
             throw new GameServerException(ErrorCode.USER_NOT_FOUND);
         }
-        if(!socialDAO.friendRequestExists(auth.getUsername(), other)) {
+        if(!socialDAO.friendRequestExists(user.getUserId(), other)) {
             throw new GameServerException(ErrorCode.REQUEST_NOT_FOUND);
         }
 
-        socialDAO.deleteGameRequest(auth.getUsername(), other);
+        socialDAO.deleteGameRequest(user.getUserId(), other);
     }
 
     public void respondToFriendRequest(Auth auth, String other, Text answer) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateUsername(other);
+        Validator.validateId(other, AccountUtils.USER_ID_LENGTH);
         Validator.validateText(answer);
         Answer response = Validator.validateAnswer(answer.getText());
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         if(!accountDAO.userExists(other)) {
             throw new GameServerException(ErrorCode.USER_NOT_FOUND);
         }
-        if(!socialDAO.friendRequestExists(auth.getUsername(), other)) {
+        if(!socialDAO.friendRequestExists(user.getUserId(), other)) {
             throw new GameServerException(ErrorCode.REQUEST_NOT_FOUND);
         }
 
         if(response == Answer.ACCEPT) {
-            socialDAO.makeFriends(other, auth.getUsername());
+            socialDAO.makeFriends(other, user.getUserId());
         }
-        socialDAO.deleteGameRequest(other, auth.getUsername());
+        socialDAO.deleteGameRequest(other, user.getUserId());
     }
 
     public User[] listIncomingFriendRequests(Auth auth) throws GameServerException {
         Validator.validateAuth(auth);
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
 
-        return socialDAO.getIncomingFriendRequests(auth.getUsername());
+        return socialDAO.getIncomingFriendRequests(user.getUserId());
     }
 
     public User[] listOutgoingFriendRequests(Auth auth) throws GameServerException {
         Validator.validateAuth(auth);
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
 
-        return socialDAO.getOutgoingFriendRequests(auth.getUsername());
+        return socialDAO.getOutgoingFriendRequests(user.getUserId());
     }
 
     public void unfriend(Auth auth, String other) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateUsername(other);
+        Validator.validateId(other, AccountUtils.USER_ID_LENGTH);
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         if(!accountDAO.userExists(other)) {
             throw new GameServerException(ErrorCode.USER_NOT_FOUND);
         }
-        if(!socialDAO.areFriends(auth.getUsername(), other)) {
+        if(!socialDAO.areFriends(user.getUserId(), other)) {
             throw new GameServerException(ErrorCode.ALREADY_FRIENDS);
         }
 
-        socialDAO.unfriend(auth.getUsername(), other);
+        socialDAO.unfriend(user.getUserId(), other);
     }
 
     public void blockUser(Auth auth, String other) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateUsername(other);
+        Validator.validateId(other, AccountUtils.USER_ID_LENGTH);
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         if(!accountDAO.userExists(other)) {
             throw new GameServerException(ErrorCode.USER_NOT_FOUND);
         }
-        if(socialDAO.isBlocked(other, auth.getUsername())) {
+        if(socialDAO.isBlocked(other, user.getUserId())) {
             throw new GameServerException(ErrorCode.ALREADY_BLOCKED);
         }
 
-        socialDAO.block(auth.getUsername(), other);
+        socialDAO.block(user.getUserId(), other);
+        if(socialDAO.areFriends(user.getUserId(), other)) {
+            socialDAO.unfriend(user.getUserId(), other);
+        }
     }
 
     public void unblockUser(Auth auth, String other) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateUsername(other);
+        Validator.validateId(other, AccountUtils.USER_ID_LENGTH);
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         if(!accountDAO.userExists(other)) {
             throw new GameServerException(ErrorCode.USER_NOT_FOUND);
         }
-        if(!socialDAO.isBlocked(other, auth.getUsername())) {
+        if(!socialDAO.isBlocked(other, user.getUserId())) {
             throw new GameServerException(ErrorCode.NOT_BLOCKED);
         }
 
-        socialDAO.unblock(auth.getUsername(), other);
+        socialDAO.unblock(user.getUserId(), other);
     }
 
     public boolean isBlocked(Auth auth, String other) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateUsername(other);
+        Validator.validateId(other, AccountUtils.USER_ID_LENGTH);
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -152,65 +164,74 @@ public class SocialUtils {
             throw new GameServerException(ErrorCode.USER_NOT_FOUND);
         }
 
-        return socialDAO.isBlocked(auth.getUsername(), other);
+        return socialDAO.isBlocked(user.getUserId(), other);
     }
 
     public User[] listFriends(Auth auth) throws GameServerException {
         Validator.validateAuth(auth);
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
 
-        return socialDAO.getFriends(auth.getUsername());
+        return socialDAO.getFriends(user.getUserId());
     }
 
     public User[] listBlocked(Auth auth) throws GameServerException {
         Validator.validateAuth(auth);
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
 
-        return socialDAO.getBlocked(auth.getUsername());
+        return socialDAO.getBlocked(user.getUserId());
     }
 
     public void sendMessage(Auth auth, String other, Text sendMessage) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateUsername(other);
+        Validator.validateId(other, AccountUtils.USER_ID_LENGTH);
         Validator.validateText(sendMessage);
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         if(!accountDAO.userExists(other)) {
             throw new GameServerException(ErrorCode.USER_NOT_FOUND);
         }
-        if(socialDAO.isBlocked(other, auth.getUsername())) {
+        if(socialDAO.isBlocked(other, user.getUserId())) {
             throw new GameServerException(ErrorCode.BLOCKED);
         }
 
-        socialDAO.sendMessage(auth.getUsername(), other, sendMessage.getText());
+        socialDAO.sendMessage(user.getUserId(), other, sendMessage.getText());
     }
 
     public Message[] listMessages(Auth auth, String senders, Date start, Date end, boolean read) throws GameServerException {
         Validator.validateAuth(auth);
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
-        String[] users = senders.split(",");
-        for(String user : users) {
-            if (!accountDAO.userExists(user)) {
-                throw new GameServerException(ErrorCode.USER_NOT_FOUND);
+        String[] users = null;
+        if(senders != null && senders.length() > 0) {
+            users = senders.split(",");
+            for (String u : users) {
+                Validator.validateId(u, AccountUtils.USER_ID_LENGTH);
+                if (!accountDAO.userExists(u)) {
+                    throw new GameServerException(ErrorCode.USER_NOT_FOUND);
+                }
             }
         }
         if(start != null && end != null && start.after(end)) {
             throw new GameServerException(ErrorCode.INVALID_DATE);
         }
 
-        return socialDAO.listMessage(auth.getUsername(), users, start, end, read);
+        return socialDAO.listMessage(user.getUserId(), users, start, end, read);
     }
 
     public void markMessagesRead(Auth auth, MarkRead markRead) throws GameServerException {
         Validator.validateAuth(auth);
         Validator.validateMarkRead(markRead);
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -227,23 +248,24 @@ public class SocialUtils {
         }
 
         if(markRead.getStart() != null) {
-            Message[] messages = socialDAO.listMessage(auth.getUsername(), null, markRead.getStart(), null, false);
+            Message[] messages = socialDAO.listMessage(user.getUserId(), null, markRead.getStart(), null, false);
             for(Message message : messages) {
                 socialDAO.markMessageRead(message.getId());
             }
         }
 
         if(markRead.getIds() == null && markRead.getStart() == null) {
-            socialDAO.markAllRead(auth.getUsername());
+            socialDAO.markAllRead(user.getUserId());
         }
     }
 
     public SocialNotifications getNotifications(Auth auth) throws GameServerException {
         Validator.validateAuth(auth);
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
 
-        return socialDAO.getSocialNotifications(auth.getUsername());
+        return socialDAO.getSocialNotifications(user.getUserId());
     }
 }

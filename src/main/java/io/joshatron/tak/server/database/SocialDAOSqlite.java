@@ -2,7 +2,6 @@ package io.joshatron.tak.server.database;
 
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
-import io.joshatron.tak.server.request.Answer;
 import io.joshatron.tak.server.response.Message;
 import io.joshatron.tak.server.response.SocialNotifications;
 import io.joshatron.tak.server.response.User;
@@ -11,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.Date;
 
 public class SocialDAOSqlite implements SocialDAO {
@@ -60,6 +60,8 @@ public class SocialDAOSqlite implements SocialDAO {
             stmt = conn.prepareStatement(checkFriends);
             stmt.setString(1, user1);
             stmt.setString(2, user2);
+            stmt.setString(3, user2);
+            stmt.setString(4, user1);
             rs = stmt.executeQuery();
 
             return rs.next();
@@ -135,27 +137,102 @@ public class SocialDAOSqlite implements SocialDAO {
 
     @Override
     public void makeFriends(String user1, String user2) throws GameServerException {
+        PreparedStatement stmt = null;
 
+        String insertFriend = "INSERT INTO friends (requester, acceptor) " +
+                "VALUES (?,?);";
+
+        try {
+            stmt = conn.prepareStatement(insertFriend);
+            stmt.setString(1, user1);
+            stmt.setString(2, user2);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+        }
     }
 
     @Override
     public void unfriend(String requester, String other) throws GameServerException {
+        PreparedStatement stmt = null;
 
+        String deleteFriend = "DELETE FROM friends " +
+                "WHERE (requester = ? AND acceptor = ?) OR (requester = ? AND acceptor = ?);";
+
+        try {
+            stmt = conn.prepareStatement(deleteFriend);
+            stmt.setString(1, requester);
+            stmt.setString(2, other);
+            stmt.setString(3, other);
+            stmt.setString(4, requester);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+        }
     }
 
     @Override
     public void block(String requester, String other) throws GameServerException {
+        PreparedStatement stmt = null;
 
+        String insertBlock = "INSERT INTO blocked (requester, blocked) " +
+                "VALUES (?,?);";
+
+        try {
+            stmt = conn.prepareStatement(insertBlock);
+            stmt.setString(1, requester);
+            stmt.setString(2, other);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+        }
     }
 
     @Override
     public void unblock(String requester, String other) throws GameServerException {
+        PreparedStatement stmt = null;
 
+        String deleteBlock = "DELETE FROM blocked " +
+                "WHERE requester = ? AND blocked = ?;";
+
+        try {
+            stmt = conn.prepareStatement(deleteBlock);
+            stmt.setString(1, requester);
+            stmt.setString(2, other);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+        }
     }
 
     @Override
     public void sendMessage(String requester, String other, String text) throws GameServerException {
+        PreparedStatement stmt = null;
 
+        String insertRequest = "INSERT INTO messages (sender, recipient, message, time, opened) " +
+                "VALUES (?,?,?,?,0);";
+
+        try {
+            stmt = conn.prepareStatement(insertRequest);
+            stmt.setString(1, requester);
+            stmt.setString(2, other);
+            stmt.setString(3, text);
+            stmt.setLong(4, Instant.now().toEpochMilli());
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+        }
     }
 
     @Override
