@@ -238,6 +238,7 @@ public class SocialUtils {
 
         if(markRead.getIds() != null) {
             for(String id : markRead.getIds()) {
+                Validator.validateId(id, MESSAGE_ID_LENGTH);
                 if(socialDAO.getMessage(id) != null) {
                     socialDAO.markMessageRead(id);
                 }

@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class SocialDAOSqlite implements SocialDAO {
@@ -237,22 +238,98 @@ public class SocialDAOSqlite implements SocialDAO {
 
     @Override
     public void markMessageRead(String id) throws GameServerException {
+        PreparedStatement stmt = null;
 
+        String markRead = "UPDATE messages " +
+                "SET read = 1 " +
+                "WHERE id = ?;";
+
+        try {
+            stmt = conn.prepareStatement(markRead);
+            stmt.setString(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+        }
     }
 
     @Override
-    public void markAllRead(String username) throws GameServerException {
+    public void markAllRead(String user) throws GameServerException {
+        PreparedStatement stmt = null;
 
+        String markRead = "UPDATE messages " +
+                "SET read = 1 " +
+                "WHERE recipient = ?;";
+
+        try {
+            stmt = conn.prepareStatement(markRead);
+            stmt.setString(1, user);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+        }
     }
 
     @Override
     public User[] getIncomingFriendRequests(String user) throws GameServerException {
-        return new User[0];
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getIncoming = "SELECT users.username as username, requester " +
+                "FROM friend_requests " +
+                "LEFT OUTER JOIN users on friends.requester = users.id " +
+                "WHERE acceptor = ?;";
+
+        try {
+            stmt = conn.prepareStatement(getIncoming);
+            stmt.setString(1, user);
+            rs = stmt.executeQuery();
+
+            ArrayList<User> users = new ArrayList<>();
+            while(rs.next()) {
+                users.add(new User(rs.getString("username"), rs.getString("requester")));
+            }
+
+            return users.toArray(new User[users.size()]);
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+            DatabaseManager.closeResultSet(rs);
+        }
     }
 
     @Override
     public User[] getOutgoingFriendRequests(String user) throws GameServerException {
-        return new User[0];
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getIncoming = "SELECT users.username as username, acceptor " +
+                "FROM friend_requests " +
+                "LEFT OUTER JOIN users on friends.acceptor = users.id " +
+                "WHERE requester = ?;";
+
+        try {
+            stmt = conn.prepareStatement(getIncoming);
+            stmt.setString(1, user);
+            rs = stmt.executeQuery();
+
+            ArrayList<User> users = new ArrayList<>();
+            while(rs.next()) {
+                users.add(new User(rs.getString("username"), rs.getString("requester")));
+            }
+
+            return users.toArray(new User[users.size()]);
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+            DatabaseManager.closeResultSet(rs);
+        }
     }
 
     @Override

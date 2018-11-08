@@ -33,43 +33,43 @@ public class DatabaseManager {
 
         String friendTable = "CREATE TABLE IF NOT EXISTS friends (" +
                 "id integer PRIMARY KEY AUTOINCREMENT," +
-                "requester integer NOT NULL," +
-                "acceptor integer NOT NULL);";
+                "requester text NOT NULL," +
+                "acceptor text NOT NULL);";
 
         String blockedTable = "CREATE TABLE IF NOT EXISTS blocked (" +
                 "id integer PRIMARY KEY AUTOINCREMENT," +
-                "requester integer NOT NULL," +
-                "blocked integer NOT NULL);";
+                "requester text NOT NULL," +
+                "blocked text NOT NULL);";
 
         String friendRequestsTable = "CREATE TABLE IF NOT EXISTS friend_requests (" +
                 "id integer PRIMARY KEY AUTOINCREMENT," +
-                "requester integer NOT NULL," +
-                "acceptor integer NOT NULL);";
+                "requester text NOT NULL," +
+                "acceptor text NOT NULL);";
 
         String messagesTable = "CREATE TABLE IF NOT EXISTS messages(" +
-                "id integer PRIMARY KEY AUTOINCREMENT," +
-                "sender integer NOT NULL," +
-                "recipient integer NOT NULL," +
+                "id text PRIMARY KEY," +
+                "sender text NOT NULL," +
+                "recipient text NOT NULL," +
                 "message text NOT NULL," +
                 "time integer NOT NULL," +
                 "opened integer NOT NULL);";
 
         String randomRequestsTable = "CREATE TABLE IF NOT EXISTS random_requests (" +
-                "requester integer PRIMARY KEY," +
+                "requester text PRIMARY KEY," +
                 "size integer NOT NULL);";
 
         String gameRequestsTable = "CREATE TABLE IF NOT EXISTS game_requests (" +
                 "id integer PRIMARY KEY AUTOINCREMENT," +
-                "requester integer NOT NULL," +
-                "acceptor integer NOT NULL," +
+                "requester text NOT NULL," +
+                "acceptor text NOT NULL," +
                 "size integer NOT NULL," +
                 "white integer NOT NULL," +
                 "first integer NOT NULL);";
 
         String gamesTable = "CREATE TABLE IF NOT EXISTS games (" +
                 "id text PRIMARY KEY," +
-                "white integer NOT NULL," +
-                "black integer NOT NULL," +
+                "white text NOT NULL," +
+                "black text NOT NULL," +
                 "size integer NOT NULL," +
                 "first integer NOT NULL," +
                 "start integer NOT NULL," +
