@@ -130,6 +130,7 @@ public class AccountDAOSqlite implements AccountDAO {
     @Override
     public User getUserFromId(String id) throws GameServerException {
         PreparedStatement stmt = null;
+        ResultSet rs = null;
 
         String checkUsername = "SELECT id, username " +
                 "FROM users " +
@@ -138,7 +139,7 @@ public class AccountDAOSqlite implements AccountDAO {
         try {
             stmt = conn.prepareStatement(checkUsername);
             stmt.setString(1, id);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             if (rs.next()) {
                 return new User(rs.getString("username"), rs.getString("id"));
@@ -150,12 +151,14 @@ public class AccountDAOSqlite implements AccountDAO {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             DatabaseManager.closeStatement(stmt);
+            DatabaseManager.closeResultSet(rs);
         }
     }
 
     @Override
     public User getUserFromUsername(String username) throws GameServerException {
         PreparedStatement stmt = null;
+        ResultSet rs = null;
 
         String checkUsername = "SELECT id, username " +
                 "FROM users " +
@@ -164,7 +167,7 @@ public class AccountDAOSqlite implements AccountDAO {
         try {
             stmt = conn.prepareStatement(checkUsername);
             stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             if (rs.next()) {
                 return new User(rs.getString("username"), rs.getString("id"));
@@ -176,6 +179,7 @@ public class AccountDAOSqlite implements AccountDAO {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             DatabaseManager.closeStatement(stmt);
+            DatabaseManager.closeResultSet(rs);
         }
     }
 

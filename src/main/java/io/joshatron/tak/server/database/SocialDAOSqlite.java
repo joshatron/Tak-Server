@@ -2,6 +2,7 @@ package io.joshatron.tak.server.database;
 
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
+import io.joshatron.tak.server.request.Read;
 import io.joshatron.tak.server.response.Message;
 import io.joshatron.tak.server.response.SocialNotifications;
 import io.joshatron.tak.server.response.User;
@@ -281,7 +282,7 @@ public class SocialDAOSqlite implements SocialDAO {
 
         String getIncoming = "SELECT users.username as username, requester " +
                 "FROM friend_requests " +
-                "LEFT OUTER JOIN users on friends.requester = users.id " +
+                "LEFT OUTER JOIN users on friend_requests.requester = users.id " +
                 "WHERE acceptor = ?;";
 
         try {
@@ -308,19 +309,19 @@ public class SocialDAOSqlite implements SocialDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String getIncoming = "SELECT users.username as username, acceptor " +
+        String getOutgoing = "SELECT users.username as username, acceptor " +
                 "FROM friend_requests " +
-                "LEFT OUTER JOIN users on friends.acceptor = users.id " +
+                "LEFT OUTER JOIN users on friend_requests.acceptor = users.id " +
                 "WHERE requester = ?;";
 
         try {
-            stmt = conn.prepareStatement(getIncoming);
+            stmt = conn.prepareStatement(getOutgoing);
             stmt.setString(1, user);
             rs = stmt.executeQuery();
 
             ArrayList<User> users = new ArrayList<>();
             while(rs.next()) {
-                users.add(new User(rs.getString("username"), rs.getString("requester")));
+                users.add(new User(rs.getString("username"), rs.getString("acceptor")));
             }
 
             return users.toArray(new User[users.size()]);
@@ -334,27 +335,230 @@ public class SocialDAOSqlite implements SocialDAO {
 
     @Override
     public User[] getFriends(String user) throws GameServerException {
-        return new User[0];
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getIncoming = "SELECT users.username as username, requester " +
+                "FROM friends " +
+                "LEFT OUTER JOIN users on friends.requester = users.id " +
+                "WHERE acceptor = ?;";
+        String getOutgoing = "SELECT users.username as username, acceptor " +
+                "FROM friends " +
+                "LEFT OUTER JOIN users on friends.acceptor = users.id " +
+                "WHERE requester = ?;";
+
+        try {
+            ArrayList<User> users = new ArrayList<>();
+
+            stmt = conn.prepareStatement(getIncoming);
+            stmt.setString(1, user);
+            rs = stmt.executeQuery();
+
+            while(rs.next()) {
+                users.add(new User(rs.getString("username"), rs.getString("requester")));
+            }
+            rs.close();
+
+            stmt = conn.prepareStatement(getOutgoing);
+            stmt.setString(1, user);
+            rs = stmt.executeQuery();
+
+            while(rs.next()) {
+                users.add(new User(rs.getString("username"), rs.getString("acceptor")));
+            }
+
+            return users.toArray(new User[users.size()]);
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+            DatabaseManager.closeResultSet(rs);
+        }
     }
 
     @Override
     public User[] getBlocked(String user) throws GameServerException {
-        return new User[0];
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getIncoming = "SELECT users.username as username, requester " +
+                "FROM blocked " +
+                "LEFT OUTER JOIN users on blocked.requester = users.id " +
+                "WHERE blocked = ?;";
+        String getOutgoing = "SELECT users.username as username, blocked " +
+                "FROM blocked " +
+                "LEFT OUTER JOIN users on friends.blocked = users.id " +
+                "WHERE requester = ?;";
+
+        try {
+            ArrayList<User> users = new ArrayList<>();
+
+            stmt = conn.prepareStatement(getIncoming);
+            stmt.setString(1, user);
+            rs = stmt.executeQuery();
+
+            while(rs.next()) {
+                users.add(new User(rs.getString("username"), rs.getString("requester")));
+            }
+            rs.close();
+
+            stmt = conn.prepareStatement(getOutgoing);
+            stmt.setString(1, user);
+            rs = stmt.executeQuery();
+
+            while(rs.next()) {
+                users.add(new User(rs.getString("username"), rs.getString("acceptor")));
+            }
+
+            return users.toArray(new User[users.size()]);
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+            DatabaseManager.closeResultSet(rs);
+        }
     }
 
     @Override
-    public Message[] listMessage(String username, String[] users, Date start, Date end, boolean read) throws GameServerException {
-        return new Message[0];
+    public Message[] listMessage(String userId, String[] users, Date start, Date end, Read read) throws GameServerException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        StringBuilder getMessage = new StringBuilder();
+        getMessage.append("SELECT id, sender, recipient, message, time, opened ");
+        getMessage.append("FROM messages ");
+        getMessage.append("WHERE id = ?");
+
+        if(users != null && users.length > 0) {
+            getMessage.append(" AND (");
+            boolean first = true;
+            for (int i = 0; i < users.length; i++) {
+                if(first) {
+                    getMessage.append("sender = ?");
+                    first = false;
+                }
+                else {
+                    getMessage.append(" OR sender = ?");
+                }
+            }
+            getMessage.append(")");
+        }
+
+        if(start != null) {
+            getMessage.append(" AND time > ?");
+        }
+
+        if(end != null) {
+            getMessage.append(" AND time < ?");
+        }
+
+        if(read != Read.BOTH) {
+            if(read == Read.READ) {
+                getMessage.append(" AND read = 1");
+            }
+            else {
+                getMessage.append(" AND read = 0");
+            }
+        }
+
+        getMessage.append(";");
+
+        try {
+            ArrayList<Message> messages = new ArrayList<>();
+
+            stmt = conn.prepareStatement(getMessage.toString());
+            stmt.setString(1, userId);
+            int i = 2;
+            if(users != null && users.length > 0) {
+                for(String user : users) {
+                    stmt.setString(i, user);
+                    i++;
+                }
+            }
+            if(start != null) {
+                stmt.setLong(i, start.getTime());
+                i++;
+            }
+            if(end != null) {
+                stmt.setLong(i, end.getTime());
+                i++;
+            }
+            rs = stmt.executeQuery();
+
+            while(rs.next()) {
+                messages.add(new Message(rs.getString("sender"), rs.getString("recipient"), new Date(rs.getLong("time")),
+                        rs.getString("message"), rs.getString("id"), (rs.getInt("opened") != 0)));
+            }
+
+            return messages.toArray(new Message[messages.size()]);
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+            DatabaseManager.closeResultSet(rs);
+        }
     }
 
     @Override
     public Message getMessage(String messageId) throws GameServerException {
-        return null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String checkUsername = "SELECT id, sender, recipient, message, time, opened " +
+                "FROM messages " +
+                "WHERE id = ?;";
+
+        try {
+            stmt = conn.prepareStatement(checkUsername);
+            stmt.setString(1, messageId);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new Message(rs.getString("sender"), rs.getString("recipient"), new Date(rs.getLong("time")),
+                                   rs.getString("message"), rs.getString("id"), (rs.getInt("opened") != 0));
+            }
+            else {
+                throw new GameServerException(ErrorCode.MESSAGE_NOT_FOUND);
+            }
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+            DatabaseManager.closeResultSet(rs);
+        }
     }
 
     @Override
-    public SocialNotifications getSocialNotifications(String username) throws GameServerException {
-        return null;
+    public SocialNotifications getSocialNotifications(String userId) throws GameServerException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String countRequests = "SELECT COUNT(*) AS total " +
+                "FROM friend_requests " +
+                "WHERE acceptor = ?;";
+        String countMessages = "SELECT COUNT(*) AS total " +
+                "FROM messages " +
+                "WHERE recipient = ? AND opened = 0;";
+
+        try {
+            stmt = conn.prepareStatement(countRequests);
+            stmt.setString(1, userId);
+            rs = stmt.executeQuery();
+            int requests = rs.getInt("total");
+            rs.close();
+
+            stmt = conn.prepareStatement(countRequests);
+            stmt.setString(1, userId);
+            rs = stmt.executeQuery();
+            int messages = rs.getInt("total");
+
+            return new SocialNotifications(requests, messages);
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            DatabaseManager.closeStatement(stmt);
+            DatabaseManager.closeResultSet(rs);
+        }
     }
 
     /*

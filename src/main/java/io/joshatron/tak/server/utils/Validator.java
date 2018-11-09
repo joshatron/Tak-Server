@@ -2,10 +2,7 @@ package io.joshatron.tak.server.utils;
 
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
-import io.joshatron.tak.server.request.Auth;
-import io.joshatron.tak.server.request.Answer;
-import io.joshatron.tak.server.request.MarkRead;
-import io.joshatron.tak.server.request.Text;
+import io.joshatron.tak.server.request.*;
 
 public class Validator {
 
@@ -67,6 +64,24 @@ public class Validator {
         }
         else if(response.equalsIgnoreCase("deny")) {
             return Answer.DENY;
+        }
+
+        throw new GameServerException(ErrorCode.INVALID_FORMATTING);
+    }
+
+    public static Read validateRead(String read) throws GameServerException {
+        if(read == null || read.length() == 0) {
+            throw new GameServerException(ErrorCode.EMPTY_FIELD);
+        }
+
+        if(read.equalsIgnoreCase("read")) {
+            return Read.READ;
+        }
+        else if(read.equalsIgnoreCase("not_read")) {
+            return Read.NOT_READ;
+        }
+        else if(read.equalsIgnoreCase("both")) {
+            return Read.BOTH;
         }
 
         throw new GameServerException(ErrorCode.INVALID_FORMATTING);
