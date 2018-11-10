@@ -103,11 +103,11 @@ public class GameController {
         }
     }
 
-    @DeleteMapping(value = "/request/random/cancel/{size}", produces = "application/json")
-    public ResponseEntity cancelRandomGameRequest(@RequestHeader(value="Authorization") String auth, @PathVariable("size") int size) {
+    @DeleteMapping(value = "/request/random/cancel", produces = "application/json")
+    public ResponseEntity cancelRandomGameRequest(@RequestHeader(value="Authorization") String auth) {
         try {
             logger.info("Deleting random game request");
-            gameUtils.deleteRandomRequest(new Auth(auth), size);
+            gameUtils.deleteRandomRequest(new Auth(auth));
             logger.info("Successfully deleted random request");
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
@@ -119,9 +119,9 @@ public class GameController {
     public ResponseEntity getOutgoingRandomRequests(@RequestHeader(value="Authorization") String auth) {
         try {
             logger.info("Getting outgoing random request sizes");
-            int[] sizes = gameUtils.checkRandomSizes(new Auth(auth));
+            int size = gameUtils.checkRandomSize(new Auth(auth));
             logger.info("Outing random games found");
-            return new ResponseEntity<>(sizes, HttpStatus.OK);
+            return new ResponseEntity<>(size, HttpStatus.OK);
         } catch (Exception e) {
             return ControllerUtils.handleExceptions(e, logger);
         }

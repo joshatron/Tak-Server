@@ -34,6 +34,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND),
     REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND),
     MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND),
+    GAME_NOT_FOUND(HttpStatus.NOT_FOUND),
 
     //Internal Error
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR);

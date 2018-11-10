@@ -104,10 +104,7 @@ public class Validator {
     }
 
     public static void validateGameRequest(GameRequest gameRequest) throws GameServerException {
-        if(gameRequest.getSize() != 3 && gameRequest.getSize() != 4 && gameRequest.getSize() != 5 &&
-           gameRequest.getSize() != 6 && gameRequest.getSize() != 8) {
-            throw new GameServerException(ErrorCode.ILLEGAL_SIZE);
-        }
+        validateGameBoardSize(gameRequest.getSize());
 
         if(!gameRequest.getColor().equalsIgnoreCase("white") && !gameRequest.getColor().equalsIgnoreCase("black")) {
             throw new GameServerException(ErrorCode.ILLEGAL_COLOR);
@@ -115,6 +112,12 @@ public class Validator {
 
         if(!gameRequest.getFirst().equalsIgnoreCase("white") && !gameRequest.getFirst().equalsIgnoreCase("black")) {
             throw new GameServerException(ErrorCode.ILLEGAL_COLOR);
+        }
+    }
+
+    public static void validateGameBoardSize(int size) throws GameServerException {
+        if(size != 3 && size != 4 && size != 5 && size != 6 && size != 8) {
+            throw new GameServerException(ErrorCode.ILLEGAL_SIZE);
         }
     }
 }
