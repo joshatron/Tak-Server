@@ -13,8 +13,8 @@ public interface SocialDAO {
     boolean friendRequestExists(String requester, String other) throws GameServerException;
     boolean areFriends(String user1, String user2) throws GameServerException;
     boolean isBlocked(String requester, String other) throws GameServerException;
-    void createGameRequest(String requester, String other) throws GameServerException;
-    void deleteGameRequest(String requester, String other) throws GameServerException;
+    void createFriendRequest(String requester, String other) throws GameServerException;
+    void deleteFriendRequest(String requester, String other) throws GameServerException;
     void makeFriends(String user1, String user2) throws GameServerException;
     void unfriend(String requester, String other) throws GameServerException;
     void block(String requester, String other) throws GameServerException;
@@ -26,7 +26,7 @@ public interface SocialDAO {
     User[] getOutgoingFriendRequests(String user) throws GameServerException;
     User[] getFriends(String user) throws GameServerException;
     User[] getBlocked(String user) throws GameServerException;
-    Message[] listMessage(String userId, String[] users, Date start, Date end, Read read) throws GameServerException;
+    Message[] listMessages(String userId, String[] users, Date start, Date end, Read read) throws GameServerException;
     Message getMessage(String messageId) throws GameServerException;
     SocialNotifications getSocialNotifications(String userId) throws GameServerException;
 }

@@ -37,7 +37,7 @@ public class SocialUtils {
             throw new GameServerException(ErrorCode.ALREADY_FRIENDS);
         }
 
-        socialDAO.createGameRequest(user.getUserId(), other);
+        socialDAO.createFriendRequest(user.getUserId(), other);
     }
 
     public void deleteFriendRequest(Auth auth, String other) throws GameServerException {
@@ -54,7 +54,7 @@ public class SocialUtils {
             throw new GameServerException(ErrorCode.REQUEST_NOT_FOUND);
         }
 
-        socialDAO.deleteGameRequest(user.getUserId(), other);
+        socialDAO.deleteFriendRequest(user.getUserId(), other);
     }
 
     public void respondToFriendRequest(Auth auth, String other, Text answer) throws GameServerException {
@@ -76,7 +76,7 @@ public class SocialUtils {
         if(response == Answer.ACCEPT) {
             socialDAO.makeFriends(other, user.getUserId());
         }
-        socialDAO.deleteGameRequest(other, user.getUserId());
+        socialDAO.deleteFriendRequest(other, user.getUserId());
     }
 
     public User[] listIncomingFriendRequests(Auth auth) throws GameServerException {

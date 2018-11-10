@@ -13,6 +13,8 @@ public enum ErrorCode {
     EMPTY_FIELD(HttpStatus.BAD_REQUEST),
     ALPHANUMERIC_ONLY(HttpStatus.BAD_REQUEST),
     TOO_MANY_ARGUMENTS(HttpStatus.BAD_REQUEST),
+    ILLEGAL_SIZE(HttpStatus.BAD_REQUEST),
+    ILLEGAL_COLOR(HttpStatus.BAD_REQUEST),
 
     //Forbidden
     USERNAME_TAKEN(HttpStatus.FORBIDDEN),
@@ -22,6 +24,8 @@ public enum ErrorCode {
     ALREADY_FRIENDS(HttpStatus.FORBIDDEN),
     ALREADY_BLOCKED(HttpStatus.FORBIDDEN),
     NOT_BLOCKED(HttpStatus.FORBIDDEN),
+    GAME_EXISTS(HttpStatus.FORBIDDEN),
+    GAME_REQUEST_EXISTS(HttpStatus.FORBIDDEN),
 
     //Bad Auth
     INCORRECT_AUTH(HttpStatus.UNAUTHORIZED),
