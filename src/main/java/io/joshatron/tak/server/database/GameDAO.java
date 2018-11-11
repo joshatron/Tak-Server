@@ -15,4 +15,5 @@ public interface GameDAO {
     boolean randomGameRequestExists(String user);
     RequestInfo[] getIncomingGameRequests(String user);
     RequestInfo[] getOutgoingGameRequests(String user);
+    int getOutgoingRandomRequestSize(String user);
 }

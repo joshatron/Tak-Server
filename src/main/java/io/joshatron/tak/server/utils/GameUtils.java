@@ -138,7 +138,16 @@ public class GameUtils {
     }
 
     public int checkRandomSize(Auth auth) throws GameServerException {
-        return 0;
+        Validator.validateAuth(auth);
+        if(!accountDAO.isAuthenticated(auth)) {
+            throw new GameServerException(ErrorCode.INCORRECT_AUTH);
+        }
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
+        if(!gameDAO.randomGameRequestExists(user.getUserId())) {
+            throw new GameServerException(ErrorCode.REQUEST_NOT_FOUND);
+        }
+
+        return gameDAO.getOutgoingRandomRequestSize(user.getUserId());
     }
 
     public GameInfo getGameInfo(Auth auth, String gameId) throws GameServerException {
