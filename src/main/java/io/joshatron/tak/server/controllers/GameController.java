@@ -1,6 +1,5 @@
 package io.joshatron.tak.server.controllers;
 
-import io.joshatron.tak.engine.turn.Turn;
 import io.joshatron.tak.server.config.ApplicationConfig;
 import io.joshatron.tak.server.request.*;
 import io.joshatron.tak.server.response.*;
@@ -130,7 +129,7 @@ public class GameController {
     @GetMapping(value = "/search", produces = "application/json")
     public ResponseEntity findGames(@RequestHeader(value="Authorization") String auth, @RequestParam(value = "opponents", required = false) String opponents,
                                     @RequestParam(value = "start", required = false) long start, @RequestParam(value = "end", required = false) long end,
-                                    @RequestParam(value = "complete", required = false) boolean complete, @RequestParam(value = "pending", required = false) boolean pending,
+                                    @RequestParam(value = "complete", required = false) String complete, @RequestParam(value = "pending", required = false) String pending,
                                     @RequestParam(value = "sizes", required = false) String sizes, @RequestParam(value = "winner", required = false) String winner,
                                     @RequestParam(value = "color", required = false) String color) {
         try {
@@ -150,18 +149,6 @@ public class GameController {
             GameInfo info = gameUtils.getGameInfo(new Auth(auth), gameId);
             logger.info("Game info found");
             return new ResponseEntity<>(info, HttpStatus.OK);
-        } catch (Exception e) {
-            return ControllerUtils.handleExceptions(e, logger);
-        }
-    }
-
-    @GetMapping(value = "/game/{id}/turns", produces = "application/json")
-    public ResponseEntity getPossibleTurns(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String gameId) {
-        try {
-            logger.info("Getting all possible turns for a game");
-            Turn[] turns = gameUtils.getTurns(new Auth(auth), gameId);
-            logger.info("Turns found");
-            return new ResponseEntity<>(turns, HttpStatus.OK);
         } catch (Exception e) {
             return ControllerUtils.handleExceptions(e, logger);
         }

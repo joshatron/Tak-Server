@@ -16,6 +16,8 @@ import java.util.Date;
 
 public class GameUtils {
 
+    public static final int GAME_ID_LENGTH = 25;
+
     private GameDAO gameDAO;
     private SocialDAO socialDAO;
     private AccountDAO accountDAO;
@@ -151,21 +153,35 @@ public class GameUtils {
     }
 
     public GameInfo getGameInfo(Auth auth, String gameId) throws GameServerException {
-        return null;
+        Validator.validateAuth(auth);
+        if(!accountDAO.isAuthenticated(auth)) {
+            throw new GameServerException(ErrorCode.INCORRECT_AUTH);
+        }
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
+        if(!gameDAO.gameExists(gameId)) {
+            throw new GameServerException(ErrorCode.GAME_NOT_FOUND);
+        }
+        if(!gameDAO.userAuthorizedForGame(user.getUserId(), gameId)) {
+            throw new GameServerException(ErrorCode.CANT_ACCESS_GAME);
+        }
+
+        return gameDAO.getGameInfo(gameId);
     }
 
-    public Turn[] getTurns(Auth auth, String gameId) throws GameServerException {
+    public GameInfo[] findGames(Auth auth, String opponents, Date start, Date end, String complete, String pending, String sizes, String winner, String color) {
         return null;
     }
 
     public void playTurn(Auth auth, String gameId, Text turn) throws GameServerException {
     }
 
-    public GameNotifications getNotifications(Auth auth) {
-        return null;
-    }
+    public GameNotifications getNotifications(Auth auth) throws GameServerException {
+        Validator.validateAuth(auth);
+        if(!accountDAO.isAuthenticated(auth)) {
+            throw new GameServerException(ErrorCode.INCORRECT_AUTH);
+        }
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
 
-    public GameInfo[] findGames(Auth auth, String opponents, Date start, Date end, boolean complete, boolean pending, String sizes, String winner, String color) {
-        return null;
+        return gameDAO.getGameNotifications(user.getUserId());
     }
 }

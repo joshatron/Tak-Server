@@ -63,15 +63,17 @@ public class DatabaseManager {
                 "requester text NOT NULL," +
                 "acceptor text NOT NULL," +
                 "size integer NOT NULL," +
-                "white integer NOT NULL," +
-                "first integer NOT NULL);";
+                "white text NOT NULL," +
+                "first text NOT NULL);";
 
         String gamesTable = "CREATE TABLE IF NOT EXISTS games (" +
                 "id text PRIMARY KEY," +
                 "white text NOT NULL," +
                 "black text NOT NULL," +
                 "size integer NOT NULL," +
-                "first integer NOT NULL," +
+                "first text NOT NULL," +
+                "current text NOT NULL," +
+                "turns integer NOT NULL," +
                 "start integer NOT NULL," +
                 "end integer," +
                 "done integer NOT NULL);";

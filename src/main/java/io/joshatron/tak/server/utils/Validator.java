@@ -70,8 +70,8 @@ public class Validator {
     }
 
     public static Read validateRead(String read) throws GameServerException {
-        if(read == null || read.length() == 0) {
-            throw new GameServerException(ErrorCode.EMPTY_FIELD);
+        if(read == null) {
+            return Read.BOTH;
         }
 
         if(read.equalsIgnoreCase("read")) {
@@ -79,9 +79,6 @@ public class Validator {
         }
         else if(read.equalsIgnoreCase("not_read")) {
             return Read.NOT_READ;
-        }
-        else if(read.equalsIgnoreCase("both")) {
-            return Read.BOTH;
         }
 
         throw new GameServerException(ErrorCode.INVALID_FORMATTING);
