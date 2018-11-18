@@ -172,6 +172,10 @@ public class GameUtils {
         return null;
     }
 
+    public Turn[] getPossibleTurns(Auth auth, String gameId) {
+        return null;
+    }
+
     public void playTurn(Auth auth, String gameId, Text turn) throws GameServerException {
     }
 
