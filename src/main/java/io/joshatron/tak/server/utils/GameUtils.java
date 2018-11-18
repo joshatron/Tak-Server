@@ -1,17 +1,18 @@
 package io.joshatron.tak.server.utils;
 
+import io.joshatron.tak.engine.game.GameState;
+import io.joshatron.tak.engine.game.Player;
 import io.joshatron.tak.engine.turn.Turn;
+import io.joshatron.tak.engine.turn.TurnUtils;
 import io.joshatron.tak.server.database.AccountDAO;
 import io.joshatron.tak.server.database.GameDAO;
 import io.joshatron.tak.server.database.SocialDAO;
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.*;
-import io.joshatron.tak.server.response.GameInfo;
-import io.joshatron.tak.server.response.GameNotifications;
-import io.joshatron.tak.server.response.RequestInfo;
-import io.joshatron.tak.server.response.User;
+import io.joshatron.tak.server.response.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class GameUtils {
@@ -172,8 +173,23 @@ public class GameUtils {
         return null;
     }
 
-    public Turn[] getPossibleTurns(Auth auth, String gameId) {
-        return null;
+    public String[] getPossibleTurns(Auth auth, String gameId) throws GameServerException {
+        GameInfo gameInfo = getGameInfo(auth, gameId);
+
+        Player player = gameInfo.getFirst().equalsIgnoreCase("white") ? Player.WHITE : Player.BLACK;
+        GameState state = new GameState(player, gameInfo.getSize());
+        for(String turn : gameInfo.getTurns()) {
+            Turn toPlay = TurnUtils.turnFromString(turn);
+            state.executeTurn(toPlay);
+        }
+
+        ArrayList<Turn> possible = state.getPossibleTurns();
+        String[] toReturn = new String[possible.size()];
+        for(int i = 0; i < toReturn.length; i++) {
+            toReturn[i] = possible.get(i).toString();
+        }
+
+        return toReturn;
     }
 
     public void playTurn(Auth auth, String gameId, Text turn) throws GameServerException {

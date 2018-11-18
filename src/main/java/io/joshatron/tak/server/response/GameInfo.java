@@ -13,5 +13,5 @@ public class GameInfo {
     private String start;
     private String end;
     private boolean done;
-    private GameTurn[] turns;
+    private String[] turns;
 }
