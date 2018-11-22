@@ -1,5 +1,6 @@
 package io.joshatron.tak.server.utils;
 
+import io.joshatron.tak.engine.game.Player;
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.*;
@@ -79,6 +80,21 @@ public class Validator {
         }
         else if(read.equalsIgnoreCase("not_read")) {
             return Read.NOT_READ;
+        }
+
+        throw new GameServerException(ErrorCode.INVALID_FORMATTING);
+    }
+
+    public static Player validatePlayer(String player) throws GameServerException {
+        if(player == null) {
+            throw new GameServerException(ErrorCode.EMPTY_FIELD);
+        }
+
+        if(player.equalsIgnoreCase("black")) {
+            return Player.BLACK;
+        }
+        else if(player.equalsIgnoreCase("white")) {
+            return Player.WHITE;
         }
 
         throw new GameServerException(ErrorCode.INVALID_FORMATTING);

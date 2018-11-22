@@ -7,6 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class GameRequest {
     private int size;
-    private String color;
+    private String requesterColor;
     private String first;
 }

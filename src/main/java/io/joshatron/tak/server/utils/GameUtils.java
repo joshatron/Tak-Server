@@ -32,7 +32,9 @@ public class GameUtils {
     public void requestGame(Auth auth, String other,GameRequest gameRequest) throws GameServerException {
         Validator.validateAuth(auth);
         Validator.validateId(other, AccountUtils.USER_ID_LENGTH);
-        Validator.validateGameRequest(gameRequest);
+        Validator.validateGameBoardSize(gameRequest.getSize());
+        Player requesterColor = Validator.validatePlayer(gameRequest.getRequesterColor());
+        Player first = Validator.validatePlayer(gameRequest.getFirst());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -50,7 +52,7 @@ public class GameUtils {
             throw new GameServerException(ErrorCode.GAME_REQUEST_EXISTS);
         }
 
-        gameDAO.createGameRequest(user.getUserId(), other, gameRequest);
+        gameDAO.createGameRequest(user.getUserId(), other, gameRequest.getSize(), requesterColor, first);
     }
 
     public void deleteRequest(Auth auth, String other) throws GameServerException {
@@ -176,7 +178,7 @@ public class GameUtils {
     public String[] getPossibleTurns(Auth auth, String gameId) throws GameServerException {
         GameInfo gameInfo = getGameInfo(auth, gameId);
 
-        Player player = gameInfo.getFirst().equalsIgnoreCase("white") ? Player.WHITE : Player.BLACK;
+        Player player = gameInfo.getFirst();
         GameState state = new GameState(player, gameInfo.getSize());
         for(String turn : gameInfo.getTurns()) {
             Turn toPlay = TurnUtils.turnFromString(turn);

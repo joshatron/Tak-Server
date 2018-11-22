@@ -155,11 +155,11 @@ public class GameController {
         }
     }
 
-    @GetMapping(value = "/game/{id}/turns", produces = "application/json")
+    @GetMapping(value = "/game/{id}/possible", produces = "application/json")
     public ResponseEntity getPossibleTurns(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String gameId) {
         try {
             logger.info("Getting all possible turns for a game");
-            Turn[] turns = gameUtils.getPossibleTurns(new Auth(auth), gameId);
+            String[] turns = gameUtils.getPossibleTurns(new Auth(auth), gameId);
             logger.info("Turns found");
             return new ResponseEntity<>(turns, HttpStatus.OK);
         } catch (Exception e) {
