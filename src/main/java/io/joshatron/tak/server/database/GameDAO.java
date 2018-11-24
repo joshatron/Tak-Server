@@ -12,11 +12,14 @@ public interface GameDAO {
     void deleteRandomGameRequest(String user);
     void resolveRandomGameRequests();
     void startGame(String requester, String other);
+    void addTurn(String gameId, String text);
+    void finishGame(String gameId, Player winner);
     boolean playingGame(String requester, String other);
     boolean gameRequestExists(String requester, String other);
     boolean randomGameRequestExists(String user);
     boolean gameExists(String gameId);
     boolean userAuthorizedForGame(String user, String gameId);
+    boolean isYourTurn(String userId, String gameId);
     RequestInfo[] getIncomingGameRequests(String user);
     RequestInfo[] getOutgoingGameRequests(String user);
     int getOutgoingRandomRequestSize(String user);

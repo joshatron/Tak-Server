@@ -15,6 +15,7 @@ public enum ErrorCode {
     TOO_MANY_ARGUMENTS(HttpStatus.BAD_REQUEST),
     ILLEGAL_SIZE(HttpStatus.BAD_REQUEST),
     ILLEGAL_COLOR(HttpStatus.BAD_REQUEST),
+    ILLEGAL_MOVE(HttpStatus.BAD_REQUEST),
 
     //Forbidden
     USERNAME_TAKEN(HttpStatus.FORBIDDEN),
@@ -27,6 +28,7 @@ public enum ErrorCode {
     GAME_EXISTS(HttpStatus.FORBIDDEN),
     GAME_REQUEST_EXISTS(HttpStatus.FORBIDDEN),
     CANT_ACCESS_GAME(HttpStatus.FORBIDDEN),
+    NOT_YOUR_TURN(HttpStatus.FORBIDDEN),
 
     //Bad Auth
     INCORRECT_AUTH(HttpStatus.UNAUTHORIZED),

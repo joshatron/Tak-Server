@@ -1,5 +1,6 @@
 package io.joshatron.tak.server.utils;
 
+import io.joshatron.tak.engine.game.GameResult;
 import io.joshatron.tak.engine.game.GameState;
 import io.joshatron.tak.engine.game.Player;
 import io.joshatron.tak.engine.turn.Turn;
@@ -157,6 +158,7 @@ public class GameUtils {
 
     public GameInfo getGameInfo(Auth auth, String gameId) throws GameServerException {
         Validator.validateAuth(auth);
+        Validator.validateId(gameId, GAME_ID_LENGTH);
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -176,14 +178,20 @@ public class GameUtils {
     }
 
     public String[] getPossibleTurns(Auth auth, String gameId) throws GameServerException {
-        GameInfo gameInfo = getGameInfo(auth, gameId);
-
-        Player player = gameInfo.getFirst();
-        GameState state = new GameState(player, gameInfo.getSize());
-        for(String turn : gameInfo.getTurns()) {
-            Turn toPlay = TurnUtils.turnFromString(turn);
-            state.executeTurn(toPlay);
+        Validator.validateAuth(auth);
+        Validator.validateId(gameId, GAME_ID_LENGTH);
+        if(!accountDAO.isAuthenticated(auth)) {
+            throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
+        if(!gameDAO.gameExists(gameId)) {
+            throw new GameServerException(ErrorCode.GAME_NOT_FOUND);
+        }
+        if(!gameDAO.userAuthorizedForGame(user.getUserId(), gameId)) {
+            throw new GameServerException(ErrorCode.CANT_ACCESS_GAME);
+        }
+
+        GameState state = getStateFromId(gameId);
 
         ArrayList<Turn> possible = state.getPossibleTurns();
         String[] toReturn = new String[possible.size()];
@@ -195,6 +203,39 @@ public class GameUtils {
     }
 
     public void playTurn(Auth auth, String gameId, Text turn) throws GameServerException {
+        Validator.validateAuth(auth);
+        Validator.validateId(gameId, GAME_ID_LENGTH);
+        Validator.validateText(turn);
+        if(!accountDAO.isAuthenticated(auth)) {
+            throw new GameServerException(ErrorCode.INCORRECT_AUTH);
+        }
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
+        if(!gameDAO.gameExists(gameId)) {
+            throw new GameServerException(ErrorCode.GAME_NOT_FOUND);
+        }
+        if(!gameDAO.userAuthorizedForGame(user.getUserId(), gameId)) {
+            throw new GameServerException(ErrorCode.CANT_ACCESS_GAME);
+        }
+        if(!gameDAO.isYourTurn(user.getUserId(), gameId)) {
+            throw new GameServerException(ErrorCode.NOT_YOUR_TURN);
+        }
+
+        GameState state = getStateFromId(gameId);
+        Turn proposed = TurnUtils.turnFromString(turn.getText());
+        if(proposed == null) {
+            throw new GameServerException(ErrorCode.INVALID_FORMATTING);
+        }
+
+        if(!state.executeTurn(proposed)) {
+            throw new GameServerException(ErrorCode.ILLEGAL_MOVE);
+        }
+
+        gameDAO.addTurn(gameId, turn.getText());
+
+        GameResult result = state.checkForWinner();
+        if(result.isFinished()) {
+            gameDAO.finishGame(gameId, result.getWinner());
+        }
     }
 
     public GameNotifications getNotifications(Auth auth) throws GameServerException {
@@ -205,5 +246,18 @@ public class GameUtils {
         User user = accountDAO.getUserFromUsername(auth.getUsername());
 
         return gameDAO.getGameNotifications(user.getUserId());
+    }
+
+    private GameState getStateFromId(String gameId) throws GameServerException {
+        GameInfo gameInfo = gameDAO.getGameInfo(gameId);
+
+        Player player = gameInfo.getFirst();
+        GameState state = new GameState(player, gameInfo.getSize());
+        for(String turn : gameInfo.getTurns()) {
+            Turn toPlay = TurnUtils.turnFromString(turn);
+            state.executeTurn(toPlay);
+        }
+
+        return state;
     }
 }
