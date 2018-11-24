@@ -1,6 +1,5 @@
 package io.joshatron.tak.server.controllers;
 
-import io.joshatron.tak.engine.turn.Turn;
 import io.joshatron.tak.server.config.ApplicationConfig;
 import io.joshatron.tak.server.request.*;
 import io.joshatron.tak.server.response.*;

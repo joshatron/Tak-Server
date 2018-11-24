@@ -146,7 +146,7 @@ public class SocialController {
     }
 
 
-    @GetMapping(value = "/user/listfriends", produces = "application/json")
+    @GetMapping(value = "/user/friends", produces = "application/json")
     public ResponseEntity listFriends(@RequestHeader(value="Authorization") String auth) {
         try {
             logger.info("Getting list of friends");
@@ -158,7 +158,7 @@ public class SocialController {
         }
     }
 
-    @GetMapping(value = "/user/listblocking", produces = "application/json")
+    @GetMapping(value = "/user/blocking", produces = "application/json")
     public ResponseEntity listBlocked(@RequestHeader(value="Authorization") String auth) {
         try {
             logger.info("Getting list blocking users");
