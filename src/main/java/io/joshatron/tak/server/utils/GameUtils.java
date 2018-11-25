@@ -173,8 +173,41 @@ public class GameUtils {
         return gameDAO.getGameInfo(gameId);
     }
 
-    public GameInfo[] findGames(Auth auth, String opponents, Date start, Date end, String complete, String pending, String sizes, String winner, String color) {
-        return null;
+    public GameInfo[] findGames(Auth auth, String opponents, Date start, Date end, String complete, String pending, String sizes, String winner, String color) throws GameServerException {
+        Validator.validateAuth(auth);
+        if(!accountDAO.isAuthenticated(auth)) {
+            throw new GameServerException(ErrorCode.INCORRECT_AUTH);
+        }
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
+        String[] users = null;
+        if(opponents != null && opponents.length() > 0) {
+            users = opponents.split(",");
+            for (String u : users) {
+                Validator.validateId(u, AccountUtils.USER_ID_LENGTH);
+                if (!accountDAO.userExists(u)) {
+                    throw new GameServerException(ErrorCode.USER_NOT_FOUND);
+                }
+            }
+        }
+        if(start != null && end != null && start.after(end)) {
+            throw new GameServerException(ErrorCode.INVALID_DATE);
+        }
+        Complete cpt = Validator.validateComplete(complete);
+        Pending pnd = Validator.validatePending(pending);
+        int[] szs = null;
+        if(sizes != null && sizes.length() > 0) {
+            String[] all = sizes.split(",");
+            szs = new int[all.length];
+            for(int i = 0; i < all.length; i++) {
+                int size = Integer.parseInt(all[i]);
+                Validator.validateGameBoardSize(size);
+                szs[i] = size;
+            }
+        }
+        Player wnr = Validator.validatePlayer(winner);
+        Player clr = Validator.validatePlayer(color);
+
+        return gameDAO.listGames(user.getUserId(), users, start, end, cpt, pnd, szs, wnr, clr);
     }
 
     public String[] getPossibleTurns(Auth auth, String gameId) throws GameServerException {

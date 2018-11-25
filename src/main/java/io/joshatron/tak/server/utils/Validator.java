@@ -71,7 +71,7 @@ public class Validator {
     }
 
     public static Read validateRead(String read) throws GameServerException {
-        if(read == null) {
+        if(read == null && read.length() == 0) {
             return Read.BOTH;
         }
 
@@ -86,8 +86,8 @@ public class Validator {
     }
 
     public static Player validatePlayer(String player) throws GameServerException {
-        if(player == null) {
-            throw new GameServerException(ErrorCode.EMPTY_FIELD);
+        if(player == null && player.length() == 0) {
+            return Player.NONE;
         }
 
         if(player.equalsIgnoreCase("black")) {
@@ -95,6 +95,51 @@ public class Validator {
         }
         else if(player.equalsIgnoreCase("white")) {
             return Player.WHITE;
+        }
+
+        throw new GameServerException(ErrorCode.INVALID_FORMATTING);
+    }
+
+    public static Complete validateComplete(String complete) throws GameServerException {
+        if(complete == null || complete.length() == 0) {
+            return Complete.BOTH;
+        }
+
+        if(complete.equalsIgnoreCase("complete")) {
+            return Complete.COMPLETE;
+        }
+        else if(complete.equalsIgnoreCase("incomplete")) {
+            return Complete.INCOMPLETE;
+        }
+
+        throw new GameServerException(ErrorCode.INVALID_FORMATTING);
+    }
+
+    public static Pending validatePending(String pending) throws GameServerException {
+        if(pending == null || pending.length() == 0) {
+            return Pending.BOTH;
+        }
+
+        if(pending.equalsIgnoreCase("pending")) {
+            return Pending.PENDING;
+        }
+        else if(pending.equalsIgnoreCase("not_pending")) {
+            return Pending.NOT_PENDING;
+        }
+
+        throw new GameServerException(ErrorCode.INVALID_FORMATTING);
+    }
+
+    public static From validateFrom(String from) throws GameServerException {
+        if(from == null || from.length() == 0) {
+            return From.BOTH;
+        }
+
+        if(from.equalsIgnoreCase("me")) {
+            return From.ME;
+        }
+        else if(from.equalsIgnoreCase("them")) {
+            return From.THEM;
         }
 
         throw new GameServerException(ErrorCode.INVALID_FORMATTING);
@@ -119,7 +164,7 @@ public class Validator {
     public static void validateGameRequest(GameRequest gameRequest) throws GameServerException {
         validateGameBoardSize(gameRequest.getSize());
 
-        if(!gameRequest.getColor().equalsIgnoreCase("white") && !gameRequest.getColor().equalsIgnoreCase("black")) {
+        if(!gameRequest.getFirst().equalsIgnoreCase("white") && !gameRequest.getFirst().equalsIgnoreCase("black")) {
             throw new GameServerException(ErrorCode.ILLEGAL_COLOR);
         }
 

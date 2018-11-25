@@ -2,6 +2,7 @@ package io.joshatron.tak.server.database;
 
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
+import io.joshatron.tak.server.request.From;
 import io.joshatron.tak.server.request.Read;
 import io.joshatron.tak.server.response.Message;
 import io.joshatron.tak.server.response.SocialNotifications;
@@ -420,7 +421,7 @@ public class SocialDAOSqlite implements SocialDAO {
     }
 
     @Override
-    public Message[] listMessages(String userId, String[] users, Date start, Date end, Read read) throws GameServerException {
+    public Message[] listMessages(String userId, String[] users, Date start, Date end, Read read, From from) throws GameServerException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 

@@ -1,6 +1,7 @@
 package io.joshatron.tak.server.database;
 
 import io.joshatron.tak.server.exceptions.GameServerException;
+import io.joshatron.tak.server.request.From;
 import io.joshatron.tak.server.request.Read;
 import io.joshatron.tak.server.response.Message;
 import io.joshatron.tak.server.response.SocialNotifications;
@@ -26,7 +27,7 @@ public interface SocialDAO {
     User[] getOutgoingFriendRequests(String user) throws GameServerException;
     User[] getFriends(String user) throws GameServerException;
     User[] getBlocked(String user) throws GameServerException;
-    Message[] listMessages(String userId, String[] users, Date start, Date end, Read read) throws GameServerException;
+    Message[] listMessages(String userId, String[] users, Date start, Date end, Read read, From from) throws GameServerException;
     Message getMessage(String messageId) throws GameServerException;
     SocialNotifications getSocialNotifications(String userId) throws GameServerException;
 }

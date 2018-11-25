@@ -205,13 +205,13 @@ public class SocialUtils {
         socialDAO.sendMessage(user.getUserId(), other, sendMessage.getText());
     }
 
-    public Message[] listMessages(Auth auth, String senders, Date start, Date end, String read) throws GameServerException {
+    public Message[] listMessages(Auth auth, String senders, Date start, Date end, String read, String from) throws GameServerException {
         Validator.validateAuth(auth);
-        Read r = Validator.validateRead(read);
-        User user = accountDAO.getUserFromUsername(auth.getUsername());
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
+        Read rd = Validator.validateRead(read);
         String[] users = null;
         if(senders != null && senders.length() > 0) {
             users = senders.split(",");
@@ -225,8 +225,9 @@ public class SocialUtils {
         if(start != null && end != null && start.after(end)) {
             throw new GameServerException(ErrorCode.INVALID_DATE);
         }
+        From frm = Validator.validateFrom(from);
 
-        return socialDAO.listMessages(user.getUserId(), users, start, end, r);
+        return socialDAO.listMessages(user.getUserId(), users, start, end, rd, frm);
     }
 
     public void markMessagesRead(Auth auth, MarkRead markRead) throws GameServerException {
@@ -250,7 +251,7 @@ public class SocialUtils {
         }
 
         if(markRead.getStart() != null) {
-            Message[] messages = socialDAO.listMessages(user.getUserId(), null, markRead.getStart(), null, Read.NOT_READ);
+            Message[] messages = socialDAO.listMessages(user.getUserId(), null, markRead.getStart(), null, Read.NOT_READ, From.THEM);
             for(Message message : messages) {
                 socialDAO.markMessageRead(message.getId());
             }
