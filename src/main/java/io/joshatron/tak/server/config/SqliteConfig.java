@@ -1,7 +1,7 @@
 package io.joshatron.tak.server.config;
 
 import io.joshatron.tak.server.database.AccountDAOSqlite;
-import io.joshatron.tak.server.database.DatabaseManager;
+import io.joshatron.tak.server.database.SqliteManager;
 import io.joshatron.tak.server.database.GameDAOSqlite;
 import io.joshatron.tak.server.database.SocialDAOSqlite;
 import io.joshatron.tak.server.exceptions.GameServerException;
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import java.sql.Connection;
 
 @Configuration
-public class ApplicationConfig {
+public class SqliteConfig {
 
     @Bean
     public GameUtils gameUtils() throws GameServerException {
@@ -48,6 +48,6 @@ public class ApplicationConfig {
 
     @Bean
     public Connection connection() throws GameServerException {
-        return DatabaseManager.getConnection();
+        return SqliteManager.getConnection();
     }
 }

@@ -5,9 +5,9 @@ import io.joshatron.tak.server.exceptions.GameServerException;
 
 import java.sql.*;
 
-public class DatabaseManager {
+public class SqliteManager {
 
-    private DatabaseManager() {
+    private SqliteManager() {
         throw new IllegalStateException("This is a utility class");
     }
 

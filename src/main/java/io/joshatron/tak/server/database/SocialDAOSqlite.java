@@ -45,8 +45,8 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
-            DatabaseManager.closeResultSet(rs);
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
         }
     }
 
@@ -71,8 +71,8 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
-            DatabaseManager.closeResultSet(rs);
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
         }
     }
 
@@ -95,8 +95,8 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
-            DatabaseManager.closeResultSet(rs);
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
         }
     }
 
@@ -115,7 +115,7 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
+            SqliteManager.closeStatement(stmt);
         }
     }
 
@@ -134,7 +134,7 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
+            SqliteManager.closeStatement(stmt);
         }
     }
 
@@ -153,7 +153,7 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
+            SqliteManager.closeStatement(stmt);
         }
     }
 
@@ -174,7 +174,7 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
+            SqliteManager.closeStatement(stmt);
         }
     }
 
@@ -193,7 +193,7 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
+            SqliteManager.closeStatement(stmt);
         }
     }
 
@@ -212,7 +212,7 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
+            SqliteManager.closeStatement(stmt);
         }
     }
 
@@ -234,7 +234,7 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
+            SqliteManager.closeStatement(stmt);
         }
     }
 
@@ -253,7 +253,7 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
+            SqliteManager.closeStatement(stmt);
         }
     }
 
@@ -272,7 +272,7 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
+            SqliteManager.closeStatement(stmt);
         }
     }
 
@@ -300,8 +300,8 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
-            DatabaseManager.closeResultSet(rs);
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
         }
     }
 
@@ -329,8 +329,8 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
-            DatabaseManager.closeResultSet(rs);
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
         }
     }
 
@@ -372,8 +372,8 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
-            DatabaseManager.closeResultSet(rs);
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
         }
     }
 
@@ -415,8 +415,8 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
-            DatabaseManager.closeResultSet(rs);
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
         }
     }
 
@@ -495,8 +495,8 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
-            DatabaseManager.closeResultSet(rs);
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
         }
     }
 
@@ -524,8 +524,8 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
-            DatabaseManager.closeResultSet(rs);
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
         }
     }
 
@@ -557,8 +557,8 @@ public class SocialDAOSqlite implements SocialDAO {
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
-            DatabaseManager.closeStatement(stmt);
-            DatabaseManager.closeResultSet(rs);
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
         }
     }
 }

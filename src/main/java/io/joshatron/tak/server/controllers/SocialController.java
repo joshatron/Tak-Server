@@ -1,6 +1,6 @@
 package io.joshatron.tak.server.controllers;
 
-import io.joshatron.tak.server.config.ApplicationConfig;
+import io.joshatron.tak.server.config.SqliteConfig;
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.*;
@@ -24,7 +24,7 @@ public class SocialController {
     private Logger logger = LoggerFactory.getLogger(SocialController.class);
 
     public SocialController() {
-        ApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfig.class);
+        ApplicationContext context = new AnnotationConfigApplicationContext(SqliteConfig.class);
         socialUtils = context.getBean(SocialUtils.class);
     }
 

@@ -1,6 +1,6 @@
 package io.joshatron.tak.server.controllers;
 
-import io.joshatron.tak.server.config.ApplicationConfig;
+import io.joshatron.tak.server.config.SqliteConfig;
 import io.joshatron.tak.server.exceptions.*;
 import io.joshatron.tak.server.request.Auth;
 import io.joshatron.tak.server.request.Text;
@@ -23,7 +23,7 @@ public class AccountController {
     private Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     public AccountController() {
-        ApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfig.class);
+        ApplicationContext context = new AnnotationConfigApplicationContext(SqliteConfig.class);
         accountUtils = context.getBean(AccountUtils.class);
     }
 

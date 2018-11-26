@@ -1,6 +1,6 @@
 package io.joshatron.tak.server.controllers;
 
-import io.joshatron.tak.server.config.ApplicationConfig;
+import io.joshatron.tak.server.config.SqliteConfig;
 import io.joshatron.tak.server.request.*;
 import io.joshatron.tak.server.response.*;
 import io.joshatron.tak.server.utils.GameUtils;
@@ -22,7 +22,7 @@ public class GameController {
     private Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     public GameController() {
-        ApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfig.class);
+        ApplicationContext context = new AnnotationConfigApplicationContext(SqliteConfig.class);
         gameUtils = context.getBean(GameUtils.class);
     }
 

@@ -1,6 +1,18 @@
 package io.joshatron.tak.server.database;
 
+import io.joshatron.tak.engine.game.Player;
+import io.joshatron.tak.server.exceptions.ErrorCode;
+import io.joshatron.tak.server.exceptions.GameServerException;
+import io.joshatron.tak.server.request.Complete;
+import io.joshatron.tak.server.request.Pending;
+import io.joshatron.tak.server.response.GameInfo;
+import io.joshatron.tak.server.response.GameNotifications;
+import io.joshatron.tak.server.response.RequestInfo;
+
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Date;
 
 public class GameDAOSqlite implements GameDAO {
 
@@ -8,6 +20,138 @@ public class GameDAOSqlite implements GameDAO {
 
     public GameDAOSqlite(Connection conn) {
         this.conn = conn;
+    }
+
+    @Override
+    public void createGameRequest(String requester, String other, int size, Player requesterColor, Player first) throws GameServerException {
+        PreparedStatement stmt = null;
+
+        String insertRequest = "INSERT INTO game_requests (requester, acceptor, size, white, first) " +
+                "VALUES (?,?,?,?,?);";
+
+        try {
+            stmt = conn.prepareStatement(insertRequest);
+            stmt.setString(1, requester);
+            stmt.setString(2, other);
+            stmt.setInt(3, size);
+            if(requesterColor == Player.WHITE) {
+                stmt.setString(4, requester);
+                if(first == Player.WHITE) {
+                    stmt.setString(5, requester);
+                }
+                else {
+                    stmt.setString(5, other);
+                }
+            }
+            else {
+                stmt.setString(4, other);
+                if(first == Player.WHITE) {
+                    stmt.setString(5, other);
+                }
+                else {
+                    stmt.setString(5, requester);
+                }
+            }
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+        }
+    }
+
+    @Override
+    public void deleteGameRequest(String requester, String other) throws GameServerException {
+
+    }
+
+    @Override
+    public void createRandomGameRequest(String user, int size) throws GameServerException {
+
+    }
+
+    @Override
+    public void deleteRandomGameRequest(String user) throws GameServerException {
+
+    }
+
+    @Override
+    public void resolveRandomGameRequests() throws GameServerException {
+
+    }
+
+    @Override
+    public void startGame(String requester, String other) throws GameServerException {
+
+    }
+
+    @Override
+    public void addTurn(String gameId, String text) throws GameServerException {
+
+    }
+
+    @Override
+    public void finishGame(String gameId, Player winner) throws GameServerException {
+
+    }
+
+    @Override
+    public boolean playingGame(String requester, String other) throws GameServerException {
+        return false;
+    }
+
+    @Override
+    public boolean gameRequestExists(String requester, String other) throws GameServerException {
+        return false;
+    }
+
+    @Override
+    public boolean randomGameRequestExists(String user) throws GameServerException {
+        return false;
+    }
+
+    @Override
+    public boolean gameExists(String gameId) throws GameServerException {
+        return false;
+    }
+
+    @Override
+    public boolean userAuthorizedForGame(String user, String gameId) throws GameServerException {
+        return false;
+    }
+
+    @Override
+    public boolean isYourTurn(String userId, String gameId) throws GameServerException {
+        return false;
+    }
+
+    @Override
+    public RequestInfo[] getIncomingGameRequests(String user) throws GameServerException {
+        return new RequestInfo[0];
+    }
+
+    @Override
+    public RequestInfo[] getOutgoingGameRequests(String user) throws GameServerException {
+        return new RequestInfo[0];
+    }
+
+    @Override
+    public int getOutgoingRandomRequestSize(String user) throws GameServerException {
+        return 0;
+    }
+
+    @Override
+    public GameInfo getGameInfo(String gameId) throws GameServerException {
+        return null;
+    }
+
+    @Override
+    public GameInfo[] listGames(String userId, String[] opponents, Date start, Date end, Complete complete, Pending pending, int[] sizes, Player winner, Player color) throws GameServerException {
+        return new GameInfo[0];
+    }
+
+    @Override
+    public GameNotifications getGameNotifications(String userId) throws GameServerException {
+        return null;
     }
 
     /*
