@@ -166,6 +166,11 @@ public class GameDAOSqlite implements GameDAO {
     }
 
     @Override
+    public RequestInfo getGameRequestInfo(String requester, String other) throws GameServerException {
+        return null;
+    }
+
+    @Override
     public RequestInfo[] getIncomingGameRequests(String user) throws GameServerException {
         return new RequestInfo[0];
     }
