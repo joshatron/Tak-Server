@@ -90,7 +90,8 @@ public class GameUtils {
         }
 
         if(response == Answer.ACCEPT) {
-            gameDAO.startGame(id, user.getUserId());
+            RequestInfo info = gameDAO.getGameRequestInfo(id, user.getUserId());
+            gameDAO.startGame(id, user.getUserId(), info.getSize(), info.getRequesterColor(), info.getFirst());
         }
         gameDAO.deleteGameRequest(id, user.getUserId());
     }

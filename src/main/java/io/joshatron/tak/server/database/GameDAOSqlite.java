@@ -61,17 +61,58 @@ public class GameDAOSqlite implements GameDAO {
 
     @Override
     public void deleteGameRequest(String requester, String other) throws GameServerException {
+        PreparedStatement stmt = null;
 
+        String deleteRequest = "DELETE FROM game_requests " +
+                "WHERE requester = ? AND acceptor = ?;";
+
+        try {
+            stmt = conn.prepareStatement(deleteRequest);
+            stmt.setString(1, requester);
+            stmt.setString(2, other);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+        }
     }
 
     @Override
     public void createRandomGameRequest(String user, int size) throws GameServerException {
+        PreparedStatement stmt = null;
 
+        String insertRequest = "INSERT INTO random_requests (requester, size) " +
+                "VALUES (?,?);";
+
+        try {
+            stmt = conn.prepareStatement(insertRequest);
+            stmt.setString(1, user);
+            stmt.setInt(2, size);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+        }
     }
 
     @Override
     public void deleteRandomGameRequest(String user) throws GameServerException {
+        PreparedStatement stmt = null;
 
+        String deleteRequest = "DELETE FROM random_requests " +
+                "WHERE requester = ?;";
+
+        try {
+            stmt = conn.prepareStatement(deleteRequest);
+            stmt.setString(1, user);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+        }
     }
 
     @Override
@@ -80,7 +121,7 @@ public class GameDAOSqlite implements GameDAO {
     }
 
     @Override
-    public void startGame(String requester, String other) throws GameServerException {
+    public void startGame(String requester, String other, int size, Player requesterColor, Player first) throws GameServerException {
 
     }
 
@@ -156,108 +197,6 @@ public class GameDAOSqlite implements GameDAO {
 
     /*
     THIS IS LEGACY CODE: DELETE AFTER CREATING NEW METHODS
-    @Override
-    public boolean requestGame(GameRequest request) throws Exception {
-        //if no auth, return false
-        if(!accountDAO.isAuthenticated(request.getAuth())) {
-            return false;
-        }
-        //if user blocked, return false
-        if(socialDAO.isBlocked(request.getAuth().getUsername(), request.getOpponent())) {
-            return false;
-        }
-
-        PreparedStatement checkStmt = null;
-        PreparedStatement insertStmt = null;
-        ResultSet checkSet = null;
-
-        //check that request doesn't already exist
-        String checkExists = "SELECT requester, acceptor " +
-                "FROM game_requests " +
-                "WHERE (requester = ? AND acceptor = ?) OR (requester = ? AND acceptor = ?);";
-
-        //Create game request
-        String addRequest = "INSERT INTO game_requests (requester,acceptor,size,white,first) " +
-                "VALUES (?,?,?,?,?);";
-
-        try {
-            checkStmt = conn.prepareStatement(checkExists);
-            checkStmt.setInt(1, accountDAO.idFromUsername(request.getAuth().getUsername()));
-            checkStmt.setInt(2, accountDAO.idFromUsername(request.getOpponent()));
-            checkStmt.setInt(3, accountDAO.idFromUsername(request.getOpponent()));
-            checkStmt.setInt(4, accountDAO.idFromUsername(request.getAuth().getUsername()));
-            checkSet = checkStmt.executeQuery();
-
-            if (checkSet.next()) {
-                return false;
-            }
-
-            insertStmt = conn.prepareStatement(addRequest);
-            insertStmt.setInt(1, accountDAO.idFromUsername(request.getAuth().getUsername()));
-            insertStmt.setInt(2, accountDAO.idFromUsername(request.getOpponent()));
-            insertStmt.setInt(3, request.getSize());
-            if (request.getColor().toLowerCase().equals("white")) {
-                insertStmt.setInt(4, 1);
-            } else {
-                insertStmt.setInt(4, 0);
-            }
-            if (request.getFirst().toLowerCase().equals("true")) {
-                insertStmt.setInt(5, 1);
-            } else {
-                insertStmt.setInt(5, 0);
-            }
-            insertStmt.executeUpdate();
-
-            return false;
-        }
-        finally {
-            if(checkStmt != null) {
-                checkStmt.close();
-            }
-            if(insertStmt != null) {
-                insertStmt.close();
-            }
-            if(checkSet != null) {
-                checkSet.close();
-            }
-        }
-    }
-
-    @Override
-    public boolean requestRandomGame(RandomGame request) throws Exception {
-        //if no auth, return false
-        if(!accountDAO.isAuthenticated(request.getAuth())) {
-            return false;
-        }
-        //check if any requests match and if they do create game
-        //if nothing matched create request
-        return false;
-    }
-
-    @Override
-    public boolean respondToGame(GameResponse response) throws Exception {
-        //if no auth, return false
-        if(!accountDAO.isAuthenticated(response.getAuth())) {
-            return false;
-        }
-        //get request and verify everything correct
-        //delete request
-        //if accept, create game
-        return false;
-    }
-
-    @Override
-    public boolean playTurn(PlayTurn turn) throws Exception {
-        //if no auth, return false
-        if(!accountDAO.isAuthenticated(turn.getAuth())) {
-            return false;
-        }
-        //verify it is that player's turn
-        //verify the move is legal
-        //add turn
-        return false;
-    }
-
     @Override
     public RequestInfo[] checkIncomingGames(Auth auth) throws Exception {
         //if no auth, return false
