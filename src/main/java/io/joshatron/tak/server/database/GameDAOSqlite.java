@@ -8,10 +8,13 @@ import io.joshatron.tak.server.request.Pending;
 import io.joshatron.tak.server.response.GameInfo;
 import io.joshatron.tak.server.response.GameNotifications;
 import io.joshatron.tak.server.response.RequestInfo;
+import io.joshatron.tak.server.utils.GameUtils;
+import io.joshatron.tak.server.utils.IdUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.Date;
 
 public class GameDAOSqlite implements GameDAO {
@@ -122,7 +125,35 @@ public class GameDAOSqlite implements GameDAO {
 
     @Override
     public void startGame(String requester, String other, int size, Player requesterColor, Player first) throws GameServerException {
+        PreparedStatement stmt = null;
 
+        String insertRequest = "INSERT INTO games (id, white, black, size, first, current, turns, start, end, done) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?);";
+
+        try {
+            stmt = conn.prepareStatement(insertRequest);
+            stmt.setString(1, IdUtils.generateId(GameUtils.GAME_ID_LENGTH));
+            if(requesterColor == Player.WHITE) {
+                stmt.setString(2, requester);
+                stmt.setString(3, other);
+            }
+            else {
+                stmt.setString(2, other);
+                stmt.setString(3, requester);
+            }
+            stmt.setInt(4, size);
+            stmt.setString(5, first.name());
+            stmt.setString(6, first.name());
+            stmt.setInt(7, 0);
+            stmt.setLong(8, Instant.now().toEpochMilli());
+            stmt.setInt(9, 0);
+            stmt.setInt(10, 0);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+        }
     }
 
     @Override

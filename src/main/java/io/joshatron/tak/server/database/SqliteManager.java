@@ -67,15 +67,25 @@ public class SqliteManager {
                 "first text NOT NULL);";
 
         String gamesTable = "CREATE TABLE IF NOT EXISTS games (" +
+                //Game ID
                 "id text PRIMARY KEY," +
+                //User ID of white player
                 "white text NOT NULL," +
+                //User ID of black player
                 "black text NOT NULL," +
+                //Board size
                 "size integer NOT NULL," +
+                //The color who goes first, either WHITE or BLACK
                 "first text NOT NULL," +
+                //The color who's turn it is, either WHITE or BLACK
                 "current text NOT NULL," +
+                //How many turns have happened
                 "turns integer NOT NULL," +
+                //The timestamp of when the game started
                 "start integer NOT NULL," +
+                //The timestamp of when the game ended, 0 if not done
                 "end integer," +
+                //Whether the game is done or not, 0 for not done, 1 for done
                 "done integer NOT NULL);";
 
         String turnsTable = "CREATE TABLE IF NOT EXISTS turns (" +
