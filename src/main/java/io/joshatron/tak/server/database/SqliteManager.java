@@ -27,43 +27,69 @@ public class SqliteManager {
 
     private static void initializeDatabase(Connection conn) throws GameServerException {
         String userTable = "CREATE TABLE IF NOT EXISTS users (" +
+                //ID of the user, alphanumeric
                 "id text PRIMARY KEY COLLATE NOCASE," +
+                //username, alphanumeric
                 "username text UNIQUE NOT NULL COLLATE NOCASE," +
+                //hashed password
                 "auth text NOT NULL);";
 
         String friendTable = "CREATE TABLE IF NOT EXISTS friends (" +
+                //ID of friend mapping, for internal use
                 "id integer PRIMARY KEY AUTOINCREMENT," +
+                //ID of the user requesting
                 "requester text NOT NULL," +
+                //ID of the user who accepted
                 "acceptor text NOT NULL);";
 
         String blockedTable = "CREATE TABLE IF NOT EXISTS blocked (" +
+                //ID of the blocking mapping, for internal use
                 "id integer PRIMARY KEY AUTOINCREMENT," +
+                //ID of the user who requests it
                 "requester text NOT NULL," +
+                //ID of the user who is blocked
                 "blocked text NOT NULL);";
 
         String friendRequestsTable = "CREATE TABLE IF NOT EXISTS friend_requests (" +
+                //ID of the friend request, for internal use
                 "id integer PRIMARY KEY AUTOINCREMENT," +
+                //ID of the user who requested
                 "requester text NOT NULL," +
+                //ID of the user who will accept of deny
                 "acceptor text NOT NULL);";
 
         String messagesTable = "CREATE TABLE IF NOT EXISTS messages(" +
+                //ID of the message alphanumeric
                 "id text PRIMARY KEY," +
+                //ID of the user who sent it
                 "sender text NOT NULL," +
+                //ID of the the recipient
                 "recipient text NOT NULL," +
+                //Content of the message
                 "message text NOT NULL," +
+                //Timestamp when it was sent
                 "time integer NOT NULL," +
+                //Whether the message has been marked read, 0 for unread, 1 for read
                 "opened integer NOT NULL);";
 
         String randomRequestsTable = "CREATE TABLE IF NOT EXISTS random_requests (" +
+                //ID of the user requesting the game
                 "requester text PRIMARY KEY," +
+                //Size of the game board to play on
                 "size integer NOT NULL);";
 
         String gameRequestsTable = "CREATE TABLE IF NOT EXISTS game_requests (" +
+                //ID of the game request, for internal use
                 "id integer PRIMARY KEY AUTOINCREMENT," +
+                //ID of the user requesting
                 "requester text NOT NULL," +
+                //ID of the user to accept or deny the game
                 "acceptor text NOT NULL," +
+                //Size of the game board
                 "size integer NOT NULL," +
+                //ID of the user who will be white
                 "white text NOT NULL," +
+                //ID of the user who will go first
                 "first text NOT NULL);";
 
         String gamesTable = "CREATE TABLE IF NOT EXISTS games (" +
