@@ -7,7 +7,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class RequestInfo {
-    private String username;
+    private String requester;
+    private String acceptor;
     private Player requesterColor;
     private Player first;
     private int size;

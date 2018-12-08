@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class GameDAOSqlite implements GameDAO {
@@ -341,22 +342,124 @@ public class GameDAOSqlite implements GameDAO {
 
     @Override
     public boolean isYourTurn(String user, String gameId) throws GameServerException {
-        return false;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getGame = "SELECT white, black, current " +
+                "FROM games " +
+                "WHERE id = ?;";
+
+        try {
+            stmt = conn.prepareStatement(gameId);
+            stmt.setString(1, gameId);
+            rs = stmt.executeQuery();
+
+            if(rs.next()) {
+                Player current = rs.getString("current").equalsIgnoreCase("WHITE") ? Player.WHITE : Player.BLACK;
+                if((rs.getString("white").equalsIgnoreCase(user) && current == Player.WHITE) ||
+                   (rs.getString("black").equalsIgnoreCase(user) && current == Player.BLACK)) {
+                    return true;
+                }
+            }
+
+            return false;
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
     }
 
     @Override
     public RequestInfo getGameRequestInfo(String requester, String other) throws GameServerException {
-        return null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getRequesting = "SELECT size, white, first " +
+                "FROM game_requests " +
+                "WHERE requester = ? AND acceptor = ?;";
+
+        try {
+            stmt = conn.prepareStatement(getRequesting);
+            stmt.setString(1, requester);
+            stmt.setString(2, other);
+            rs = stmt.executeQuery();
+
+            if(rs.next()) {
+                Player requesterColor = requester.equalsIgnoreCase(rs.getString("white")) ? Player.WHITE : Player.BLACK;
+                Player first = requester.equalsIgnoreCase(rs.getString("first")) ? requesterColor : requesterColor.other();
+                return new RequestInfo(requester, other, requesterColor, first, rs.getInt("size"));
+            }
+
+            return null;
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
     }
 
     @Override
     public RequestInfo[] getIncomingGameRequests(String user) throws GameServerException {
-        return new RequestInfo[0];
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getRequesting = "SELECT requester, size, white, first " +
+                "FROM game_requests " +
+                "WHERE acceptor = ?;";
+
+        try {
+            stmt = conn.prepareStatement(getRequesting);
+            stmt.setString(1, user);
+            rs = stmt.executeQuery();
+
+            ArrayList<RequestInfo> requests = new ArrayList<>();
+            while(rs.next()) {
+                String requester = rs.getString("requester");
+                Player requesterColor = requester.equalsIgnoreCase(rs.getString("white")) ? Player.WHITE : Player.BLACK;
+                Player first = requester.equalsIgnoreCase(rs.getString("first")) ? requesterColor : requesterColor.other();
+                requests.add(new RequestInfo(requester, user, requesterColor, first, rs.getInt("size")));
+            }
+
+            return requests.toArray(new RequestInfo[requests.size()]);
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
     }
 
     @Override
     public RequestInfo[] getOutgoingGameRequests(String user) throws GameServerException {
-        return new RequestInfo[0];
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getRequesting = "SELECT requester, size, white, first " +
+                "FROM game_requests " +
+                "WHERE requester = ?;";
+
+        try {
+            stmt = conn.prepareStatement(getRequesting);
+            stmt.setString(1, user);
+            rs = stmt.executeQuery();
+
+            ArrayList<RequestInfo> requests = new ArrayList<>();
+            while(rs.next()) {
+                Player requesterColor = user.equalsIgnoreCase(rs.getString("white")) ? Player.WHITE : Player.BLACK;
+                Player first = user.equalsIgnoreCase(rs.getString("first")) ? requesterColor : requesterColor.other();
+                requests.add(new RequestInfo(user, rs.getString("acceptor"), requesterColor, first, rs.getInt("size")));
+            }
+
+            return requests.toArray(new RequestInfo[requests.size()]);
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
     }
 
     @Override
