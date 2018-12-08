@@ -127,11 +127,11 @@ public class GameDAOSqlite implements GameDAO {
     public void startGame(String requester, String other, int size, Player requesterColor, Player first) throws GameServerException {
         PreparedStatement stmt = null;
 
-        String insertRequest = "INSERT INTO games (id, white, black, size, first, current, turns, start, end, done) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?);";
+        String insertGame = "INSERT INTO games (id, white, black, size, first, current, turns, start, end, winner, done) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?);";
 
         try {
-            stmt = conn.prepareStatement(insertRequest);
+            stmt = conn.prepareStatement(insertGame);
             stmt.setString(1, IdUtils.generateId(GameUtils.GAME_ID_LENGTH));
             if(requesterColor == Player.WHITE) {
                 stmt.setString(2, requester);
@@ -147,7 +147,8 @@ public class GameDAOSqlite implements GameDAO {
             stmt.setInt(7, 0);
             stmt.setLong(8, Instant.now().toEpochMilli());
             stmt.setInt(9, 0);
-            stmt.setInt(10, 0);
+            stmt.setString(10, "NONE");
+            stmt.setInt(11, 0);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
@@ -158,12 +159,52 @@ public class GameDAOSqlite implements GameDAO {
 
     @Override
     public void addTurn(String gameId, String text) throws GameServerException {
+        PreparedStatement stmt = null;
 
+        String insertTurn = "INSERT INTO turns (game_id, turn_order, turn) " +
+                "VALUES (?,?,?);";
+        String updateTurns = "UPDATE games " +
+                "SET turns = ? " +
+                "WHERE id = ?;";
+
+        int currentTurns = getGameInfo(gameId).getTurns().length;
+
+        try {
+            stmt = conn.prepareStatement(insertTurn);
+            stmt.setString(1, gameId);
+            stmt.setInt(2, currentTurns);
+            stmt.setString(3, text);
+            stmt.executeUpdate();
+            stmt = conn.prepareStatement(updateTurns);
+            stmt.setInt(1, currentTurns + 1);
+            stmt.setString(2, gameId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+        }
     }
 
     @Override
     public void finishGame(String gameId, Player winner) throws GameServerException {
+        PreparedStatement stmt = null;
 
+        String updateTurns = "UPDATE games " +
+                "SET winner = ?, end = ?, done = 1, current = 'NONE' " +
+                "WHERE id = ?;";
+
+        try {
+            stmt = conn.prepareStatement(updateTurns);
+            stmt.setString(1, winner.name());
+            stmt.setLong(2, Instant.now().toEpochMilli());
+            stmt.setString(3, gameId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+        }
     }
 
     @Override

@@ -15,6 +15,7 @@ public class GameInfo {
     private Player first;
     private Date start;
     private Date end;
+    private Player winner;
     private boolean done;
     private String[] turns;
 }

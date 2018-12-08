@@ -111,13 +111,19 @@ public class SqliteManager {
                 "start integer NOT NULL," +
                 //The timestamp of when the game ended, 0 if not done
                 "end integer," +
+                //The color who's won the game, either WHITE, BLACK, or NONE for tie or unfinished game
+                "winner text NOT NULL," +
                 //Whether the game is done or not, 0 for not done, 1 for done
                 "done integer NOT NULL);";
 
         String turnsTable = "CREATE TABLE IF NOT EXISTS turns (" +
+                //ID of the turn, for internal use
                 "id integer PRIMARY KEY AUTOINCREMENT," +
+                //ID of the game
                 "game_id text NOT NULL," +
+                //Order the turn is in, starting at 0
                 "turn_order integer NOT NULL," +
+                //String representation of the turn
                 "turn text NOT NULL);";
 
         try {
