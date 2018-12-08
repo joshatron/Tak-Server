@@ -13,6 +13,7 @@ public class GameInfo {
     private String black;
     private int size;
     private Player first;
+    private Player current;
     private Date start;
     private Date end;
     private Player winner;

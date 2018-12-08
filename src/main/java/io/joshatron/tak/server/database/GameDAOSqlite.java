@@ -13,6 +13,7 @@ import io.joshatron.tak.server.utils.IdUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Date;
@@ -164,20 +165,22 @@ public class GameDAOSqlite implements GameDAO {
         String insertTurn = "INSERT INTO turns (game_id, turn_order, turn) " +
                 "VALUES (?,?,?);";
         String updateTurns = "UPDATE games " +
-                "SET turns = ? " +
+                "SET turns = ?, current = ? " +
                 "WHERE id = ?;";
 
-        int currentTurns = getGameInfo(gameId).getTurns().length;
+        GameInfo currentGameState = getGameInfo(gameId);
+        Player next = currentGameState.getCurrent() == Player.WHITE ? Player.BLACK : Player.WHITE;
 
         try {
             stmt = conn.prepareStatement(insertTurn);
             stmt.setString(1, gameId);
-            stmt.setInt(2, currentTurns);
+            stmt.setInt(2, currentGameState.getTurns().length);
             stmt.setString(3, text);
             stmt.executeUpdate();
             stmt = conn.prepareStatement(updateTurns);
-            stmt.setInt(1, currentTurns + 1);
-            stmt.setString(2, gameId);
+            stmt.setInt(1, currentGameState.getTurns().length + 1);
+            stmt.setString(2, next.name());
+            stmt.setString(3, gameId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
@@ -208,32 +211,136 @@ public class GameDAOSqlite implements GameDAO {
     }
 
     @Override
-    public boolean playingGame(String requester, String other) throws GameServerException {
-        return false;
+    public boolean playingGame(String user, String other) throws GameServerException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getPlaying = "SELECT done " +
+                "FROM games " +
+                "WHERE white = ? AND black = ?;";
+
+        try {
+            stmt = conn.prepareStatement(getPlaying);
+            stmt.setString(1, user);
+            stmt.setString(2, other);
+            rs = stmt.executeQuery();
+
+            while(rs.next()) {
+                if(rs.getInt("done") == 0) {
+                    return true;
+                }
+            }
+
+            return false;
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
     }
 
     @Override
     public boolean gameRequestExists(String requester, String other) throws GameServerException {
-        return false;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getRequesting = "SELECT id " +
+                "FROM game_requests " +
+                "WHERE requester = ? AND acceptor = ?;";
+
+        try {
+            stmt = conn.prepareStatement(getRequesting);
+            stmt.setString(1, requester);
+            stmt.setString(2, other);
+            rs = stmt.executeQuery();
+
+            return rs.next();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
     }
 
     @Override
     public boolean randomGameRequestExists(String user) throws GameServerException {
-        return false;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getRequesting = "SELECT requester " +
+                "FROM random_requests " +
+                "WHERE requester = ?;";
+
+        try {
+            stmt = conn.prepareStatement(getRequesting);
+            stmt.setString(1, user);
+            rs = stmt.executeQuery();
+
+            return rs.next();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
     }
 
     @Override
     public boolean gameExists(String gameId) throws GameServerException {
-        return false;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getGame = "SELECT id " +
+                "FROM games " +
+                "WHERE id = ?;";
+
+        try {
+            stmt = conn.prepareStatement(gameId);
+            stmt.setString(1, gameId);
+            rs = stmt.executeQuery();
+
+            return rs.next();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
     }
 
     @Override
     public boolean userAuthorizedForGame(String user, String gameId) throws GameServerException {
-        return false;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getGame = "SELECT white, black " +
+                "FROM games " +
+                "WHERE id = ?;";
+
+        try {
+            stmt = conn.prepareStatement(gameId);
+            stmt.setString(1, gameId);
+            rs = stmt.executeQuery();
+
+            if(rs.next()) {
+                if(rs.getString("white").equalsIgnoreCase(user) || rs.getString("black").equalsIgnoreCase(user)) {
+                    return true;
+                }
+            }
+
+            return false;
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
     }
 
     @Override
-    public boolean isYourTurn(String userId, String gameId) throws GameServerException {
+    public boolean isYourTurn(String user, String gameId) throws GameServerException {
         return false;
     }
 

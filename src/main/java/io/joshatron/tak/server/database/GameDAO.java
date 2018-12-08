@@ -19,12 +19,12 @@ public interface GameDAO {
     void startGame(String requester, String other, int size, Player requesterColor, Player first) throws GameServerException;
     void addTurn(String gameId, String text) throws GameServerException;
     void finishGame(String gameId, Player winner) throws GameServerException;
-    boolean playingGame(String requester, String other) throws GameServerException;
+    boolean playingGame(String user, String other) throws GameServerException;
     boolean gameRequestExists(String requester, String other) throws GameServerException;
     boolean randomGameRequestExists(String user) throws GameServerException;
     boolean gameExists(String gameId) throws GameServerException;
     boolean userAuthorizedForGame(String user, String gameId) throws GameServerException;
-    boolean isYourTurn(String userId, String gameId) throws GameServerException;
+    boolean isYourTurn(String user, String gameId) throws GameServerException;
     RequestInfo getGameRequestInfo(String requester, String other) throws GameServerException;
     RequestInfo[] getIncomingGameRequests(String user) throws GameServerException;
     RequestInfo[] getOutgoingGameRequests(String user) throws GameServerException;
