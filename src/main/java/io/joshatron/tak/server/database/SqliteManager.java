@@ -87,9 +87,9 @@ public class SqliteManager {
                 "acceptor text NOT NULL," +
                 //Size of the game board
                 "size integer NOT NULL," +
-                //ID of the user who will be white
-                "white text NOT NULL," +
-                //ID of the user who will go first
+                //Color of the requesting user, either WHITE or BLACK
+                "requester_color text NOT NULL," +
+                //Color of the user who will go first, either WHITE or BLACK
                 "first text NOT NULL);";
 
         String gamesTable = "CREATE TABLE IF NOT EXISTS games (" +

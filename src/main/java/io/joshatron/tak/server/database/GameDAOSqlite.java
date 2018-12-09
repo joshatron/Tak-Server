@@ -7,6 +7,7 @@ import io.joshatron.tak.server.request.Complete;
 import io.joshatron.tak.server.request.Pending;
 import io.joshatron.tak.server.response.GameInfo;
 import io.joshatron.tak.server.response.GameNotifications;
+import io.joshatron.tak.server.response.RandomRequestInfo;
 import io.joshatron.tak.server.response.RequestInfo;
 import io.joshatron.tak.server.utils.GameUtils;
 import io.joshatron.tak.server.utils.IdUtils;
@@ -31,7 +32,7 @@ public class GameDAOSqlite implements GameDAO {
     public void createGameRequest(String requester, String other, int size, Player requesterColor, Player first) throws GameServerException {
         PreparedStatement stmt = null;
 
-        String insertRequest = "INSERT INTO game_requests (requester, acceptor, size, white, first) " +
+        String insertRequest = "INSERT INTO game_requests (requester, acceptor, size, requester_color, first) " +
                 "VALUES (?,?,?,?,?);";
 
         try {
@@ -39,24 +40,9 @@ public class GameDAOSqlite implements GameDAO {
             stmt.setString(1, requester);
             stmt.setString(2, other);
             stmt.setInt(3, size);
-            if(requesterColor == Player.WHITE) {
-                stmt.setString(4, requester);
-                if(first == Player.WHITE) {
-                    stmt.setString(5, requester);
-                }
-                else {
-                    stmt.setString(5, other);
-                }
-            }
-            else {
-                stmt.setString(4, other);
-                if(first == Player.WHITE) {
-                    stmt.setString(5, other);
-                }
-                else {
-                    stmt.setString(5, requester);
-                }
-            }
+            stmt.setString(4, requesterColor.name());
+            stmt.setString(5, first.name());
+            stmt.executeUpdate();
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
@@ -118,11 +104,6 @@ public class GameDAOSqlite implements GameDAO {
         } finally {
             SqliteManager.closeStatement(stmt);
         }
-    }
-
-    @Override
-    public void resolveRandomGameRequests() throws GameServerException {
-
     }
 
     @Override
@@ -298,7 +279,7 @@ public class GameDAOSqlite implements GameDAO {
                 "WHERE id = ?;";
 
         try {
-            stmt = conn.prepareStatement(gameId);
+            stmt = conn.prepareStatement(getGame);
             stmt.setString(1, gameId);
             rs = stmt.executeQuery();
 
@@ -321,17 +302,11 @@ public class GameDAOSqlite implements GameDAO {
                 "WHERE id = ?;";
 
         try {
-            stmt = conn.prepareStatement(gameId);
+            stmt = conn.prepareStatement(getGame);
             stmt.setString(1, gameId);
             rs = stmt.executeQuery();
 
-            if(rs.next()) {
-                if(rs.getString("white").equalsIgnoreCase(user) || rs.getString("black").equalsIgnoreCase(user)) {
-                    return true;
-                }
-            }
-
-            return false;
+            return (rs.next() && (rs.getString("white").equalsIgnoreCase(user) || rs.getString("black").equalsIgnoreCase(user)));
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
@@ -350,7 +325,7 @@ public class GameDAOSqlite implements GameDAO {
                 "WHERE id = ?;";
 
         try {
-            stmt = conn.prepareStatement(gameId);
+            stmt = conn.prepareStatement(getGame);
             stmt.setString(1, gameId);
             rs = stmt.executeQuery();
 
@@ -387,8 +362,8 @@ public class GameDAOSqlite implements GameDAO {
             rs = stmt.executeQuery();
 
             if(rs.next()) {
-                Player requesterColor = requester.equalsIgnoreCase(rs.getString("white")) ? Player.WHITE : Player.BLACK;
-                Player first = requester.equalsIgnoreCase(rs.getString("first")) ? requesterColor : requesterColor.other();
+                Player requesterColor = rs.getString("requester_color").equalsIgnoreCase("WHITE") ? Player.WHITE : Player.BLACK;
+                Player first = rs.getString("first").equalsIgnoreCase("WHITE") ? Player.WHITE : Player.BLACK;
                 return new RequestInfo(requester, other, requesterColor, first, rs.getInt("size"));
             }
 
@@ -406,7 +381,7 @@ public class GameDAOSqlite implements GameDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String getRequesting = "SELECT requester, size, white, first " +
+        String getRequesting = "SELECT requester, size, requester_color, first " +
                 "FROM game_requests " +
                 "WHERE acceptor = ?;";
 
@@ -417,10 +392,9 @@ public class GameDAOSqlite implements GameDAO {
 
             ArrayList<RequestInfo> requests = new ArrayList<>();
             while(rs.next()) {
-                String requester = rs.getString("requester");
-                Player requesterColor = requester.equalsIgnoreCase(rs.getString("white")) ? Player.WHITE : Player.BLACK;
-                Player first = requester.equalsIgnoreCase(rs.getString("first")) ? requesterColor : requesterColor.other();
-                requests.add(new RequestInfo(requester, user, requesterColor, first, rs.getInt("size")));
+                Player requesterColor = rs.getString("requester_color").equalsIgnoreCase("WHITE") ? Player.WHITE : Player.BLACK;
+                Player first = rs.getString("first").equalsIgnoreCase("WHITE") ? Player.WHITE : Player.BLACK;
+                requests.add(new RequestInfo(rs.getString("requester"), user, requesterColor, first, rs.getInt("size")));
             }
 
             return requests.toArray(new RequestInfo[requests.size()]);
@@ -448,8 +422,8 @@ public class GameDAOSqlite implements GameDAO {
 
             ArrayList<RequestInfo> requests = new ArrayList<>();
             while(rs.next()) {
-                Player requesterColor = user.equalsIgnoreCase(rs.getString("white")) ? Player.WHITE : Player.BLACK;
-                Player first = user.equalsIgnoreCase(rs.getString("first")) ? requesterColor : requesterColor.other();
+                Player requesterColor = rs.getString("requester_color").equalsIgnoreCase("WHITE") ? Player.WHITE : Player.BLACK;
+                Player first = rs.getString("first").equalsIgnoreCase("WHITE") ? Player.WHITE : Player.BLACK;
                 requests.add(new RequestInfo(user, rs.getString("acceptor"), requesterColor, first, rs.getInt("size")));
             }
 
@@ -464,12 +438,116 @@ public class GameDAOSqlite implements GameDAO {
 
     @Override
     public int getOutgoingRandomRequestSize(String user) throws GameServerException {
-        return 0;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getRequesting = "SELECT size " +
+                "FROM random_requests " +
+                "WHERE requester = ?;";
+
+        try {
+            stmt = conn.prepareStatement(getRequesting);
+            stmt.setString(1, user);
+            rs = stmt.executeQuery();
+
+            if(rs.next()) {
+                return rs.getInt("size");
+            }
+
+            throw new GameServerException(ErrorCode.REQUEST_NOT_FOUND);
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
+    }
+
+    @Override
+    public RandomRequestInfo[] getRandomGameRequests() throws GameServerException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getRequest = "SELECT requester, size " +
+                "FROM random_requests;";
+
+        try {
+            stmt = conn.prepareStatement(getRequest);
+            rs = stmt.executeQuery();
+
+            ArrayList<RandomRequestInfo> requests = new ArrayList<>();
+            while(rs.next()) {
+                requests.add(new RandomRequestInfo(rs.getString("requester"), rs.getInt("size")));
+            }
+
+            return requests.toArray(new RandomRequestInfo[requests.size()]);
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
     }
 
     @Override
     public GameInfo getGameInfo(String gameId) throws GameServerException {
-        return null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getGame = "SELECT * " +
+                "FROM games " +
+                "WHERE id = ?;";
+
+        try {
+            stmt = conn.prepareStatement(getGame);
+            stmt.setString(1, gameId);
+            rs = stmt.executeQuery();
+
+            if(rs.next()) {
+                Player first = rs.getString("first").equalsIgnoreCase("WHITE") ? Player.WHITE : Player.BLACK;
+                Player current = rs.getString("current").equalsIgnoreCase("WHITE") ? Player.WHITE : Player.BLACK;
+                Player winner = rs.getString("winner").equalsIgnoreCase("WHITE") ? Player.WHITE : Player.BLACK;
+                boolean done = rs.getInt("done") == 1;
+                String[] turns = getTurnsForGame(gameId);
+                return new GameInfo(rs.getString("white"), rs.getString("black"), rs.getInt("size"), first,
+                                    current, new Date(rs.getLong("start")), new Date(rs.getLong("end")), winner, done, turns);
+            }
+
+            return null;
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
+    }
+
+    private String[] getTurnsForGame(String gameId) throws GameServerException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getTurns = "SELECT turn " +
+                "FROM turns " +
+                "WHERE game_id = ? " +
+                "ORDER BY turn_order ASC;";
+
+        try {
+            stmt = conn.prepareStatement(getTurns);
+            stmt.setString(1, gameId);
+            rs = stmt.executeQuery();
+
+            ArrayList<String> turns = new ArrayList<>();
+            while(rs.next()) {
+                turns.add(rs.getString("turn"));
+            }
+
+            return turns.toArray(new String[turns.size()]);
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
     }
 
     @Override
@@ -481,286 +559,4 @@ public class GameDAOSqlite implements GameDAO {
     public GameNotifications getGameNotifications(String userId) throws GameServerException {
         return null;
     }
-
-    /*
-    THIS IS LEGACY CODE: DELETE AFTER CREATING NEW METHODS
-    @Override
-    public RequestInfo[] checkIncomingGames(Auth auth) throws Exception {
-        //if no auth, return false
-        if(!accountDAO.isAuthenticated(auth)) {
-            return null;
-        }
-
-        PreparedStatement requestStmt = null;
-        ResultSet requestSet = null;
-
-        //select all requests and convert to request infos
-        String incoming = "SELECT users.username as username, size, white, first " +
-                "FROM game_requests " +
-                "LEFT OUTER JOIN users on game_requests.requester = users.id " +
-                "WHERE acceptor = ?;";
-
-        try {
-            requestStmt = conn.prepareStatement(incoming);
-            requestStmt.setInt(1, accountDAO.idFromUsername(auth.getUsername()));
-            requestSet = requestStmt.executeQuery();
-
-            ArrayList<RequestInfo> requests = new ArrayList<>();
-
-            while (requestSet.next()) {
-                String user = requestSet.getString("username");
-                boolean white = requestSet.getInt("white") == 0;
-                boolean first = requestSet.getInt("first") == 0;
-                int size = requestSet.getInt("size");
-                requests.add(new RequestInfo(user, white, first, size));
-            }
-
-            return requests.toArray(new RequestInfo[requests.size()]);
-        }
-        finally {
-            if(requestStmt != null) {
-                requestStmt.close();
-            }
-            if(requestSet != null) {
-                requestSet.close();
-            }
-        }
-    }
-
-    @Override
-    public RequestInfo[] checkOutgoingGames(Auth auth) throws Exception {
-        //if no auth, return false
-        if(!accountDAO.isAuthenticated(auth)) {
-            return null;
-        }
-
-        PreparedStatement requestStmt = null;
-        ResultSet requestSet = null;
-
-        //select all requests and convert to request infos
-        String incoming = "SELECT users.username as username, size, white, first " +
-                "FROM game_requests " +
-                "LEFT OUTER JOIN users on game_requests.acceptor = users.id " +
-                "WHERE requester = ?;";
-
-        try {
-            requestStmt = conn.prepareStatement(incoming);
-            requestStmt.setInt(1, accountDAO.idFromUsername(auth.getUsername()));
-            requestSet = requestStmt.executeQuery();
-
-            ArrayList<RequestInfo> requests = new ArrayList<>();
-
-            while (requestSet.next()) {
-                String user = requestSet.getString("username");
-                boolean white = requestSet.getInt("white") == 1;
-                boolean first = requestSet.getInt("first") == 1;
-                int size = requestSet.getInt("size");
-                requests.add(new RequestInfo(user, white, first, size));
-            }
-
-            return requests.toArray(new RequestInfo[requests.size()]);
-        }
-        finally {
-            if(requestStmt != null) {
-                requestStmt.close();
-            }
-            if(requestSet != null) {
-                requestSet.close();
-            }
-        }
-    }
-
-    @Override
-    public int[] listCompletedGames(ListCompleted completed) throws Exception {
-        //if no auth, return false
-        if(!accountDAO.isAuthenticated(completed.getAuth())) {
-            return null;
-        }
-
-        PreparedStatement gameStmt = null;
-        ResultSet gameSet = null;
-
-        //find all completed games and get ids
-        String games = "SELECT id " +
-                "FROM games " +
-                "WHERE done = 1 AND (white = ? or black = ?);";
-
-        try {
-            gameStmt = conn.prepareStatement(games);
-            gameStmt.setInt(1, accountDAO.idFromUsername(completed.getAuth().getUsername()));
-            gameStmt.setInt(2, accountDAO.idFromUsername(completed.getAuth().getUsername()));
-            gameSet = gameStmt.executeQuery();
-
-            ArrayList<Integer> ints = new ArrayList<>();
-
-            while (gameSet.next()) {
-                ints.add(gameSet.getInt("id"));
-            }
-
-            int[] toReturn = new int[ints.size()];
-
-            for (int i = 0; i < toReturn.length; i++) {
-                toReturn[i] = ints.get(i).intValue();
-            }
-
-            return toReturn;
-        }
-        finally {
-            if(gameStmt != null) {
-                gameStmt.close();
-            }
-            if(gameSet != null) {
-                gameSet.close();
-            }
-        }
-    }
-
-    @Override
-    public int[] listIncompleteGames(ListIncomplete incomplete) throws Exception {
-        //if no auth, return false
-        if(!accountDAO.isAuthenticated(incomplete.getAuth())) {
-            return null;
-        }
-
-        PreparedStatement gameStmt = null;
-        ResultSet gameSet = null;
-
-        //find all completed games and get ids
-        String games = "SELECT id " +
-                "FROM games " +
-                "WHERE done = 0 AND (white = ? or black = ?);";
-
-        try {
-            gameStmt = conn.prepareStatement(games);
-            gameStmt.setInt(1, accountDAO.idFromUsername(incomplete.getAuth().getUsername()));
-            gameStmt.setInt(2, accountDAO.idFromUsername(incomplete.getAuth().getUsername()));
-            gameSet = gameStmt.executeQuery();
-
-            ArrayList<Integer> ints = new ArrayList<>();
-
-            while (gameSet.next()) {
-                ints.add(gameSet.getInt("id"));
-            }
-
-            int[] toReturn = new int[ints.size()];
-
-            for (int i = 0; i < toReturn.length; i++) {
-                toReturn[i] = ints.get(i).intValue();
-            }
-
-            return toReturn;
-        }
-        finally {
-            if(gameStmt != null) {
-                gameStmt.close();
-            }
-            if(gameSet != null) {
-                gameSet.close();
-            }
-        }
-    }
-
-    @Override
-    public GameInfo getGame(GetGame game) throws Exception {
-        //if no auth, return false
-        if(!accountDAO.isAuthenticated(game.getAuth())) {
-            return null;
-        }
-        //make sure user is a player
-        if(!authorizedForGame(game.getAuth().getUsername(), game.getId())) {
-            return null;
-        }
-
-        PreparedStatement gameStmt = null;
-        PreparedStatement turnStmt = null;
-        ResultSet gameSet = null;
-        ResultSet turnSet = null;
-
-        //get info on game
-        GameInfo gameInfo = new GameInfo();
-        String getGame = "SELECT white, black, size, first, start, end, done " +
-                "FROM games " +
-                "WHERE id = ?;";
-
-        //get turns for game
-        String getTurn = "SELECT turn_order, turn " +
-                "FROM turns " +
-                "WHERE game_id = ? " +
-                "ORDER BY turn_order ASC;";
-
-        try {
-            gameStmt = conn.prepareStatement(getGame);
-            gameStmt.setString(1, game.getId());
-            gameSet = gameStmt.executeQuery();
-            if (gameSet.next()) {
-                String white = accountDAO.usernameFromId(gameSet.getInt("white"));
-                String black = accountDAO.usernameFromId(gameSet.getInt("black"));
-                int size = gameSet.getInt("size");
-                String first = gameSet.getInt("first") == 0 ? "white" : "black";
-                String start = gameSet.getString("start");
-                String end = gameSet.getString("end");
-                boolean done = gameSet.getInt("done") == 1;
-                gameInfo = new GameInfo(white, black, size, first, start, end, done);
-            }
-
-            turnStmt = conn.prepareStatement(getTurn);
-            turnStmt.setString(1, game.getId());
-            turnSet = turnStmt.executeQuery();
-            ArrayList<GameTurn> turns = new ArrayList<>();
-            while (turnSet.next()) {
-                turns.add(new GameTurn(turnSet.getString("turn"), turnSet.getInt("turn_order")));
-            }
-
-            gameInfo.setTurns(turns.toArray(new GameTurn[turns.size()]));
-
-            return gameInfo;
-        }
-        finally {
-            if(gameStmt != null) {
-                gameStmt.close();
-            }
-            if(turnStmt != null) {
-                turnStmt.close();
-            }
-            if(gameSet != null) {
-                gameSet.close();
-            }
-            if(turnSet != null) {
-                turnSet.close();
-            }
-        }
-    }
-
-    private boolean authorizedForGame(String username, String gameID) throws Exception {
-        String getGame = "SELECT white, black " +
-                "FROM games " +
-                "WHERE id = ?;";
-
-        PreparedStatement gameStmt = null;
-        ResultSet gameSet = null;
-
-        try {
-            gameStmt = conn.prepareStatement(getGame);
-            gameStmt.setString(1, gameID);
-            gameSet = gameStmt.executeQuery();
-
-            if (gameSet.next()) {
-                int userID = accountDAO.idFromUsername(username);
-
-                if (userID == gameSet.getInt("white") || userID == gameSet.getInt("black")) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-        finally {
-            if(gameStmt != null) {
-                gameStmt.close();
-            }
-            if(gameSet != null) {
-                gameSet.close();
-            }
-        }
-    }*/
 }

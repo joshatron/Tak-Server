@@ -128,7 +128,12 @@ public class GameUtils {
         }
 
         gameDAO.createRandomGameRequest(user.getUserId(), size);
-        gameDAO.resolveRandomGameRequests();
+        resolveRandomGameRequests();
+    }
+
+    private void resolveRandomGameRequests() throws GameServerException {
+        RandomRequestInfo[] requests = gameDAO.getRandomGameRequests();
+        //TODO: resolve matches in requests and create games
     }
 
     public void deleteRandomRequest(Auth auth) throws GameServerException {
