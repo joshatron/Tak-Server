@@ -12,17 +12,14 @@ import io.joshatron.tak.server.response.RequestInfo;
 import io.joshatron.tak.server.utils.GameUtils;
 import io.joshatron.tak.server.utils.IdUtils;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class GameDAOSqlite implements GameDAO {
 
-    Connection conn;
+    private Connection conn;
 
     public GameDAOSqlite(Connection conn) {
         this.conn = conn;
@@ -331,10 +328,8 @@ public class GameDAOSqlite implements GameDAO {
 
             if(rs.next()) {
                 Player current = rs.getString("current").equalsIgnoreCase("WHITE") ? Player.WHITE : Player.BLACK;
-                if((rs.getString("white").equalsIgnoreCase(user) && current == Player.WHITE) ||
-                   (rs.getString("black").equalsIgnoreCase(user) && current == Player.BLACK)) {
-                    return true;
-                }
+                return ((rs.getString("white").equalsIgnoreCase(user) && current == Player.WHITE) ||
+                        (rs.getString("black").equalsIgnoreCase(user) && current == Player.BLACK));
             }
 
             return false;
@@ -397,7 +392,7 @@ public class GameDAOSqlite implements GameDAO {
                 requests.add(new RequestInfo(rs.getString("requester"), user, requesterColor, first, rs.getInt("size")));
             }
 
-            return requests.toArray(new RequestInfo[requests.size()]);
+            return requests.toArray(new RequestInfo[0]);
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
@@ -427,7 +422,7 @@ public class GameDAOSqlite implements GameDAO {
                 requests.add(new RequestInfo(user, rs.getString("acceptor"), requesterColor, first, rs.getInt("size")));
             }
 
-            return requests.toArray(new RequestInfo[requests.size()]);
+            return requests.toArray(new RequestInfo[0]);
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
@@ -480,7 +475,7 @@ public class GameDAOSqlite implements GameDAO {
                 requests.add(new RandomRequestInfo(rs.getString("requester"), rs.getInt("size")));
             }
 
-            return requests.toArray(new RandomRequestInfo[requests.size()]);
+            return requests.toArray(new RandomRequestInfo[0]);
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
@@ -541,7 +536,7 @@ public class GameDAOSqlite implements GameDAO {
                 turns.add(rs.getString("turn"));
             }
 
-            return turns.toArray(new String[turns.size()]);
+            return turns.toArray(new String[0]);
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
@@ -552,11 +547,75 @@ public class GameDAOSqlite implements GameDAO {
 
     @Override
     public GameInfo[] listGames(String userId, String[] opponents, Date start, Date end, Complete complete, Pending pending, int[] sizes, Player winner, Player color) throws GameServerException {
-        return new GameInfo[0];
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            ArrayList<GameInfo> games = new ArrayList<>();
+
+            stmt = conn.prepareStatement(generateGameQuery(opponents, start, end, complete, pending, sizes, winner, color));
+            //TODO: fill out parameters
+            rs = stmt.executeQuery();
+
+            while(rs.next()) {
+                Player first = rs.getString("first").equalsIgnoreCase("WHITE") ? Player.WHITE : Player.BLACK;
+                Player current = rs.getString("current").equalsIgnoreCase("WHITE") ? Player.WHITE : Player.BLACK;
+                Player win = rs.getString("winner").equalsIgnoreCase("WHITE") ? Player.WHITE : Player.BLACK;
+                boolean done = rs.getInt("done") == 1;
+                String[] turns = getTurnsForGame(rs.getString("id"));
+                games.add(new GameInfo(rs.getString("white"), rs.getString("black"), rs.getInt("size"), first, current,
+                                       new Date(rs.getLong("start")), new Date(rs.getLong("end")), win, done, turns));
+            }
+
+            return games.toArray(new GameInfo[0]);
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
+    }
+
+    private String generateGameQuery(String[] opponents, Date start, Date end, Complete complete, Pending pending, int[] sizes, Player winner, Player color) {
+        StringBuilder getGames = new StringBuilder();
+        //TODO: set up query
+
+        return getGames.toString();
     }
 
     @Override
     public GameNotifications getGameNotifications(String userId) throws GameServerException {
-        return null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String countRequests = "SELECT COUNT(*) as total " +
+                "FROM game_requests " +
+                "WHERE acceptor = ?;";
+        String countGames = "SELECT COUNT(*) as total " +
+                "FROM games " +
+                "WHERE done = 0 AND (" +
+                "(white = ? AND current = 'WHITE') OR " +
+                "(black = ? AND current = 'BLACK'));";
+
+        try {
+            stmt = conn.prepareStatement(countRequests);
+            stmt.setString(1, userId);
+            rs = stmt.executeQuery();
+            int requests = rs.getInt("total");
+            rs.close();
+
+            stmt = conn.prepareStatement(countGames);
+            stmt.setString(1, userId);
+            stmt.setString(2, userId);
+            rs = stmt.executeQuery();
+            int games = rs.getInt("total");
+
+            return new GameNotifications(requests, games);
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
     }
 }
