@@ -428,12 +428,28 @@ public class SocialDAOSqlite implements SocialDAO {
         try {
             ArrayList<Message> messages = new ArrayList<>();
 
-            stmt = conn.prepareStatement(generateMessageQuery(users, start, end, read));
-            stmt.setString(1, userId);
-            int i = 2;
+            stmt = conn.prepareStatement(generateMessageQuery(users, start, end, read, from));
+            int i = 1;
+            if(from == From.BOTH) {
+                stmt.setString(i, userId);
+                i++;
+                stmt.setString(i, userId);
+            }
+            else {
+                stmt.setString(i, userId);
+
+            }
+            i++;
             if(users != null && users.length > 0) {
                 for(String user : users) {
-                    stmt.setString(i, user);
+                    if(from == From.BOTH) {
+                        stmt.setString(i, user);
+                        i++;
+                        stmt.setString(i, user);
+                    }
+                    else {
+                        stmt.setString(i, user);
+                    }
                     i++;
                 }
             }
@@ -460,21 +476,45 @@ public class SocialDAOSqlite implements SocialDAO {
         }
     }
 
-   private String generateMessageQuery(String[] users, Date start, Date end, Read read) {
+   private String generateMessageQuery(String[] users, Date start, Date end, Read read, From from) {
        StringBuilder getMessage = new StringBuilder();
        getMessage.append("SELECT id, sender, recipient, message, time, opened ");
        getMessage.append("FROM messages ");
-       getMessage.append("WHERE id = ?");
+       if(from == From.ME) {
+           getMessage.append("WHERE sender = ? ");
+       }
+       else if(from == From.THEM) {
+           getMessage.append("WHERE recipient = ? ");
+       }
+       else {
+           getMessage.append("WHERE (sender = ? OR recipient = ?) ");
+       }
 
        if (users != null && users.length > 0) {
            getMessage.append(" AND (");
            boolean first = true;
            for (int i = 0; i < users.length; i++) {
                if (first) {
-                   getMessage.append("sender = ?");
+                   if(from == From.ME) {
+                       getMessage.append("recipient = ?");
+                   }
+                   else if(from == From.THEM) {
+                       getMessage.append("sender = ?");
+                   }
+                   else {
+                       getMessage.append("(sender = ? OR recipient = ?)");
+                   }
                    first = false;
                } else {
-                   getMessage.append(" OR sender = ?");
+                   if(from == From.ME) {
+                       getMessage.append(" OR recipient = ?");
+                   }
+                   else if(from == From.THEM) {
+                       getMessage.append(" OR sender = ?");
+                   }
+                   else {
+                       getMessage.append(" OR (sender = ? or recipient = ?)");
+                   }
                }
            }
            getMessage.append(")");

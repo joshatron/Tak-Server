@@ -578,7 +578,11 @@ public class GameDAOSqlite implements GameDAO {
 
     private String generateGameQuery(String[] opponents, Date start, Date end, Complete complete, Pending pending, int[] sizes, Player winner, Player color) {
         StringBuilder getGames = new StringBuilder();
-        //TODO: set up query
+        getGames.append("SELECT * ");
+        getGames.append("FROM games ");
+        getGames.append("WHERE (requester = ? OR acceptor = ?) ");
+
+        //TODO: finish adding other parameters
 
         return getGames.toString();
     }
