@@ -513,7 +513,7 @@ public class SocialDAOSqlite implements SocialDAO {
                        getMessage.append(" OR sender = ?");
                    }
                    else {
-                       getMessage.append(" OR (sender = ? or recipient = ?)");
+                       getMessage.append(" OR (sender = ? OR recipient = ?)");
                    }
                }
            }

@@ -580,9 +580,94 @@ public class GameDAOSqlite implements GameDAO {
         StringBuilder getGames = new StringBuilder();
         getGames.append("SELECT * ");
         getGames.append("FROM games ");
-        getGames.append("WHERE (requester = ? OR acceptor = ?) ");
+        if(color == Player.WHITE) {
+            getGames.append("WHERE white = ?");
+        }
+        else if(color == Player.BLACK) {
+            getGames.append("WHERE black = ?");
+        }
+        else {
+            getGames.append("WHERE (white = ? OR black = ?)");
+        }
 
-        //TODO: finish adding other parameters
+        if(opponents != null && opponents.length > 0) {
+            getGames.append(" AND (");
+            boolean first = true;
+            for (int i = 0; i < opponents.length; i++) {
+               if (first) {
+                   if(color == Player.WHITE) {
+                       getGames.append("black = ? ");
+                   }
+                   else if(color == Player.BLACK) {
+                       getGames.append("white = ? ");
+                   }
+                   else {
+                       getGames.append("(white = ? OR black = ?)");
+                   }
+                   first = false;
+               } else {
+                   if(color == Player.WHITE) {
+                       getGames.append(" OR black = ?");
+                   }
+                   else if(color == Player.BLACK) {
+                       getGames.append(" OR white = ?");
+                   }
+                   else {
+                       getGames.append(" OR (white = ? OR black = ?)");
+                   }
+               }
+           }
+           getGames.append(")");
+        }
+
+        if (start != null) {
+            getGames.append(" AND time > ?");
+        }
+
+        if (end != null) {
+            getGames.append(" AND time < ?");
+        }
+
+        if (complete != Complete.BOTH) {
+            if (complete == Complete.COMPLETE) {
+                getGames.append(" AND done = 1");
+            } else {
+                getGames.append(" AND done = 0");
+            }
+        }
+
+        if (pending != Pending.BOTH) {
+            if(pending == Pending.PENDING) {
+                getGames.append(" AND ((white = ? AND current = 'WHITE') OR (black = ? AND current = 'BLACK'))");
+            }
+            else {
+                getGames.append(" AND ((white = ? AND current = 'BLACK') OR (black = ? AND current = 'WHITE'))");
+            }
+        }
+
+        if(sizes != null && sizes.length > 0) {
+            getGames.append(" AND (");
+            boolean first = true;
+            for (int i = 0; i < sizes.length; i++) {
+               if (first) {
+                   getGames.append("size = ?");
+                   first = false;
+               } else {
+                   getGames.append(" OR size = ?");
+               }
+           }
+           getGames.append(")");
+        }
+
+        if (winner != Player.NONE) {
+            if (winner == Player.WHITE) {
+                getGames.append(" AND winner = 'WHITE'");
+            } else {
+                getGames.append(" AND winner = 'BLACK'");
+            }
+        }
+
+        getGames.append(";");
 
         return getGames.toString();
     }
