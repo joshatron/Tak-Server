@@ -133,7 +133,20 @@ public class GameUtils {
 
     private void resolveRandomGameRequests() throws GameServerException {
         RandomRequestInfo[] requests = gameDAO.getRandomGameRequests();
-        //TODO: resolve matches in requests and create games
+
+        for(int i = 0; i < requests.length; i++) {
+            if(requests[i] != null) {
+                for(int j = i + 1; j < requests.length; j++) {
+                    if(requests[j] != null && requests[i].getSize() == requests[j].getSize() &&
+                       !socialDAO.isBlocked(requests[i].getRequester(), requests[j].getRequester()) &&
+                       !socialDAO.isBlocked(requests[j].getRequester(), requests[i].getRequester())) {
+                        gameDAO.startGame(requests[i].getRequester(), requests[j].getRequester(), requests[i].getSize(), Player.WHITE, Player.WHITE);
+                        requests[j] = null;
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     public void deleteRandomRequest(Auth auth) throws GameServerException {
