@@ -430,27 +430,20 @@ public class SocialDAOSqlite implements SocialDAO {
 
             stmt = conn.prepareStatement(generateMessageQuery(users, start, end, read, from));
             int i = 1;
+            stmt.setString(i, userId);
+            i++;
             if(from == From.BOTH) {
                 stmt.setString(i, userId);
                 i++;
-                stmt.setString(i, userId);
             }
-            else {
-                stmt.setString(i, userId);
-
-            }
-            i++;
             if(users != null && users.length > 0) {
                 for(String user : users) {
+                    stmt.setString(i, user);
+                    i++;
                     if(from == From.BOTH) {
                         stmt.setString(i, user);
                         i++;
-                        stmt.setString(i, user);
                     }
-                    else {
-                        stmt.setString(i, user);
-                    }
-                    i++;
                 }
             }
             if(start != null) {

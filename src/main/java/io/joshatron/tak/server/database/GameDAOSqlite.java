@@ -554,7 +554,43 @@ public class GameDAOSqlite implements GameDAO {
             ArrayList<GameInfo> games = new ArrayList<>();
 
             stmt = conn.prepareStatement(generateGameQuery(opponents, start, end, complete, pending, sizes, winner, color));
-            //TODO: fill out parameters
+            int i = 1;
+            stmt.setString(i, userId);
+            i++;
+            if(color == Player.NONE) {
+                stmt.setString(i, userId);
+                i++;
+            }
+            if(opponents != null && opponents.length > 0) {
+                for (String opponent : opponents) {
+                    stmt.setString(i, opponent);
+                    i++;
+                    if(color == Player.NONE) {
+                        stmt.setString(i, opponent);
+                        i++;
+                    }
+                }
+            }
+            if (start != null) {
+                stmt.setLong(i, start.getTime());
+                i++;
+            }
+            if (end != null) {
+                stmt.setLong(i, end.getTime());
+                i++;
+            }
+            if (pending != Pending.BOTH) {
+                stmt.setString(i, userId);
+                i++;
+                stmt.setString(i, userId);
+                i++;
+            }
+            if(sizes != null && sizes.length > 0) {
+                for(int size : sizes) {
+                    stmt.setInt(i, size);
+                    i++;
+                }
+            }
             rs = stmt.executeQuery();
 
             while(rs.next()) {
