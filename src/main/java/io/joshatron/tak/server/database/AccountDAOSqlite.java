@@ -105,7 +105,30 @@ public class AccountDAOSqlite implements AccountDAO {
     }
 
     @Override
-    public boolean userExists(String username) throws GameServerException {
+    public boolean userExists(String userId) throws GameServerException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String checkUsername = "SELECT username " +
+                "FROM users " +
+                "WHERE id = ?;";
+
+        try {
+            stmt = conn.prepareStatement(checkUsername);
+            stmt.setString(1, userId);
+            rs = stmt.executeQuery();
+
+            return rs.next();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
+    }
+
+    @Override
+    public boolean usernameExists(String username) throws GameServerException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 

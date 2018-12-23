@@ -25,7 +25,7 @@ public class AccountUtils {
 
     public void registerUser(Auth auth) throws GameServerException {
         Validator.validateAuth(auth);
-        if(accountDAO.userExists(auth.getUsername())) {
+        if(accountDAO.usernameExists(auth.getUsername())) {
             throw new GameServerException(ErrorCode.USERNAME_TAKEN);
         }
 
@@ -56,7 +56,7 @@ public class AccountUtils {
         if(auth.getUsername().equals(change.getText())) {
             throw new GameServerException(ErrorCode.SAME_USERNAME);
         }
-        if(accountDAO.userExists(change.getText())) {
+        if(accountDAO.usernameExists(change.getText())) {
             throw new GameServerException(ErrorCode.USERNAME_TAKEN);
         }
 

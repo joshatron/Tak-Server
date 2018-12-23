@@ -36,6 +36,9 @@ public class SocialUtils {
         if(socialDAO.areFriends(user.getUserId(), other)) {
             throw new GameServerException(ErrorCode.ALREADY_FRIENDS);
         }
+        if(user.getUserId().equalsIgnoreCase(other)) {
+            throw new GameServerException(ErrorCode.REQUESTING_SELF);
+        }
 
         socialDAO.createFriendRequest(user.getUserId(), other);
     }
@@ -126,7 +129,7 @@ public class SocialUtils {
         if(!accountDAO.userExists(other)) {
             throw new GameServerException(ErrorCode.USER_NOT_FOUND);
         }
-        if(socialDAO.isBlocked(other, user.getUserId())) {
+        if(socialDAO.isBlocked(user.getUserId(), other)) {
             throw new GameServerException(ErrorCode.ALREADY_BLOCKED);
         }
 

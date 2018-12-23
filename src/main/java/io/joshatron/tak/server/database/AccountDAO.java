@@ -10,7 +10,8 @@ public interface AccountDAO {
     void addUser(Auth auth, int idLength) throws GameServerException;
     void updatePassword(String username, String password) throws GameServerException;
     void updateUsername(String oldUsername, String newUsername) throws GameServerException;
-    boolean userExists(String username) throws GameServerException;
+    boolean userExists(String userId) throws GameServerException;
+    boolean usernameExists(String username) throws GameServerException;
     User getUserFromId(String id) throws GameServerException;
     User getUserFromUsername(String username) throws GameServerException;
 }

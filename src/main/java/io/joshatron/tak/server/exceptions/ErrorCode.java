@@ -29,6 +29,7 @@ public enum ErrorCode {
     GAME_REQUEST_EXISTS(HttpStatus.FORBIDDEN),
     CANT_ACCESS_GAME(HttpStatus.FORBIDDEN),
     NOT_YOUR_TURN(HttpStatus.FORBIDDEN),
+    REQUESTING_SELF(HttpStatus.FORBIDDEN),
 
     //Bad Auth
     INCORRECT_AUTH(HttpStatus.UNAUTHORIZED),
