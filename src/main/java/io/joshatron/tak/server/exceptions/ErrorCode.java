@@ -38,6 +38,7 @@ public enum ErrorCode {
 
     //Not Found
     USER_NOT_FOUND(HttpStatus.NOT_FOUND),
+    FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND),
     REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND),
     MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND),
     GAME_NOT_FOUND(HttpStatus.NOT_FOUND),

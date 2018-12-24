@@ -119,7 +119,7 @@ public class SocialUtils {
             throw new GameServerException(ErrorCode.USER_NOT_FOUND);
         }
         if(!socialDAO.areFriends(user.getUserId(), other)) {
-            throw new GameServerException(ErrorCode.ALREADY_FRIENDS);
+            throw new GameServerException(ErrorCode.FRIEND_NOT_FOUND);
         }
 
         socialDAO.unfriend(user.getUserId(), other);
