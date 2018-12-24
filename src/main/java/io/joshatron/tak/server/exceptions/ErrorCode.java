@@ -23,6 +23,7 @@ public enum ErrorCode {
     SAME_PASSWORD(HttpStatus.FORBIDDEN),
     BLOCKED(HttpStatus.FORBIDDEN),
     ALREADY_FRIENDS(HttpStatus.FORBIDDEN),
+    ALREADY_REQUESTING(HttpStatus.FORBIDDEN),
     ALREADY_BLOCKED(HttpStatus.FORBIDDEN),
     NOT_BLOCKED(HttpStatus.FORBIDDEN),
     GAME_EXISTS(HttpStatus.FORBIDDEN),
@@ -30,6 +31,7 @@ public enum ErrorCode {
     CANT_ACCESS_GAME(HttpStatus.FORBIDDEN),
     NOT_YOUR_TURN(HttpStatus.FORBIDDEN),
     REQUESTING_SELF(HttpStatus.FORBIDDEN),
+    BLOCKING_SELF(HttpStatus.FORBIDDEN),
 
     //Bad Auth
     INCORRECT_AUTH(HttpStatus.UNAUTHORIZED),

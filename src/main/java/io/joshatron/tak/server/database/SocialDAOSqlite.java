@@ -87,8 +87,8 @@ public class SocialDAOSqlite implements SocialDAO {
 
         try {
             stmt = conn.prepareStatement(checkBlocked);
-            stmt.setString(1, requester);
-            stmt.setString(2, other);
+            stmt.setString(1, other);
+            stmt.setString(2, requester);
             rs = stmt.executeQuery();
 
             return rs.next();
