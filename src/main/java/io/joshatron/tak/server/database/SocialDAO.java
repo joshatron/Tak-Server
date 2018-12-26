@@ -26,7 +26,7 @@ public interface SocialDAO {
     User[] getIncomingFriendRequests(String user) throws GameServerException;
     User[] getOutgoingFriendRequests(String user) throws GameServerException;
     User[] getFriends(String user) throws GameServerException;
-    User[] getBlocked(String user) throws GameServerException;
+    User[] getBlocking(String user) throws GameServerException;
     Message[] listMessages(String userId, String[] users, Date start, Date end, Read read, From from) throws GameServerException;
     Message getMessage(String messageId) throws GameServerException;
     SocialNotifications getSocialNotifications(String userId) throws GameServerException;

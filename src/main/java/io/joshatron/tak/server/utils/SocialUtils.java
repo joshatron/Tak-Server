@@ -202,7 +202,7 @@ public class SocialUtils {
         }
         User user = accountDAO.getUserFromUsername(auth.getUsername());
 
-        return socialDAO.getBlocked(user.getUserId());
+        return socialDAO.getBlocking(user.getUserId());
     }
 
     public void sendMessage(Auth auth, String other, Text sendMessage) throws GameServerException {

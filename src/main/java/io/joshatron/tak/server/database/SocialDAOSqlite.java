@@ -378,37 +378,24 @@ public class SocialDAOSqlite implements SocialDAO {
     }
 
     @Override
-    public User[] getBlocked(String user) throws GameServerException {
+    public User[] getBlocking(String user) throws GameServerException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String getIncoming = "SELECT users.username as username, requester " +
-                "FROM blocked " +
-                "LEFT OUTER JOIN users on blocked.requester = users.id " +
-                "WHERE blocked = ?;";
         String getOutgoing = "SELECT users.username as username, blocked " +
                 "FROM blocked " +
-                "LEFT OUTER JOIN users on friends.blocked = users.id " +
+                "LEFT OUTER JOIN users on blocked.blocked = users.id " +
                 "WHERE requester = ?;";
 
         try {
             ArrayList<User> users = new ArrayList<>();
-
-            stmt = conn.prepareStatement(getIncoming);
-            stmt.setString(1, user);
-            rs = stmt.executeQuery();
-
-            while(rs.next()) {
-                users.add(new User(rs.getString("username"), rs.getString("requester")));
-            }
-            rs.close();
 
             stmt = conn.prepareStatement(getOutgoing);
             stmt.setString(1, user);
             rs = stmt.executeQuery();
 
             while(rs.next()) {
-                users.add(new User(rs.getString("username"), rs.getString("acceptor")));
+                users.add(new User(rs.getString("username"), rs.getString("blocked")));
             }
 
             return users.toArray(new User[0]);
