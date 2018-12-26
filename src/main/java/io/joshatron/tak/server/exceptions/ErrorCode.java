@@ -25,7 +25,6 @@ public enum ErrorCode {
     ALREADY_FRIENDS(HttpStatus.FORBIDDEN),
     ALREADY_REQUESTING(HttpStatus.FORBIDDEN),
     ALREADY_BLOCKED(HttpStatus.FORBIDDEN),
-    NOT_BLOCKED(HttpStatus.FORBIDDEN),
     GAME_EXISTS(HttpStatus.FORBIDDEN),
     GAME_REQUEST_EXISTS(HttpStatus.FORBIDDEN),
     CANT_ACCESS_GAME(HttpStatus.FORBIDDEN),
@@ -42,6 +41,7 @@ public enum ErrorCode {
     REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND),
     MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND),
     GAME_NOT_FOUND(HttpStatus.NOT_FOUND),
+    NOT_BLOCKED(HttpStatus.NOT_FOUND),
 
     //Internal Error
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR);
