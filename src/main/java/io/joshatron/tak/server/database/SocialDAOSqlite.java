@@ -262,7 +262,7 @@ public class SocialDAOSqlite implements SocialDAO {
         PreparedStatement stmt = null;
 
         String markRead = "UPDATE messages " +
-                "SET read = 1 " +
+                "SET opened = 1 " +
                 "WHERE recipient = ?;";
 
         try {
