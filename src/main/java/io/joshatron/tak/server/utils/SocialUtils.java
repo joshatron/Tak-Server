@@ -216,15 +216,29 @@ public class SocialUtils {
         if(!accountDAO.userExists(other)) {
             throw new GameServerException(ErrorCode.USER_NOT_FOUND);
         }
-        if(socialDAO.isBlocked(other, user.getUserId())) {
+        if(socialDAO.isBlocked(user.getUserId(), other)) {
             throw new GameServerException(ErrorCode.BLOCKED);
+        }
+        if(sendMessage.getText().length() == 0) {
+            throw new GameServerException(ErrorCode.EMPTY_FIELD);
+        }
+        if(sendMessage.getText().length() > 5000) {
+            throw new GameServerException(ErrorCode.MESSAGE_TOO_LONG);
         }
 
         socialDAO.sendMessage(user.getUserId(), other, sendMessage.getText());
     }
 
-    public Message[] listMessages(Auth auth, String senders, Date start, Date end, String read, String from) throws GameServerException {
+    public Message[] listMessages(Auth auth, String senders, Long startTime, Long endTime, String read, String from) throws GameServerException {
         Validator.validateAuth(auth);
+        Date start = null;
+        if(startTime != null) {
+            start = new Date(startTime.longValue());
+        }
+        Date end = null;
+        if(endTime != null) {
+            end = new Date(endTime.longValue());
+        }
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }

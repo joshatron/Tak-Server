@@ -16,6 +16,7 @@ public enum ErrorCode {
     ILLEGAL_SIZE(HttpStatus.BAD_REQUEST),
     ILLEGAL_COLOR(HttpStatus.BAD_REQUEST),
     ILLEGAL_MOVE(HttpStatus.BAD_REQUEST),
+    MESSAGE_TOO_LONG(HttpStatus.BAD_REQUEST),
 
     //Forbidden
     USERNAME_TAKEN(HttpStatus.FORBIDDEN),

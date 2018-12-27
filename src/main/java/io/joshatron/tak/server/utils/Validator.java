@@ -71,7 +71,7 @@ public class Validator {
     }
 
     public static Read validateRead(String read) throws GameServerException {
-        if(read == null && read.length() == 0) {
+        if(read == null || read.length() == 0) {
             return Read.BOTH;
         }
 
@@ -86,7 +86,7 @@ public class Validator {
     }
 
     public static Player validatePlayer(String player) throws GameServerException {
-        if(player == null && player.length() == 0) {
+        if(player == null || player.length() == 0) {
             return Player.NONE;
         }
 
