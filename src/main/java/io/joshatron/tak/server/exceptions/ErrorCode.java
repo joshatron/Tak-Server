@@ -32,6 +32,7 @@ public enum ErrorCode {
     NOT_YOUR_TURN(HttpStatus.FORBIDDEN),
     REQUESTING_SELF(HttpStatus.FORBIDDEN),
     BLOCKING_SELF(HttpStatus.FORBIDDEN),
+    NOT_YOUR_MESSAGE(HttpStatus.FORBIDDEN),
 
     //Bad Auth
     INCORRECT_AUTH(HttpStatus.UNAUTHORIZED),

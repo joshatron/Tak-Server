@@ -4,6 +4,9 @@ import java.util.Random;
 
 public class IdUtils {
 
+    public static final int MESSAGE_LENGTH = 20;
+    public static final int USER_LENGTH = 15;
+
     private IdUtils() {
         throw new IllegalStateException("This is a utility class");
     }

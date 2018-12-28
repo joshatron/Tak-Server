@@ -7,6 +7,7 @@ import io.joshatron.tak.server.request.Read;
 import io.joshatron.tak.server.response.Message;
 import io.joshatron.tak.server.response.SocialNotifications;
 import io.joshatron.tak.server.response.User;
+import io.joshatron.tak.server.utils.IdUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -220,8 +221,8 @@ public class SocialDAOSqlite implements SocialDAO {
     public void sendMessage(String requester, String other, String text) throws GameServerException {
         PreparedStatement stmt = null;
 
-        String insertRequest = "INSERT INTO messages (sender, recipient, message, time, opened) " +
-                "VALUES (?,?,?,?,0);";
+        String insertRequest = "INSERT INTO messages (sender, recipient, message, time, opened, id) " +
+                "VALUES (?,?,?,?,0,?);";
 
         try {
             stmt = conn.prepareStatement(insertRequest);
@@ -229,6 +230,7 @@ public class SocialDAOSqlite implements SocialDAO {
             stmt.setString(2, other);
             stmt.setString(3, text);
             stmt.setLong(4, Instant.now().toEpochMilli());
+            stmt.setString(5, IdUtils.generateId(IdUtils.MESSAGE_LENGTH));
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -243,7 +245,7 @@ public class SocialDAOSqlite implements SocialDAO {
         PreparedStatement stmt = null;
 
         String markRead = "UPDATE messages " +
-                "SET read = 1 " +
+                "SET opened = 1 " +
                 "WHERE id = ?;";
 
         try {
@@ -510,9 +512,9 @@ public class SocialDAOSqlite implements SocialDAO {
 
        if (read != Read.BOTH) {
            if (read == Read.READ) {
-               getMessage.append(" AND read = 1");
+               getMessage.append(" AND opened = 1");
            } else {
-               getMessage.append(" AND read = 0");
+               getMessage.append(" AND opened = 0");
            }
        }
 

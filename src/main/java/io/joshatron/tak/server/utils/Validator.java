@@ -5,6 +5,8 @@ import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.*;
 
+import java.util.Date;
+
 public class Validator {
 
     private Validator() {
@@ -150,14 +152,22 @@ public class Validator {
             throw new GameServerException(ErrorCode.EMPTY_FIELD);
         }
 
-        if(markRead.getStart() != null && markRead.getIds() != null) {
-            throw new GameServerException(ErrorCode.TOO_MANY_ARGUMENTS);
+        if(markRead.getStart() != null) {
+            validateDate(markRead.getStart());
         }
 
         if(markRead.getIds() != null) {
             for (String id : markRead.getIds()) {
                 validateId(id, SocialUtils.MESSAGE_ID_LENGTH);
             }
+        }
+    }
+
+    public static void validateDate(Date date) throws GameServerException {
+        Date now = new Date();
+
+        if(now.before(date)) {
+            throw new GameServerException(ErrorCode.INVALID_DATE);
         }
     }
 

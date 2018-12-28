@@ -270,14 +270,27 @@ public class SocialUtils {
         }
         User user = accountDAO.getUserFromUsername(auth.getUsername());
 
+        boolean notFound = false;
+        boolean forbidden = false;
         if(markRead.getIds() != null) {
             for(String id : markRead.getIds()) {
                 Validator.validateId(id, MESSAGE_ID_LENGTH);
-                if(socialDAO.getMessage(id) != null) {
-                    socialDAO.markMessageRead(id);
+                try {
+                    Message message = socialDAO.getMessage(id);
+                    if(!message.getRecipient().equalsIgnoreCase(user.getUserId())) {
+                        forbidden = true;
+                    }
+                    else {
+                        socialDAO.markMessageRead(id);
+                    }
                 }
-                else {
-                    throw new GameServerException(ErrorCode.MESSAGE_NOT_FOUND);
+                catch (GameServerException e) {
+                    if(e.getCode() == ErrorCode.MESSAGE_NOT_FOUND) {
+                        notFound = true;
+                    }
+                    else {
+                        throw e;
+                    }
                 }
             }
         }
@@ -291,6 +304,13 @@ public class SocialUtils {
 
         if(markRead.getIds() == null && markRead.getStart() == null) {
             socialDAO.markAllRead(user.getUserId());
+        }
+
+        if(forbidden) {
+            throw new GameServerException(ErrorCode.NOT_YOUR_MESSAGE);
+        }
+        if(notFound) {
+            throw new GameServerException(ErrorCode.MESSAGE_NOT_FOUND);
         }
     }
 
