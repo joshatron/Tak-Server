@@ -249,9 +249,6 @@ public class SocialUtils {
             users = senders.split(",");
             for (String u : users) {
                 Validator.validateId(u, AccountUtils.USER_ID_LENGTH);
-                if (!accountDAO.userExists(u)) {
-                    throw new GameServerException(ErrorCode.USER_NOT_FOUND);
-                }
             }
         }
         if(start != null && end != null && start.after(end)) {
