@@ -346,7 +346,7 @@ public class GameDAOSqlite implements GameDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String getRequesting = "SELECT size, white, first " +
+        String getRequesting = "SELECT size, requester_color, first " +
                 "FROM game_requests " +
                 "WHERE requester = ? AND acceptor = ?;";
 
@@ -406,7 +406,7 @@ public class GameDAOSqlite implements GameDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String getRequesting = "SELECT requester, size, white, first " +
+        String getRequesting = "SELECT requester, size, requester_color, first " +
                 "FROM game_requests " +
                 "WHERE requester = ?;";
 
