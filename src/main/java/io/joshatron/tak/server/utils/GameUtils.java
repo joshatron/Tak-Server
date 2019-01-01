@@ -138,9 +138,12 @@ public class GameUtils {
             if(requests[i] != null) {
                 for(int j = i + 1; j < requests.length; j++) {
                     if(requests[j] != null && requests[i].getSize() == requests[j].getSize() &&
+                       !gameDAO.playingGame(requests[i].getRequester(), requests[j].getRequester()) &&
                        !socialDAO.isBlocked(requests[i].getRequester(), requests[j].getRequester()) &&
                        !socialDAO.isBlocked(requests[j].getRequester(), requests[i].getRequester())) {
                         gameDAO.startGame(requests[i].getRequester(), requests[j].getRequester(), requests[i].getSize(), Player.WHITE, Player.WHITE);
+                        gameDAO.deleteRandomGameRequest(requests[i].getRequester());
+                        gameDAO.deleteRandomGameRequest(requests[j].getRequester());
                         requests[j] = null;
                         break;
                     }
