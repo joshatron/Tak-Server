@@ -192,12 +192,20 @@ public class GameUtils {
         return gameDAO.getGameInfo(gameId);
     }
 
-    public GameInfo[] findGames(Auth auth, String opponents, Date start, Date end, String complete, String pending, String sizes, String winner, String color) throws GameServerException {
+    public GameInfo[] findGames(Auth auth, String opponents, Long startTime, Long endTime, String complete, String pending, String sizes, String winner, String color) throws GameServerException {
         Validator.validateAuth(auth);
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         User user = accountDAO.getUserFromUsername(auth.getUsername());
+        Date start = null;
+        if(startTime != null) {
+            start = new Date(startTime.longValue());
+        }
+        Date end = null;
+        if(endTime != null) {
+            end = new Date(endTime.longValue());
+        }
         String[] users = null;
         if(opponents != null && opponents.length() > 0) {
             users = opponents.split(",");

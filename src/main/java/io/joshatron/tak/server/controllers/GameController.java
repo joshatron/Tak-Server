@@ -128,13 +128,13 @@ public class GameController {
 
     @GetMapping(value = "/search", produces = "application/json")
     public ResponseEntity findGames(@RequestHeader(value="Authorization") String auth, @RequestParam(value = "opponents", required = false) String opponents,
-                                    @RequestParam(value = "start", required = false) long start, @RequestParam(value = "end", required = false) long end,
+                                    @RequestParam(value = "start", required = false) Long start, @RequestParam(value = "end", required = false) Long end,
                                     @RequestParam(value = "complete", required = false) String complete, @RequestParam(value = "pending", required = false) String pending,
                                     @RequestParam(value = "sizes", required = false) String sizes, @RequestParam(value = "winner", required = false) String winner,
                                     @RequestParam(value = "color", required = false) String color) {
         try {
             logger.info("Searching for games");
-            GameInfo[] games = gameUtils.findGames(new Auth(auth), opponents, new Date(start), new Date(end), complete, pending, sizes, winner, color);
+            GameInfo[] games = gameUtils.findGames(new Auth(auth), opponents, start, end, complete, pending, sizes, winner, color);
             logger.info("Games found");
             return new ResponseEntity(games, HttpStatus.OK);
         } catch (Exception e) {
