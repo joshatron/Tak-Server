@@ -189,7 +189,7 @@ public class GameUtils {
             throw new GameServerException(ErrorCode.GAME_NOT_FOUND);
         }
         if(!gameDAO.userAuthorizedForGame(user.getUserId(), gameId)) {
-            throw new GameServerException(ErrorCode.CANT_ACCESS_GAME);
+            throw new GameServerException(ErrorCode.GAME_NOT_FOUND);
         }
 
         return gameDAO.getGameInfo(gameId);

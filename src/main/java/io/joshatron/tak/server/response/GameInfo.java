@@ -9,6 +9,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 public class GameInfo {
+    private String gameId;
     private String white;
     private String black;
     private int size;
