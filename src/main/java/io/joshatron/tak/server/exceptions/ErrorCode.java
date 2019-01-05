@@ -15,7 +15,6 @@ public enum ErrorCode {
     TOO_MANY_ARGUMENTS(HttpStatus.BAD_REQUEST),
     ILLEGAL_SIZE(HttpStatus.BAD_REQUEST),
     ILLEGAL_COLOR(HttpStatus.BAD_REQUEST),
-    ILLEGAL_MOVE(HttpStatus.BAD_REQUEST),
     MESSAGE_TOO_LONG(HttpStatus.BAD_REQUEST),
 
     //Forbidden
@@ -28,11 +27,11 @@ public enum ErrorCode {
     ALREADY_BLOCKED(HttpStatus.FORBIDDEN),
     GAME_EXISTS(HttpStatus.FORBIDDEN),
     GAME_REQUEST_EXISTS(HttpStatus.FORBIDDEN),
-    CANT_ACCESS_GAME(HttpStatus.FORBIDDEN),
     NOT_YOUR_TURN(HttpStatus.FORBIDDEN),
     REQUESTING_SELF(HttpStatus.FORBIDDEN),
     BLOCKING_SELF(HttpStatus.FORBIDDEN),
     NOT_YOUR_MESSAGE(HttpStatus.FORBIDDEN),
+    ILLEGAL_MOVE(HttpStatus.FORBIDDEN),
 
     //Bad Auth
     INCORRECT_AUTH(HttpStatus.UNAUTHORIZED),
