@@ -152,8 +152,10 @@ public class Validator {
             throw new GameServerException(ErrorCode.EMPTY_FIELD);
         }
 
-        if(markRead.getStart() != null) {
-            validateDate(markRead.getStart());
+        if(markRead.getSenders() != null) {
+            for (String sender : markRead.getSenders()) {
+                validateId(sender, AccountUtils.USER_ID_LENGTH);
+            }
         }
 
         if(markRead.getIds() != null) {

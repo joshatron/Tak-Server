@@ -271,7 +271,6 @@ public class SocialUtils {
         boolean forbidden = false;
         if(markRead.getIds() != null) {
             for(String id : markRead.getIds()) {
-                Validator.validateId(id, MESSAGE_ID_LENGTH);
                 try {
                     Message message = socialDAO.getMessage(id);
                     if(!message.getRecipient().equalsIgnoreCase(user.getUserId())) {
@@ -292,14 +291,18 @@ public class SocialUtils {
             }
         }
 
-        if(markRead.getStart() != null) {
-            Message[] messages = socialDAO.listMessages(user.getUserId(), null, markRead.getStart(), null, Read.NOT_READ, From.THEM);
-            for(Message message : messages) {
-                socialDAO.markMessageRead(message.getId());
+        if(markRead.getSenders() != null) {
+            for(String sender : markRead.getSenders()) {
+                if(!accountDAO.userExists(sender)) {
+                    notFound = true;
+                }
+                else {
+                    socialDAO.markMessagesFromSenderRead(user.getUserId(), sender);
+                }
             }
         }
 
-        if(markRead.getIds() == null && markRead.getStart() == null) {
+        if(markRead.getIds() == null && markRead.getSenders() == null) {
             socialDAO.markAllRead(user.getUserId());
         }
 

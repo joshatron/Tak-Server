@@ -260,6 +260,26 @@ public class SocialDAOSqlite implements SocialDAO {
     }
 
     @Override
+    public void markMessagesFromSenderRead(String requester, String other) throws GameServerException {
+        PreparedStatement stmt = null;
+
+        String markRead = "UPDATE messages " +
+                "SET opened = 1 " +
+                "WHERE sender = ? AND recipient = ?;";
+
+        try {
+            stmt = conn.prepareStatement(markRead);
+            stmt.setString(1, other);
+            stmt.setString(2, requester);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+        }
+    }
+
+    @Override
     public void markAllRead(String user) throws GameServerException {
         PreparedStatement stmt = null;
 

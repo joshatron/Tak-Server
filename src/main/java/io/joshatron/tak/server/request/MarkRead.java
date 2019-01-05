@@ -9,5 +9,5 @@ import java.util.Date;
 @AllArgsConstructor
 public class MarkRead {
     private String[] ids;
-    private Date start;
+    private String[] senders;
 }

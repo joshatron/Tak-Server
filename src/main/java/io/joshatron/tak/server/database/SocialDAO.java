@@ -22,6 +22,7 @@ public interface SocialDAO {
     void unblock(String requester, String other) throws GameServerException;
     void sendMessage(String requester, String other, String text) throws GameServerException;
     void markMessageRead(String id) throws GameServerException;
+    void markMessagesFromSenderRead(String requester, String other) throws GameServerException;
     void markAllRead(String user) throws GameServerException;
     User[] getIncomingFriendRequests(String user) throws GameServerException;
     User[] getOutgoingFriendRequests(String user) throws GameServerException;
