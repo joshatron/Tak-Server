@@ -4,6 +4,7 @@ import io.joshatron.tak.engine.game.Player;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.Complete;
 import io.joshatron.tak.server.request.Pending;
+import io.joshatron.tak.server.request.Winner;
 import io.joshatron.tak.server.response.GameInfo;
 import io.joshatron.tak.server.response.GameNotifications;
 import io.joshatron.tak.server.response.RandomRequestInfo;
@@ -31,6 +32,6 @@ public interface GameDAO {
     int getOutgoingRandomRequestSize(String user) throws GameServerException;
     RandomRequestInfo[] getRandomGameRequests() throws GameServerException;
     GameInfo getGameInfo(String gameId) throws GameServerException;
-    GameInfo[] listGames(String userId, String[] opponents, Date start, Date end, Complete complete, Pending pending, int[] sizes, Player winner, Player color) throws GameServerException;
+    GameInfo[] listGames(String userId, String[] opponents, Date start, Date end, Complete complete, Pending pending, int[] sizes, Winner winner, Player color) throws GameServerException;
     GameNotifications getGameNotifications(String userId) throws GameServerException;
 }

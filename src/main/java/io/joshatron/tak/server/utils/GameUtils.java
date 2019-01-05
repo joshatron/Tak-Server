@@ -201,13 +201,20 @@ public class GameUtils {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         User user = accountDAO.getUserFromUsername(auth.getUsername());
+        Date now = new Date();
         Date start = null;
         if(startTime != null) {
             start = new Date(startTime.longValue());
+            if(now.before(start)) {
+                throw new GameServerException(ErrorCode.INVALID_DATE);
+            }
         }
         Date end = null;
         if(endTime != null) {
             end = new Date(endTime.longValue());
+            if(now.before(end)) {
+                throw new GameServerException(ErrorCode.INVALID_DATE);
+            }
         }
         String[] users = null;
         if(opponents != null && opponents.length() > 0) {
@@ -234,7 +241,7 @@ public class GameUtils {
                 szs[i] = size;
             }
         }
-        Player wnr = Validator.validatePlayer(winner);
+        Winner wnr = Validator.validateWinner(winner);
         Player clr = Validator.validatePlayer(color);
 
         return gameDAO.listGames(user.getUserId(), users, start, end, cpt, pnd, szs, wnr, clr);

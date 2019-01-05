@@ -117,6 +117,21 @@ public class Validator {
         throw new GameServerException(ErrorCode.INVALID_FORMATTING);
     }
 
+    public static Winner validateWinner(String from) throws GameServerException {
+        if(from == null || from.length() == 0) {
+            return Winner.BOTH;
+        }
+
+        if(from.equalsIgnoreCase("me")) {
+            return Winner.ME;
+        }
+        else if(from.equalsIgnoreCase("them")) {
+            return Winner.THEM;
+        }
+
+        throw new GameServerException(ErrorCode.INVALID_FORMATTING);
+    }
+
     public static Pending validatePending(String pending) throws GameServerException {
         if(pending == null || pending.length() == 0) {
             return Pending.BOTH;

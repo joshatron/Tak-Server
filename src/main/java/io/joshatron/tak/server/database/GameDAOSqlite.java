@@ -5,6 +5,7 @@ import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.Complete;
 import io.joshatron.tak.server.request.Pending;
+import io.joshatron.tak.server.request.Winner;
 import io.joshatron.tak.server.response.GameInfo;
 import io.joshatron.tak.server.response.GameNotifications;
 import io.joshatron.tak.server.response.RandomRequestInfo;
@@ -546,7 +547,7 @@ public class GameDAOSqlite implements GameDAO {
     }
 
     @Override
-    public GameInfo[] listGames(String userId, String[] opponents, Date start, Date end, Complete complete, Pending pending, int[] sizes, Player winner, Player color) throws GameServerException {
+    public GameInfo[] listGames(String userId, String[] opponents, Date start, Date end, Complete complete, Pending pending, int[] sizes, Winner winner, Player color) throws GameServerException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
@@ -591,6 +592,12 @@ public class GameDAOSqlite implements GameDAO {
                     i++;
                 }
             }
+            if(winner != Winner.BOTH) {
+                stmt.setString(i, userId);
+                i++;
+                stmt.setString(i, userId);
+                i++;
+            }
             rs = stmt.executeQuery();
 
             while(rs.next()) {
@@ -612,7 +619,7 @@ public class GameDAOSqlite implements GameDAO {
         }
     }
 
-    private String generateGameQuery(String[] opponents, Date start, Date end, Complete complete, Pending pending, int[] sizes, Player winner, Player color) {
+    private String generateGameQuery(String[] opponents, Date start, Date end, Complete complete, Pending pending, int[] sizes, Winner winner, Player color) {
         StringBuilder getGames = new StringBuilder();
         getGames.append("SELECT * ");
         getGames.append("FROM games ");
@@ -657,11 +664,11 @@ public class GameDAOSqlite implements GameDAO {
         }
 
         if (start != null) {
-            getGames.append(" AND time > ?");
+            getGames.append(" AND start > ?");
         }
 
         if (end != null) {
-            getGames.append(" AND time < ?");
+            getGames.append(" AND start < ?");
         }
 
         if (complete != Complete.BOTH) {
@@ -695,11 +702,11 @@ public class GameDAOSqlite implements GameDAO {
            getGames.append(")");
         }
 
-        if (winner != Player.NONE) {
-            if (winner == Player.WHITE) {
-                getGames.append(" AND winner = 'WHITE'");
+        if (winner != Winner.BOTH) {
+            if (winner == Winner.ME) {
+                getGames.append(" AND ((winner = 'WHITE' AND white = ?) OR (winner = 'BLACK' AND black = ?))");
             } else {
-                getGames.append(" AND winner = 'BLACK'");
+                getGames.append(" AND ((winner = 'WHITE' AND black = ?) OR (winner = 'BLACK' AND white = ?))");
             }
         }
 
