@@ -465,7 +465,7 @@ public class SocialDAOSqlite implements SocialDAO {
             rs = stmt.executeQuery();
 
             while(rs.next()) {
-                messages.add(new Message(rs.getString("sender"), rs.getString("recipient"), new Date(rs.getLong("time")),
+                messages.add(new Message(rs.getString("sender"), rs.getString("recipient"), rs.getLong("time"),
                         rs.getString("message"), rs.getString("id"), (rs.getInt("opened") != 0)));
             }
 
@@ -538,6 +538,7 @@ public class SocialDAOSqlite implements SocialDAO {
            }
        }
 
+       getMessage.append(" ORDER BY time");
        getMessage.append(";");
 
        return getMessage.toString();
@@ -558,7 +559,7 @@ public class SocialDAOSqlite implements SocialDAO {
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return new Message(rs.getString("sender"), rs.getString("recipient"), new Date(rs.getLong("time")),
+                return new Message(rs.getString("sender"), rs.getString("recipient"), rs.getLong("time"),
                                    rs.getString("message"), rs.getString("id"), (rs.getInt("opened") != 0));
             }
             else {

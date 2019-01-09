@@ -36,6 +36,9 @@ public class SocialUtils {
         if(socialDAO.isBlocked(user.getUserId(), other)) {
             throw new GameServerException(ErrorCode.BLOCKED);
         }
+        if(socialDAO.isBlocked(other, user.getUserId())) {
+            throw new GameServerException(ErrorCode.BLOCKING);
+        }
         if(socialDAO.friendRequestExists(user.getUserId(), other)) {
             throw new GameServerException(ErrorCode.ALREADY_REQUESTING);
         }

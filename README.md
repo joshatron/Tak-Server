@@ -1,8 +1,6 @@
 Tak Server
 ==========
 
-#### NOTE: NOT AT FULL FUNCTIONALITY YET
-
 The tak server is a RESTful api that allows people to play each other online.
 It can keep track of friends and allow them to play games against each other.
 It can also set up random games against random players.
@@ -22,10 +20,10 @@ A summary of the methods are described below:
 | /social/request/respond/{id}              | POST      | Accept or deny a friend request                                           |
 | /social/request/incoming                  | GET       | Get all your incoming friend requests                                     |
 | /social/request/outgoing                  | GET       | Get all your outgoing friend requests                                     |
-| /social/user/unfriend/{id}                | POST      | Unfriend a user                                                           |
-| /social/user/block/{id}                   | POST      | Block a user                                                              |
-| /social/user/unblock/{id}                 | DELETE    | Unblock a user                                                            |
-| /social/user/blocked/{id}                 | GET       | Check if you are blocked by a user                                        |
+| /social/user/{id}/unfriend                | DELETE    | Unfriend a user                                                           |
+| /social/user/{id}/block                   | POST      | Block a user                                                              |
+| /social/user/{id}/unblock                 | DELETE    | Unblock a user                                                            |
+| /social/user/{id}/blocked                 | GET       | Check if you are blocked by a user                                        |
 | /social/user/friends                      | GET       | Get a list of your friends                                                |
 | /social/user/blocking                     | GET       | Get a list for users you are blocking                                     |
 | /social/message/send/{id}                 | POST      | Send a message to a user                                                  |

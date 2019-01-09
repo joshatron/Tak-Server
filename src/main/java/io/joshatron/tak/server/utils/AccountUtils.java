@@ -56,7 +56,7 @@ public class AccountUtils {
         if(auth.getUsername().equals(change.getText())) {
             throw new GameServerException(ErrorCode.SAME_USERNAME);
         }
-        if(accountDAO.usernameExists(change.getText())) {
+        if(!auth.getUsername().equalsIgnoreCase(change.getText()) &&  accountDAO.usernameExists(change.getText())) {
             throw new GameServerException(ErrorCode.USERNAME_TAKEN);
         }
 

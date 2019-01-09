@@ -10,7 +10,7 @@ import java.util.Date;
 public class Message {
     private String sender;
     private String recipient;
-    private Date timestamp;
+    private long timestamp;
     private String message;
     private String id;
     private boolean opened;

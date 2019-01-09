@@ -92,7 +92,7 @@ public class SocialController {
         }
     }
 
-    @PostMapping(value = "/user/unfriend/{id}", produces = "application/json")
+    @DeleteMapping(value = "/user/{id}/unfriend", produces = "application/json")
     public ResponseEntity unfriend(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String other) {
         try {
             logger.info("Unfriending user");
@@ -104,7 +104,7 @@ public class SocialController {
         }
     }
 
-    @PostMapping(value = "/user/block/{id}", produces = "application/json")
+    @PostMapping(value = "/user/{id}/block", produces = "application/json")
     public ResponseEntity blockUser(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String block) {
         try {
             logger.info("Blocking user");
@@ -116,7 +116,7 @@ public class SocialController {
         }
     }
 
-    @DeleteMapping(value = "/user/unblock/{id}", produces = "application/json")
+    @DeleteMapping(value = "/user/{id}/unblock", produces = "application/json")
     public ResponseEntity unblockUser(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String unblock) {
         try {
             logger.info("Unblocking user");
@@ -128,7 +128,7 @@ public class SocialController {
         }
     }
 
-    @GetMapping(value = "/user/blocked/{id}", produces = "application/json")
+    @GetMapping(value = "/user/{id}/blocked", produces = "application/json")
     public ResponseEntity isBlocked(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String isBlocked) {
         try {
             logger.info("Checking if user is blocked");
