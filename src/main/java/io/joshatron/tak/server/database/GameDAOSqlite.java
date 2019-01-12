@@ -506,7 +506,7 @@ public class GameDAOSqlite implements GameDAO {
                 boolean done = rs.getInt("done") == 1;
                 String[] turns = getTurnsForGame(gameId);
                 return new GameInfo(rs.getString("id"), rs.getString("white"), rs.getString("black"), rs.getInt("size"), first,
-                                    current, new Date(rs.getLong("start")), new Date(rs.getLong("end")), winner, done, turns);
+                                    current, rs.getLong("start"), rs.getLong("end"), winner, done, turns);
             }
 
             return null;
@@ -607,7 +607,7 @@ public class GameDAOSqlite implements GameDAO {
                 boolean done = rs.getInt("done") == 1;
                 String[] turns = getTurnsForGame(rs.getString("id"));
                 games.add(new GameInfo(rs.getString("id"), rs.getString("white"), rs.getString("black"), rs.getInt("size"), first, current,
-                                       new Date(rs.getLong("start")), new Date(rs.getLong("end")), win, done, turns));
+                                       rs.getLong("start"), rs.getLong("end"), win, done, turns));
             }
 
             return games.toArray(new GameInfo[0]);

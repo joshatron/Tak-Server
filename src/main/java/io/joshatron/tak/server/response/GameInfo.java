@@ -15,8 +15,8 @@ public class GameInfo {
     private int size;
     private Player first;
     private Player current;
-    private Date start;
-    private Date end;
+    private long start;
+    private long end;
     private Player winner;
     private boolean done;
     private String[] turns;
