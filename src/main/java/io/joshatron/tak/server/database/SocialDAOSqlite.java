@@ -303,7 +303,7 @@ public class SocialDAOSqlite implements SocialDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String getIncoming = "SELECT users.username as username, requester " +
+        String getIncoming = "SELECT users.username as username, users.rating as rating, requester " +
                 "FROM friend_requests " +
                 "LEFT OUTER JOIN users on friend_requests.requester = users.id " +
                 "WHERE acceptor = ?;";
@@ -315,7 +315,7 @@ public class SocialDAOSqlite implements SocialDAO {
 
             ArrayList<User> users = new ArrayList<>();
             while(rs.next()) {
-                users.add(new User(rs.getString("username"), rs.getString("requester")));
+                users.add(new User(rs.getString("username"), rs.getString("requester"), rs.getInt("rating")));
             }
 
             return users.toArray(new User[0]);
@@ -332,7 +332,7 @@ public class SocialDAOSqlite implements SocialDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String getOutgoing = "SELECT users.username as username, acceptor " +
+        String getOutgoing = "SELECT users.username as username, users.rating as rating, acceptor " +
                 "FROM friend_requests " +
                 "LEFT OUTER JOIN users on friend_requests.acceptor = users.id " +
                 "WHERE requester = ?;";
@@ -344,7 +344,7 @@ public class SocialDAOSqlite implements SocialDAO {
 
             ArrayList<User> users = new ArrayList<>();
             while(rs.next()) {
-                users.add(new User(rs.getString("username"), rs.getString("acceptor")));
+                users.add(new User(rs.getString("username"), rs.getString("acceptor"), rs.getInt("rating")));
             }
 
             return users.toArray(new User[0]);
@@ -361,11 +361,11 @@ public class SocialDAOSqlite implements SocialDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String getIncoming = "SELECT users.username as username, requester " +
+        String getIncoming = "SELECT users.username as username, users.rating as rating, requester " +
                 "FROM friends " +
                 "LEFT OUTER JOIN users on friends.requester = users.id " +
                 "WHERE acceptor = ?;";
-        String getOutgoing = "SELECT users.username as username, acceptor " +
+        String getOutgoing = "SELECT users.username as username, users.rating as rating, acceptor " +
                 "FROM friends " +
                 "LEFT OUTER JOIN users on friends.acceptor = users.id " +
                 "WHERE requester = ?;";
@@ -378,7 +378,7 @@ public class SocialDAOSqlite implements SocialDAO {
             rs = stmt.executeQuery();
 
             while(rs.next()) {
-                users.add(new User(rs.getString("username"), rs.getString("requester")));
+                users.add(new User(rs.getString("username"), rs.getString("requester"), rs.getInt("rating")));
             }
             rs.close();
 
@@ -387,7 +387,7 @@ public class SocialDAOSqlite implements SocialDAO {
             rs = stmt.executeQuery();
 
             while(rs.next()) {
-                users.add(new User(rs.getString("username"), rs.getString("acceptor")));
+                users.add(new User(rs.getString("username"), rs.getString("acceptor"), rs.getInt("rating")));
             }
 
             return users.toArray(new User[0]);
@@ -404,7 +404,7 @@ public class SocialDAOSqlite implements SocialDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String getOutgoing = "SELECT users.username as username, blocked " +
+        String getOutgoing = "SELECT users.username as username, users.rating as rating, blocked " +
                 "FROM blocked " +
                 "LEFT OUTER JOIN users on blocked.blocked = users.id " +
                 "WHERE requester = ?;";
@@ -417,7 +417,7 @@ public class SocialDAOSqlite implements SocialDAO {
             rs = stmt.executeQuery();
 
             while(rs.next()) {
-                users.add(new User(rs.getString("username"), rs.getString("blocked")));
+                users.add(new User(rs.getString("username"), rs.getString("blocked"), rs.getInt("rating")));
             }
 
             return users.toArray(new User[0]);

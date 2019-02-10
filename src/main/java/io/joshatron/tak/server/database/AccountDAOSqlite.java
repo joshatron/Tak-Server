@@ -48,8 +48,8 @@ public class AccountDAOSqlite implements AccountDAO {
         PreparedStatement stmt = null;
 
         //insert new user if it isn't
-        String insertUser = "INSERT INTO  users (username, auth, id) " +
-                "VALUES (?,?,?);";
+        String insertUser = "INSERT INTO  users (username, auth, id, rating) " +
+                "VALUES (?,?,?,1000);";
 
         try {
             stmt = conn.prepareStatement(insertUser);
@@ -155,7 +155,7 @@ public class AccountDAOSqlite implements AccountDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String checkUsername = "SELECT id, username " +
+        String checkUsername = "SELECT id, username, rating " +
                 "FROM users " +
                 "WHERE id = ?;";
 
@@ -165,7 +165,7 @@ public class AccountDAOSqlite implements AccountDAO {
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return new User(rs.getString("username"), rs.getString("id"));
+                return new User(rs.getString("username"), rs.getString("id"), rs.getInt("rating"));
             }
             else {
                 throw new GameServerException(ErrorCode.USER_NOT_FOUND);
@@ -193,7 +193,7 @@ public class AccountDAOSqlite implements AccountDAO {
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return new User(rs.getString("username"), rs.getString("id"));
+                return new User(rs.getString("username"), rs.getString("id"), rs.getInt("rating"));
             }
             else {
                 throw new GameServerException(ErrorCode.USER_NOT_FOUND);

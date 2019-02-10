@@ -32,7 +32,9 @@ public class SqliteManager {
                 //username, alphanumeric
                 "username text UNIQUE NOT NULL COLLATE NOCASE," +
                 //hashed password
-                "auth text NOT NULL);";
+                "auth text NOT NULL," +
+                //current elo ranking
+                "rating integer NOT NULL);";
 
         String friendTable = "CREATE TABLE IF NOT EXISTS friends (" +
                 //ID of friend mapping, for internal use

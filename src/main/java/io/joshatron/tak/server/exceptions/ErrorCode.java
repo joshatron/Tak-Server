@@ -46,7 +46,8 @@ public enum ErrorCode {
     NOT_BLOCKED(HttpStatus.NOT_FOUND),
 
     //Internal Error
-    DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR);
+    DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR),
+    GAME_ENGINE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR);
 
 
 

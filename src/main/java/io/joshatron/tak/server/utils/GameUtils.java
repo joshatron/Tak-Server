@@ -1,5 +1,6 @@
 package io.joshatron.tak.server.utils;
 
+import io.joshatron.tak.engine.exception.TakEngineException;
 import io.joshatron.tak.engine.game.GameResult;
 import io.joshatron.tak.engine.game.GameState;
 import io.joshatron.tak.engine.game.Player;
@@ -15,6 +16,7 @@ import io.joshatron.tak.server.response.*;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class GameUtils {
 
@@ -269,7 +271,7 @@ public class GameUtils {
 
         GameState state = getStateFromId(gameId);
 
-        ArrayList<Turn> possible = state.getPossibleTurns();
+        List<Turn> possible = state.getPossibleTurns();
         String[] toReturn = new String[possible.size()];
         for(int i = 0; i < toReturn.length; i++) {
             toReturn[i] = possible.get(i).toString();
@@ -302,7 +304,10 @@ public class GameUtils {
             throw new GameServerException(ErrorCode.INVALID_FORMATTING);
         }
 
-        if(!state.executeTurn(proposed)) {
+        try {
+            state.executeTurn(proposed);
+        }
+        catch(TakEngineException e) {
             throw new GameServerException(ErrorCode.ILLEGAL_MOVE);
         }
 
@@ -325,15 +330,20 @@ public class GameUtils {
     }
 
     private GameState getStateFromId(String gameId) throws GameServerException {
-        GameInfo gameInfo = gameDAO.getGameInfo(gameId);
+        try {
+            GameInfo gameInfo = gameDAO.getGameInfo(gameId);
 
-        Player player = gameInfo.getFirst();
-        GameState state = new GameState(player, gameInfo.getSize());
-        for(String turn : gameInfo.getTurns()) {
-            Turn toPlay = TurnUtils.turnFromString(turn);
-            state.executeTurn(toPlay);
+            Player player = gameInfo.getFirst();
+            GameState state = new GameState(player, gameInfo.getSize());
+            for(String turn : gameInfo.getTurns()) {
+                Turn toPlay = TurnUtils.turnFromString(turn);
+                state.executeTurn(toPlay);
+            }
+
+            return state;
         }
-
-        return state;
+        catch(TakEngineException e) {
+            throw new GameServerException(ErrorCode.GAME_ENGINE_ERROR);
+        }
     }
 }
