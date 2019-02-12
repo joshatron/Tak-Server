@@ -16,6 +16,7 @@ public class GameInfo {
     private Player first;
     private Player current;
     private long start;
+    private long last;
     private long end;
     private Player winner;
     private boolean done;

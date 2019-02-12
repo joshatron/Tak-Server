@@ -108,8 +108,8 @@ public class GameDAOSqlite implements GameDAO {
     public void startGame(String requester, String other, int size, Player requesterColor, Player first) throws GameServerException {
         PreparedStatement stmt = null;
 
-        String insertGame = "INSERT INTO games (id, white, black, size, first, current, turns, start, end, winner, done) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?);";
+        String insertGame = "INSERT INTO games (id, white, black, size, first, current, turns, start, last, end, winner, done) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?);";
 
         try {
             stmt = conn.prepareStatement(insertGame);
@@ -127,9 +127,10 @@ public class GameDAOSqlite implements GameDAO {
             stmt.setString(6, first.name());
             stmt.setInt(7, 0);
             stmt.setLong(8, Instant.now().toEpochMilli());
-            stmt.setInt(9, 0);
-            stmt.setString(10, "NONE");
-            stmt.setInt(11, 0);
+            stmt.setLong(9, Instant.now().toEpochMilli());
+            stmt.setInt(10, 0);
+            stmt.setString(11, "NONE");
+            stmt.setInt(12, 0);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
@@ -145,7 +146,7 @@ public class GameDAOSqlite implements GameDAO {
         String insertTurn = "INSERT INTO turns (game_id, turn_order, turn) " +
                 "VALUES (?,?,?);";
         String updateTurns = "UPDATE games " +
-                "SET turns = ?, current = ? " +
+                "SET turns = ?, current = ?, last = ? " +
                 "WHERE id = ?;";
 
         GameInfo currentGameState = getGameInfo(gameId);
@@ -160,7 +161,8 @@ public class GameDAOSqlite implements GameDAO {
             stmt = conn.prepareStatement(updateTurns);
             stmt.setInt(1, currentGameState.getTurns().length + 1);
             stmt.setString(2, next.name());
-            stmt.setString(3, gameId);
+            stmt.setLong(3, Instant.now().toEpochMilli());
+            stmt.setString(4, gameId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
@@ -506,7 +508,7 @@ public class GameDAOSqlite implements GameDAO {
                 boolean done = rs.getInt("done") == 1;
                 String[] turns = getTurnsForGame(gameId);
                 return new GameInfo(rs.getString("id"), rs.getString("white"), rs.getString("black"), rs.getInt("size"), first,
-                                    current, rs.getLong("start"), rs.getLong("end"), winner, done, turns);
+                                    current, rs.getLong("start"), rs.getLong("last"), rs.getLong("end"), winner, done, turns);
             }
 
             return null;
@@ -607,7 +609,7 @@ public class GameDAOSqlite implements GameDAO {
                 boolean done = rs.getInt("done") == 1;
                 String[] turns = getTurnsForGame(rs.getString("id"));
                 games.add(new GameInfo(rs.getString("id"), rs.getString("white"), rs.getString("black"), rs.getInt("size"), first, current,
-                                       rs.getLong("start"), rs.getLong("end"), win, done, turns));
+                                       rs.getLong("start"), rs.getLong("last"), rs.getLong("end"), win, done, turns));
             }
 
             return games.toArray(new GameInfo[0]);

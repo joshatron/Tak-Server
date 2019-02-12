@@ -111,6 +111,8 @@ public class SqliteManager {
                 "turns integer NOT NULL," +
                 //The timestamp of when the game started
                 "start integer NOT NULL," +
+                //The timestamp of when a move was last made
+                "last integer NOT NULL," +
                 //The timestamp of when the game ended, 0 if not done
                 "end integer," +
                 //The color who's won the game, either WHITE, BLACK, or NONE for tie or unfinished game
