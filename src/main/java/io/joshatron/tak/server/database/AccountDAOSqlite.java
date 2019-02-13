@@ -105,6 +105,26 @@ public class AccountDAOSqlite implements AccountDAO {
     }
 
     @Override
+    public void updateRating(String userId, int newRating) throws GameServerException {
+        PreparedStatement stmt = null;
+
+        String changeUser = "UPDATE users " +
+                "SET rating = ? " +
+                "WHERE id = ?;";
+
+        try {
+            stmt = conn.prepareStatement(changeUser);
+            stmt.setInt(1, newRating);
+            stmt.setString(2, userId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+        }
+    }
+
+    @Override
     public boolean userExists(String userId) throws GameServerException {
         PreparedStatement stmt = null;
         ResultSet rs = null;

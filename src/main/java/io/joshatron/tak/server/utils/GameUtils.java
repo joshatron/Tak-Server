@@ -14,7 +14,6 @@ import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.*;
 import io.joshatron.tak.server.response.*;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -316,7 +315,25 @@ public class GameUtils {
         GameResult result = state.checkForWinner();
         if(result.isFinished()) {
             gameDAO.finishGame(gameId, result.getWinner());
+            GameInfo info = gameDAO.getGameInfo(gameId);
+            if(info.getWinner() == Player.WHITE) {
+                updateRatings(info.getWhite(), info.getBlack());
+            }
+            else {
+                updateRatings(info.getBlack(), info.getWhite());
+            }
         }
+    }
+
+    private void updateRatings(String winner, String loser) throws GameServerException {
+        int k = 20;
+        User w = accountDAO.getUserFromId(winner);
+        User l = accountDAO.getUserFromId(loser);
+
+        //Implement elo diff
+
+        accountDAO.updateRating(winner, w.getRating());
+        accountDAO.updateRating(loser, l.getRating());
     }
 
     public GameNotifications getNotifications(Auth auth) throws GameServerException {
