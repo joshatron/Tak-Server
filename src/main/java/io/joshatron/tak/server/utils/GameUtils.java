@@ -331,9 +331,11 @@ public class GameUtils {
         User l = accountDAO.getUserFromId(loser);
 
         //Implement elo diff
+        double winnerExpected = 1. / (1 + Math.pow(10, (l.getRating() - w.getRating()) / 400.));
+        double loserExpected = 1. / (1 + Math.pow(10, (w.getRating() - l.getRating()) / 400.));
 
-        accountDAO.updateRating(winner, w.getRating());
-        accountDAO.updateRating(loser, l.getRating());
+        accountDAO.updateRating(winner, (int)Math.round(w.getRating() + k * (1 - winnerExpected)));
+        accountDAO.updateRating(loser, (int)Math.round(l.getRating() + k * (0 - loserExpected)));
     }
 
     public GameNotifications getNotifications(Auth auth) throws GameServerException {
