@@ -203,7 +203,7 @@ public class AccountDAOSqlite implements AccountDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String checkUsername = "SELECT id, username " +
+        String checkUsername = "SELECT id, username, rating " +
                 "FROM users " +
                 "WHERE username = ?;";
 

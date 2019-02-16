@@ -7,7 +7,7 @@ command -v mvn >/dev/null 2>&1 || { echo >&2 "Maven is required for setup. Abort
 mvn clean install
 
 mkdir -p game-server/
-cp target/tak-server*.jar game-server/
+cp target/tak-server*.jar game-server/tak-server.jar
 
 cd game-server
 if [ ! -f keystore.p12 ]; then
