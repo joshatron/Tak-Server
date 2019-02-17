@@ -13,11 +13,17 @@ import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.*;
 import io.joshatron.tak.server.response.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
 public class GameUtils {
+
+    @Autowired
+    private Environment env;
 
     public static final int GAME_ID_LENGTH = 25;
 
@@ -186,6 +192,7 @@ public class GameUtils {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         User user = accountDAO.getUserFromUsername(auth.getUsername());
+        checkForForfeits(user.getUserId());
         if(!gameDAO.gameExists(gameId)) {
             throw new GameServerException(ErrorCode.GAME_NOT_FOUND);
         }
@@ -202,6 +209,7 @@ public class GameUtils {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         User user = accountDAO.getUserFromUsername(auth.getUsername());
+        checkForForfeits(user.getUserId());
         Date now = new Date();
         Date start = null;
         if(startTime != null) {
@@ -255,6 +263,7 @@ public class GameUtils {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         User user = accountDAO.getUserFromUsername(auth.getUsername());
+        checkForForfeits(user.getUserId());
         if(!gameDAO.gameExists(gameId)) {
             throw new GameServerException(ErrorCode.GAME_NOT_FOUND);
         }
@@ -287,6 +296,7 @@ public class GameUtils {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         User user = accountDAO.getUserFromUsername(auth.getUsername());
+        checkForForfeits(user.getUserId());
         if(!gameDAO.gameExists(gameId)) {
             throw new GameServerException(ErrorCode.GAME_NOT_FOUND);
         }
@@ -344,6 +354,7 @@ public class GameUtils {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         User user = accountDAO.getUserFromUsername(auth.getUsername());
+        checkForForfeits(user.getUserId());
 
         return gameDAO.getGameNotifications(user.getUserId());
     }
@@ -363,6 +374,22 @@ public class GameUtils {
         }
         catch(TakEngineException e) {
             throw new GameServerException(ErrorCode.GAME_ENGINE_ERROR);
+        }
+    }
+
+    private void checkForForfeits(String userId) throws GameServerException {
+        if(env.getProperty("game.forfeit.days") != null) {
+            int days = Integer.parseInt(env.getProperty("game.forfeit.days"));
+            if(days > 0) {
+                GameInfo[] openGames = gameDAO.listGames(userId, null, null, null, Complete.INCOMPLETE, null, null, null, null);
+
+                for(GameInfo game : openGames) {
+                    //check if it has been enough days
+                    if(Instant.now().toEpochMilli() - game.getLast() > days * (1000 * 60 * 60 * 24)) {
+                        gameDAO.finishGame(game.getGameId(), game.getCurrent().opposite());
+                    }
+                }
+            }
         }
     }
 }

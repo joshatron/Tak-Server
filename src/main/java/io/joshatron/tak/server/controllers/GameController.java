@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-
 @RestController
 @RequestMapping("/games")
 public class GameController {
@@ -181,9 +179,9 @@ public class GameController {
     @GetMapping(value = "/notifications", produces = "application/json")
     public ResponseEntity getNotifications(@RequestHeader(value="Authorization") String auth) {
         try {
-            logger.info("Getting notifications");
+            logger.info("Getting game notifications");
             GameNotifications gameNotifications = gameUtils.getNotifications(new Auth(auth));
-            logger.info("Notifications found");
+            logger.info("Game notifications found");
             return new ResponseEntity(gameNotifications, HttpStatus.OK);
         } catch (Exception e) {
             return ControllerUtils.handleExceptions(e, logger);

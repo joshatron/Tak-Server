@@ -5,6 +5,8 @@ import io.joshatron.tak.server.request.Auth;
 import io.joshatron.tak.server.response.User;
 import io.joshatron.tak.server.utils.IdUtils;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,6 +14,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class AccountDAOSqlite implements AccountDAO {
+
+    @Autowired
+    private Environment env;
 
     private Connection conn;
 
@@ -52,9 +57,13 @@ public class AccountDAOSqlite implements AccountDAO {
                 "VALUES (?,?,?,1000);";
 
         try {
+            int rounds = 10;
+            if(env.getProperty("bcrypt.rounds") != null) {
+                rounds = Integer.parseInt(env.getProperty("bcrypt.rounds"));
+            }
             stmt = conn.prepareStatement(insertUser);
             stmt.setString(1, auth.getUsername());
-            stmt.setString(2, BCrypt.hashpw(auth.getPassword(), BCrypt.gensalt()));
+            stmt.setString(2, BCrypt.hashpw(auth.getPassword(), BCrypt.gensalt(rounds)));
             stmt.setString(3, IdUtils.generateId(idLength));
             stmt.executeUpdate();
         } catch (SQLException e) {
