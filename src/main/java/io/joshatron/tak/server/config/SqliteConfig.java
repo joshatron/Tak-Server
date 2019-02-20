@@ -6,6 +6,7 @@ import io.joshatron.tak.server.database.GameDAOSqlite;
 import io.joshatron.tak.server.database.SocialDAOSqlite;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.utils.AccountUtils;
+import io.joshatron.tak.server.utils.AdminUtils;
 import io.joshatron.tak.server.utils.GameUtils;
 import io.joshatron.tak.server.utils.SocialUtils;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +30,11 @@ public class SqliteConfig {
     @Bean
     public AccountUtils accountUtils() throws GameServerException {
         return new AccountUtils(accountDAOSqlite());
+    }
+
+    @Bean
+    public AdminUtils adminUtils() throws GameServerException {
+        return new AdminUtils();
     }
 
     @Bean
