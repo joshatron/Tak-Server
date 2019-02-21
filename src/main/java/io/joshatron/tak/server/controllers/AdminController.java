@@ -24,7 +24,19 @@ public class AdminController {
         adminUtils = context.getBean(AdminUtils.class);
     }
 
-    @PostMapping(value = "/changepass", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/initialize")
+    public ResponseEntity initialize() {
+        try {
+            logger.info("Creating admin password");
+            String pass = adminUtils.initializeAccount();
+            logger.info("Admin password successfully created: {}", pass);
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return ControllerUtils.handleExceptions(e, logger);
+        }
+    }
+
+    @PostMapping(value = "/changepass", consumes = "application/json")
     public ResponseEntity changePassword(@RequestHeader(value="Authorization") String auth, @RequestBody Text passChange) {
         try {
             logger.info("Changing admin password");
@@ -35,4 +47,7 @@ public class AdminController {
             return ControllerUtils.handleExceptions(e, logger);
         }
     }
+
+    //reset password for user
+    //ban user
 }
