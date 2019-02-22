@@ -11,4 +11,8 @@ public class AdminUtils {
 
     public void changePassword(Auth auth, Text passChange) {
     }
+
+    public String resetUserPassword(Auth auth, Text userToChange) {
+        return null;
+    }
 }

@@ -48,6 +48,17 @@ public class AdminController {
         }
     }
 
-    //reset password for user
+    @PostMapping(value = "/resetuser", consumes = "application/json", produces = "application/json")
+    public ResponseEntity resetUserPassword(@RequestHeader(value="Authorization") String auth, @RequestBody Text userToChange) {
+        try {
+            logger.info("Resetting user password");
+            String newPass = adminUtils.resetUserPassword(new Auth(auth), userToChange);
+            logger.info("User password successfully reset");
+            return new ResponseEntity<>(new Text(newPass), HttpStatus.OK);
+        } catch (Exception e) {
+            return ControllerUtils.handleExceptions(e, logger);
+        }
+    }
+
     //ban user
 }
