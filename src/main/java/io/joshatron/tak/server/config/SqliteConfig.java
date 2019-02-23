@@ -1,9 +1,6 @@
 package io.joshatron.tak.server.config;
 
-import io.joshatron.tak.server.database.AccountDAOSqlite;
-import io.joshatron.tak.server.database.SqliteManager;
-import io.joshatron.tak.server.database.GameDAOSqlite;
-import io.joshatron.tak.server.database.SocialDAOSqlite;
+import io.joshatron.tak.server.database.*;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.utils.AccountUtils;
 import io.joshatron.tak.server.utils.AdminUtils;
@@ -34,7 +31,7 @@ public class SqliteConfig {
 
     @Bean
     public AdminUtils adminUtils() throws GameServerException {
-        return new AdminUtils();
+        return new AdminUtils(adminDAOSqlite(), accountDAOSqlite());
     }
 
     @Bean
@@ -50,6 +47,11 @@ public class SqliteConfig {
     @Bean
     public AccountDAOSqlite accountDAOSqlite() throws GameServerException {
         return new AccountDAOSqlite(connection());
+    }
+
+    @Bean
+    public AdminDAOSqlite adminDAOSqlite() throws GameServerException {
+        return new AdminDAOSqlite(connection());
     }
 
     @Bean
