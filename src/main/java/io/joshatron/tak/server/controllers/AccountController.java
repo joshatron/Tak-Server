@@ -43,7 +43,7 @@ public class AccountController {
         }
     }
 
-    @PostMapping(value = "/changepass", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/change-pass", consumes = "application/json", produces = "application/json")
     public ResponseEntity changePassword(@RequestHeader(value="Authorization") String auth, @RequestBody Text passChange) {
         try {
             logger.info("Changing password");
@@ -55,7 +55,7 @@ public class AccountController {
         }
     }
 
-    @PostMapping(value = "/changename", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/change-name", consumes = "application/json", produces = "application/json")
     public ResponseEntity changeUsername(@RequestHeader(value="Authorization") String auth, @RequestBody Text userChange) {
         try {
             logger.info("Changing username");

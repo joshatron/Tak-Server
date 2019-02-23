@@ -36,7 +36,7 @@ public class AdminController {
         }
     }
 
-    @PostMapping(value = "/changepass", consumes = "application/json")
+    @PostMapping(value = "/change-pass", consumes = "application/json")
     public ResponseEntity changePassword(@RequestHeader(value="Authorization") String auth, @RequestBody Text passChange) {
         try {
             logger.info("Changing admin password");
@@ -48,7 +48,7 @@ public class AdminController {
         }
     }
 
-    @PostMapping(value = "/resetuser", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/reset-user", consumes = "application/json", produces = "application/json")
     public ResponseEntity resetUserPassword(@RequestHeader(value="Authorization") String auth, @RequestBody Text userToChange) {
         try {
             logger.info("Resetting user password");
@@ -60,5 +60,27 @@ public class AdminController {
         }
     }
 
-    //ban user
+    @PostMapping(value = "/ban-user", consumes = "application/json", produces = "application/json")
+    public ResponseEntity banUser(@RequestHeader(value="Authorization") String auth, @RequestBody Text userToBan) {
+        try {
+            logger.info("Banning user");
+            adminUtils.banUser(new Auth(auth), userToBan);
+            logger.info("User successfully banned");
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return ControllerUtils.handleExceptions(e, logger);
+        }
+    }
+
+    @PostMapping(value = "/unban-user", consumes = "application/json", produces = "application/json")
+    public ResponseEntity unbanUser(@RequestHeader(value="Authorization") String auth, @RequestBody Text userToUnban) {
+        try {
+            logger.info("Unbanning user");
+            adminUtils.unbanUser(new Auth(auth), userToUnban);
+            logger.info("User successfully unbanned");
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return ControllerUtils.handleExceptions(e, logger);
+        }
+    }
 }

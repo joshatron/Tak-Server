@@ -15,4 +15,10 @@ public class AdminUtils {
     public String resetUserPassword(Auth auth, Text userToChange) {
         return null;
     }
+
+    public void banUser(Auth auth, Text userToBan) {
+    }
+
+    public void unbanUser(Auth auth, Text userToUnban) {
+    }
 }

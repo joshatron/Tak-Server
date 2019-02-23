@@ -196,7 +196,7 @@ public class SocialController {
         }
     }
 
-    @PostMapping(value = "/message/markread", consumes = "application/json", produces = "application/json")
+    @PostMapping(value = "/message/mark-read", consumes = "application/json", produces = "application/json")
     public ResponseEntity markMessagesRead(@RequestHeader(value="Authorization") String auth, @RequestBody MarkRead markRead) {
         try {
             logger.info("Marking messages as read");
