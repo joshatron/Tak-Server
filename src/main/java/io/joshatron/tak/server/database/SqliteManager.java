@@ -34,7 +34,9 @@ public class SqliteManager {
                 //hashed password
                 "auth text NOT NULL," +
                 //current elo ranking
-                "rating integer NOT NULL);";
+                "rating integer NOT NULL," +
+                //time when the user did something last
+                "last integer NOT NULL);";
 
         String friendTable = "CREATE TABLE IF NOT EXISTS friends (" +
                 //ID of friend mapping, for internal use
@@ -130,6 +132,16 @@ public class SqliteManager {
                 //String representation of the turn
                 "turn text NOT NULL);";
 
+        String configTable = "CREATE TABLE IF NOT EXISTS config (" +
+                //Field name for the config
+                "field text PRIMARY KEY," +
+                //Value of the config
+                "value text NOT NULL);";
+
+        String bannedTable = "CREATE TABLE IF NOT EXISTS banned (" +
+                //ID of the user who is banned
+                "id text PRIMARY KEY);";
+
         try {
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(userTable);
@@ -141,6 +153,8 @@ public class SqliteManager {
             stmt.executeUpdate(gameRequestsTable);
             stmt.executeUpdate(gamesTable);
             stmt.executeUpdate(turnsTable);
+            stmt.executeUpdate(configTable);
+            stmt.executeUpdate(bannedTable);
             stmt.close();
 
         } catch (SQLException e) {

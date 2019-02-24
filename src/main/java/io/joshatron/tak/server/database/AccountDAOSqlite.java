@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 
 public class AccountDAOSqlite implements AccountDAO {
 
@@ -38,8 +39,13 @@ public class AccountDAOSqlite implements AccountDAO {
             stmt.setString(1, auth.getUsername());
             rs = stmt.executeQuery();
 
-            return (rs.next() && auth.getUsername().equals(rs.getString("username")) &&
-                    BCrypt.checkpw(auth.getPassword(), rs.getString("auth")));
+            boolean authorized = (rs.next() && auth.getUsername().equals(rs.getString("username")) &&
+                                  BCrypt.checkpw(auth.getPassword(), rs.getString("auth")));
+
+            if(authorized) {
+                updateLast(auth.getUsername());
+            }
+            return authorized;
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
@@ -48,13 +54,32 @@ public class AccountDAOSqlite implements AccountDAO {
         }
     }
 
+    private void updateLast(String username) throws GameServerException {
+        PreparedStatement stmt = null;
+
+        String updateLast = "UPDATE users " +
+                "SET last = ? " +
+                "WHERE username = ?;";
+
+        try {
+            stmt = conn.prepareStatement(updateLast);
+            stmt.setLong(1, Instant.now().toEpochMilli());
+            stmt.setString(2, username);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+        }
+    }
+
     @Override
     public void addUser(Auth auth, int idLength) throws GameServerException {
         PreparedStatement stmt = null;
 
         //insert new user if it isn't
-        String insertUser = "INSERT INTO  users (username, auth, id, rating) " +
-                "VALUES (?,?,?,1000);";
+        String insertUser = "INSERT INTO  users (username, auth, id, rating, last) " +
+                "VALUES (?,?,?,1000,?);";
 
         try {
             int rounds = 10;
@@ -65,6 +90,7 @@ public class AccountDAOSqlite implements AccountDAO {
             stmt.setString(1, auth.getUsername());
             stmt.setString(2, BCrypt.hashpw(auth.getPassword(), BCrypt.gensalt(rounds)));
             stmt.setString(3, IdUtils.generateId(idLength));
+            stmt.setLong(4, Instant.now().toEpochMilli());
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
