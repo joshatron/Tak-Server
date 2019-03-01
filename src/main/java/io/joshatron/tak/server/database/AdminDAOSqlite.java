@@ -3,7 +3,6 @@ package io.joshatron.tak.server.database;
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.Auth;
-import io.joshatron.tak.server.response.User;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
@@ -18,6 +17,28 @@ public class AdminDAOSqlite implements AdminDAO {
 
     public AdminDAOSqlite(Connection conn) {
         this.conn = conn;
+    }
+
+    @Override
+    public boolean isInitialized() throws GameServerException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        String getAuth = "SELECT value " +
+                "FROM config " +
+                "WHERE field = " + ADMIN_PASS_FIELD + ";";
+
+        try {
+            stmt = conn.prepareStatement(getAuth);
+            rs = stmt.executeQuery();
+
+            return rs.next();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+            SqliteManager.closeResultSet(rs);
+        }
     }
 
     @Override

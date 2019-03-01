@@ -39,7 +39,8 @@ public class AccountUtils {
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
-        if(auth.getPassword().equals(change.getText())) {
+        Auth testAuth = new Auth(auth.getUsername(), change.getText());
+        if(accountDAO.isAuthenticated(testAuth)) {
             throw new GameServerException(ErrorCode.SAME_PASSWORD);
         }
 
