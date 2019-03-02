@@ -26,7 +26,7 @@ public class SqliteConfig {
 
     @Bean
     public AccountUtils accountUtils() throws GameServerException {
-        return new AccountUtils(accountDAOSqlite());
+        return new AccountUtils(accountDAOSqlite(), adminDAOSqlite());
     }
 
     @Bean

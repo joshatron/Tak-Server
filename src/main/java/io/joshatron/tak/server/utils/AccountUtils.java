@@ -1,6 +1,7 @@
 package io.joshatron.tak.server.utils;
 
 import io.joshatron.tak.server.database.AccountDAO;
+import io.joshatron.tak.server.database.AdminDAO;
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.Auth;
@@ -12,15 +13,18 @@ public class AccountUtils {
     public static final int USER_ID_LENGTH = 15;
 
     private AccountDAO accountDAO;
+    private AdminDAO adminDAO;
 
-    public AccountUtils(AccountDAO accountDAO) {
+    public AccountUtils(AccountDAO accountDAO, AdminDAO adminDAO) {
         this.accountDAO = accountDAO;
+        this.adminDAO = adminDAO;
     }
 
     public boolean isAuthenticated(Auth auth) throws GameServerException {
         Validator.validateAuth(auth);
 
-        return accountDAO.isAuthenticated(auth);
+        String id = accountDAO.getUserFromUsername(auth.getUsername()).getUserId();
+        return accountDAO.isAuthenticated(auth) && !adminDAO.isUserBanned(id);
     }
 
     public void registerUser(Auth auth) throws GameServerException {

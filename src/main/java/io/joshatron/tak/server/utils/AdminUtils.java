@@ -39,13 +39,48 @@ public class AdminUtils {
         adminDAO.updatePassword(passChange.getText());
     }
 
-    public String resetUserPassword(Auth auth, Text userToChange) {
-        return null;
+    public String resetUserPassword(Auth auth, Text userToChange) throws GameServerException {
+        Validator.validateAuth(auth);
+        Validator.validateText(userToChange);
+        Validator.validateId(userToChange.getText(), AccountUtils.USER_ID_LENGTH);
+        if(!adminDAO.isInitialized()) {
+            throw new GameServerException(ErrorCode.ADMIN_PASSWORD_NOT_INITIALIZED);
+        }
+        if(!adminDAO.isAuthenticated(auth)) {
+            throw new GameServerException(ErrorCode.INCORRECT_AUTH);
+        }
+
+        String newPass = IdUtils.generateId(30);
+        accountDAO.updatePassword(accountDAO.getUserFromId(userToChange.getText()).getUsername(), newPass);
+
+        return newPass;
     }
 
-    public void banUser(Auth auth, Text userToBan) {
+    public void banUser(Auth auth, Text userToBan) throws GameServerException {
+        Validator.validateAuth(auth);
+        Validator.validateText(userToBan);
+        Validator.validateId(userToBan.getText(), AccountUtils.USER_ID_LENGTH);
+        if(!adminDAO.isInitialized()) {
+            throw new GameServerException(ErrorCode.ADMIN_PASSWORD_NOT_INITIALIZED);
+        }
+        if(!adminDAO.isAuthenticated(auth)) {
+            throw new GameServerException(ErrorCode.INCORRECT_AUTH);
+        }
+
+        adminDAO.banUser(userToBan.getText());
     }
 
-    public void unbanUser(Auth auth, Text userToUnban) {
+    public void unbanUser(Auth auth, Text userToUnban) throws GameServerException {
+        Validator.validateAuth(auth);
+        Validator.validateText(userToUnban);
+        Validator.validateId(userToUnban.getText(), AccountUtils.USER_ID_LENGTH);
+        if(!adminDAO.isInitialized()) {
+            throw new GameServerException(ErrorCode.ADMIN_PASSWORD_NOT_INITIALIZED);
+        }
+        if(!adminDAO.isAuthenticated(auth)) {
+            throw new GameServerException(ErrorCode.INCORRECT_AUTH);
+        }
+
+        adminDAO.unbanUser(userToUnban.getText());
     }
 }
