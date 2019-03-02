@@ -42,7 +42,7 @@ public class AdminUtils {
     public String resetUserPassword(Auth auth, Text userToChange) throws GameServerException {
         Validator.validateAuth(auth);
         Validator.validateText(userToChange);
-        Validator.validateId(userToChange.getText(), AccountUtils.USER_ID_LENGTH);
+        Validator.validateId(userToChange.getText(), IdUtils.USER_LENGTH);
         if(!adminDAO.isInitialized()) {
             throw new GameServerException(ErrorCode.ADMIN_PASSWORD_NOT_INITIALIZED);
         }
@@ -59,7 +59,7 @@ public class AdminUtils {
     public void banUser(Auth auth, Text userToBan) throws GameServerException {
         Validator.validateAuth(auth);
         Validator.validateText(userToBan);
-        Validator.validateId(userToBan.getText(), AccountUtils.USER_ID_LENGTH);
+        Validator.validateId(userToBan.getText(), IdUtils.USER_LENGTH);
         if(!adminDAO.isInitialized()) {
             throw new GameServerException(ErrorCode.ADMIN_PASSWORD_NOT_INITIALIZED);
         }
@@ -73,7 +73,7 @@ public class AdminUtils {
     public void unbanUser(Auth auth, Text userToUnban) throws GameServerException {
         Validator.validateAuth(auth);
         Validator.validateText(userToUnban);
-        Validator.validateId(userToUnban.getText(), AccountUtils.USER_ID_LENGTH);
+        Validator.validateId(userToUnban.getText(), IdUtils.USER_LENGTH);
         if(!adminDAO.isInitialized()) {
             throw new GameServerException(ErrorCode.ADMIN_PASSWORD_NOT_INITIALIZED);
         }

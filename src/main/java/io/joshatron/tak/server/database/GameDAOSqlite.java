@@ -113,7 +113,7 @@ public class GameDAOSqlite implements GameDAO {
 
         try {
             stmt = conn.prepareStatement(insertGame);
-            stmt.setString(1, IdUtils.generateId(GameUtils.GAME_ID_LENGTH));
+            stmt.setString(1, IdUtils.generateId(IdUtils.GAME_LENGTH));
             if(requesterColor == Player.WHITE) {
                 stmt.setString(2, requester);
                 stmt.setString(3, other);

@@ -25,8 +25,6 @@ public class GameUtils {
     @Autowired
     private Environment env;
 
-    public static final int GAME_ID_LENGTH = 25;
-
     private GameDAO gameDAO;
     private SocialDAO socialDAO;
     private AccountDAO accountDAO;
@@ -39,7 +37,7 @@ public class GameUtils {
 
     public void requestGame(Auth auth, String other,GameRequest gameRequest) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(other, AccountUtils.USER_ID_LENGTH);
+        Validator.validateId(other, IdUtils.USER_LENGTH);
         Validator.validateGameBoardSize(gameRequest.getSize());
         Player requesterColor = Validator.validatePlayer(gameRequest.getRequesterColor());
         Player first = Validator.validatePlayer(gameRequest.getFirst());
@@ -65,7 +63,7 @@ public class GameUtils {
 
     public void deleteRequest(Auth auth, String other) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(other, AccountUtils.USER_ID_LENGTH);
+        Validator.validateId(other, IdUtils.USER_LENGTH);
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -82,7 +80,7 @@ public class GameUtils {
 
     public void respondToGame(Auth auth, String id, Text answer) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(id, AccountUtils.USER_ID_LENGTH);
+        Validator.validateId(id, IdUtils.USER_LENGTH);
         Validator.validateText(answer);
         Answer response = Validator.validateAnswer(answer.getText());
         if(!accountDAO.isAuthenticated(auth)) {
@@ -187,7 +185,7 @@ public class GameUtils {
 
     public GameInfo getGameInfo(Auth auth, String gameId) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(gameId, GAME_ID_LENGTH);
+        Validator.validateId(gameId, IdUtils.GAME_LENGTH);
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -229,7 +227,7 @@ public class GameUtils {
         if(opponents != null && opponents.length() > 0) {
             users = opponents.split(",");
             for (String u : users) {
-                Validator.validateId(u, AccountUtils.USER_ID_LENGTH);
+                Validator.validateId(u, IdUtils.USER_LENGTH);
                 if (!accountDAO.userExists(u)) {
                     throw new GameServerException(ErrorCode.USER_NOT_FOUND);
                 }
@@ -258,7 +256,7 @@ public class GameUtils {
 
     public String[] getPossibleTurns(Auth auth, String gameId) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(gameId, GAME_ID_LENGTH);
+        Validator.validateId(gameId, IdUtils.GAME_LENGTH);
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -290,7 +288,7 @@ public class GameUtils {
 
     public void playTurn(Auth auth, String gameId, Text turn) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(gameId, GAME_ID_LENGTH);
+        Validator.validateId(gameId, IdUtils.GAME_LENGTH);
         Validator.validateText(turn);
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);

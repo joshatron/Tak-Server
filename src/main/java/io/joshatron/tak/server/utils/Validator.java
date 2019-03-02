@@ -169,7 +169,7 @@ public class Validator {
 
         if(markRead.getSenders() != null) {
             for (String sender : markRead.getSenders()) {
-                validateId(sender, AccountUtils.USER_ID_LENGTH);
+                validateId(sender, IdUtils.USER_LENGTH);
             }
         }
 
