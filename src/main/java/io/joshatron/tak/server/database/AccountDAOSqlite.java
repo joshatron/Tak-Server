@@ -82,10 +82,7 @@ public class AccountDAOSqlite implements AccountDAO {
                 "VALUES (?,?,?,1000,?);";
 
         try {
-            int rounds = 10;
-            if(env.getProperty("bcrypt.rounds") != null) {
-                rounds = Integer.parseInt(env.getProperty("bcrypt.rounds"));
-            }
+            int rounds = env.containsProperty("bcrypt.rounds") ? Integer.parseInt(env.getProperty("bcrypt.rounds")) : 10;
             stmt = conn.prepareStatement(insertUser);
             stmt.setString(1, auth.getUsername());
             stmt.setString(2, BCrypt.hashpw(auth.getPassword(), BCrypt.gensalt(rounds)));
@@ -108,8 +105,9 @@ public class AccountDAOSqlite implements AccountDAO {
                 "WHERE username = ?;";
 
         try {
+            int rounds = env.containsProperty("bcrypt.rounds") ? Integer.parseInt(env.getProperty("bcrypt.rounds")) : 10;
             stmt = conn.prepareStatement(changePass);
-            stmt.setString(1, BCrypt.hashpw(password, BCrypt.gensalt()));
+            stmt.setString(1, BCrypt.hashpw(password, BCrypt.gensalt(rounds)));
             stmt.setString(2, username);
             stmt.executeUpdate();
         } catch (SQLException e) {

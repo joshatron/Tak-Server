@@ -6,8 +6,13 @@ import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.Auth;
 import io.joshatron.tak.server.request.Text;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 public class AdminUtils {
+
+    @Autowired
+    private Environment env;
 
     private AdminDAO adminDAO;
     private AccountDAO accountDAO;
@@ -22,7 +27,11 @@ public class AdminUtils {
             throw new GameServerException(ErrorCode.ADMIN_PASSWORD_INITIALIZED);
         }
 
-        return IdUtils.generateId(30);
+        String pass = env.containsProperty("initial.admin.password") ? env.getProperty("initial.admin.password") : IdUtils.generateId(30);
+
+        adminDAO.updatePassword(pass);
+
+        return pass;
     }
 
     public void changePassword(Auth auth, Text passChange) throws GameServerException {

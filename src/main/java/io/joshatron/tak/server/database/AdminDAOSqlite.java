@@ -24,9 +24,9 @@ public class AdminDAOSqlite implements AdminDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String getAuth = "SELECT value " +
+        String getAuth = "SELECT * " +
                 "FROM config " +
-                "WHERE field = " + ADMIN_PASS_FIELD + ";";
+                "WHERE field = \"" + ADMIN_PASS_FIELD + "\";";
 
         try {
             stmt = conn.prepareStatement(getAuth);
@@ -48,7 +48,7 @@ public class AdminDAOSqlite implements AdminDAO {
 
         String getAuth = "SELECT value " +
                 "FROM config " +
-                "WHERE field = " + ADMIN_PASS_FIELD + ";";
+                "WHERE field = \"" + ADMIN_PASS_FIELD + "\";";
 
         try {
             stmt = conn.prepareStatement(getAuth);
@@ -94,11 +94,11 @@ public class AdminDAOSqlite implements AdminDAO {
 
         String getAuth = "SELECT * " +
                 "FROM config " +
-                "WHERE field = " + ADMIN_PASS_FIELD + ";";
+                "WHERE field = \"" + ADMIN_PASS_FIELD + "\";";
 
         String addAuth = "Update config " +
                 "SET value = ? " +
-                "WHERE field = " + ADMIN_PASS_FIELD + ";";
+                "WHERE field = \"" + ADMIN_PASS_FIELD + "\";";
 
         try {
             stmt = conn.prepareStatement(getAuth);
@@ -106,7 +106,7 @@ public class AdminDAOSqlite implements AdminDAO {
 
             if(!rs.next()) {
                 addAuth = "INSERT into config (field, value) " +
-                        "VALUES (" + ADMIN_PASS_FIELD + ", ?);";
+                        "VALUES (\"" + ADMIN_PASS_FIELD + "\", ?);";
             }
 
             stmt.close();

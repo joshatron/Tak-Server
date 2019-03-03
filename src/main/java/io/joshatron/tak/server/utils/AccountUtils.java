@@ -21,8 +21,13 @@ public class AccountUtils {
     public boolean isAuthenticated(Auth auth) throws GameServerException {
         Validator.validateAuth(auth);
 
-        String id = accountDAO.getUserFromUsername(auth.getUsername()).getUserId();
-        return accountDAO.isAuthenticated(auth) && !adminDAO.isUserBanned(id);
+        try {
+            String id = accountDAO.getUserFromUsername(auth.getUsername()).getUserId();
+            return accountDAO.isAuthenticated(auth) && !adminDAO.isUserBanned(id);
+        }
+        catch(GameServerException e) {
+            return false;
+        }
     }
 
     public void registerUser(Auth auth) throws GameServerException {
