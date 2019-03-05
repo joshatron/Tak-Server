@@ -35,6 +35,10 @@ public class SqliteManager {
                 "auth text NOT NULL," +
                 //current elo ranking
                 "rating integer NOT NULL," +
+                //Number of invalid login attempts since last successful
+                "failed integer NOT NULL," +
+                //State of the user, either normal, locked, or banned
+                "state text NOT NULL," +
                 //time when the user did something last
                 "last integer NOT NULL);";
 
@@ -138,10 +142,6 @@ public class SqliteManager {
                 //Value of the config
                 "value text NOT NULL);";
 
-        String bannedTable = "CREATE TABLE IF NOT EXISTS banned (" +
-                //ID of the user who is banned
-                "id text PRIMARY KEY);";
-
         try {
             Statement stmt = conn.createStatement();
             stmt.executeUpdate(userTable);
@@ -154,7 +154,6 @@ public class SqliteManager {
             stmt.executeUpdate(gamesTable);
             stmt.executeUpdate(turnsTable);
             stmt.executeUpdate(configTable);
-            stmt.executeUpdate(bannedTable);
             stmt.close();
 
         } catch (SQLException e) {
