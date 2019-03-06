@@ -2,6 +2,7 @@ package io.joshatron.tak.server.database;
 
 import io.joshatron.tak.server.exceptions.*;
 import io.joshatron.tak.server.request.Auth;
+import io.joshatron.tak.server.response.State;
 import io.joshatron.tak.server.response.User;
 import io.joshatron.tak.server.utils.IdUtils;
 import org.mindrot.jbcrypt.BCrypt;
@@ -30,7 +31,7 @@ public class AccountDAOSqlite implements AccountDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String getAuth = "SELECT username, auth " +
+        String getAuth = "SELECT id, username, auth, failed, state " +
                 "FROM users " +
                 "WHERE username = ?;";
 
@@ -42,9 +43,28 @@ public class AccountDAOSqlite implements AccountDAO {
             boolean authorized = (rs.next() && auth.getUsername().equals(rs.getString("username")) &&
                                   BCrypt.checkpw(auth.getPassword(), rs.getString("auth")));
 
-            if(authorized) {
-                updateLast(auth.getUsername());
+            State state = State.valueOf(rs.getString("state"));
+
+            if(state == State.LOCKED) {
+                throw new GameServerException(ErrorCode.LOCKED_OUT);
             }
+            else if(state == State.BANNED) {
+                throw new GameServerException(ErrorCode.BANNED);
+            }
+
+            int maxFailed = Integer.parseInt(env.getProperty("failed.logins"));
+
+            if(authorized) {
+                updateLast(rs.getString("id"));
+                updateFailed(rs.getString("id"), 0);
+            }
+            else {
+                if(maxFailed > 0 && rs.getInt("failed") + 1 >= maxFailed) {
+                    updateState(rs.getString("id"), State.LOCKED);
+                }
+                updateFailed(rs.getString("id"), rs.getInt("failed") + 1);
+            }
+
             return authorized;
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
@@ -54,17 +74,55 @@ public class AccountDAOSqlite implements AccountDAO {
         }
     }
 
-    private void updateLast(String username) throws GameServerException {
+    public void updateState(String userId, State state) throws GameServerException {
+        PreparedStatement stmt = null;
+
+        String updateLast = "UPDATE users " +
+                "SET state = ? " +
+                "WHERE id = ?;";
+
+        try {
+            stmt = conn.prepareStatement(updateLast);
+            stmt.setString(1, state.name());
+            stmt.setString(2, userId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+        }
+    }
+
+    private void updateFailed(String userId, int num) throws GameServerException {
+        PreparedStatement stmt = null;
+
+        String updateLast = "UPDATE users " +
+                "SET failed = ? " +
+                "WHERE id = ?;";
+
+        try {
+            stmt = conn.prepareStatement(updateLast);
+            stmt.setInt(1, num);
+            stmt.setString(2, userId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new GameServerException(ErrorCode.DATABASE_ERROR);
+        } finally {
+            SqliteManager.closeStatement(stmt);
+        }
+    }
+
+    private void updateLast(String userId) throws GameServerException {
         PreparedStatement stmt = null;
 
         String updateLast = "UPDATE users " +
                 "SET last = ? " +
-                "WHERE username = ?;";
+                "WHERE id = ?;";
 
         try {
             stmt = conn.prepareStatement(updateLast);
             stmt.setLong(1, Instant.now().toEpochMilli());
-            stmt.setString(2, username);
+            stmt.setString(2, userId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
