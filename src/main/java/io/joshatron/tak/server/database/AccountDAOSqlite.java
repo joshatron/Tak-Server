@@ -52,7 +52,7 @@ public class AccountDAOSqlite implements AccountDAO {
                 throw new GameServerException(ErrorCode.BANNED);
             }
 
-            int maxFailed = Integer.parseInt(env.getProperty("failed.logins"));
+            int maxFailed = Integer.parseInt(env.getProperty("login.attempts"));
 
             if(authorized) {
                 updateLast(rs.getString("id"));
@@ -266,7 +266,7 @@ public class AccountDAOSqlite implements AccountDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String checkUsername = "SELECT id, username, rating " +
+        String checkUsername = "SELECT id, username, rating, state " +
                 "FROM users " +
                 "WHERE id = ?;";
 
@@ -276,7 +276,7 @@ public class AccountDAOSqlite implements AccountDAO {
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return new User(rs.getString("username"), rs.getString("id"), rs.getInt("rating"));
+                return new User(rs.getString("username"), rs.getString("id"), rs.getInt("rating"), State.valueOf(rs.getString("state")));
             }
             else {
                 throw new GameServerException(ErrorCode.USER_NOT_FOUND);
@@ -294,7 +294,7 @@ public class AccountDAOSqlite implements AccountDAO {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
-        String checkUsername = "SELECT id, username, rating " +
+        String checkUsername = "SELECT id, username, rating, state " +
                 "FROM users " +
                 "WHERE username = ?;";
 
@@ -304,7 +304,7 @@ public class AccountDAOSqlite implements AccountDAO {
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return new User(rs.getString("username"), rs.getString("id"), rs.getInt("rating"));
+                return new User(rs.getString("username"), rs.getString("id"), rs.getInt("rating"), State.valueOf(rs.getString("state")));
             }
             else {
                 throw new GameServerException(ErrorCode.USER_NOT_FOUND);

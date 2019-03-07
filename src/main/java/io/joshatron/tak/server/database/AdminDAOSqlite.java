@@ -65,29 +65,6 @@ public class AdminDAOSqlite implements AdminDAO {
     }
 
     @Override
-    public boolean isUserBanned(String userId) throws GameServerException {
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        String getBan = "SELECT * " +
-                "FROM banned " +
-                "WHERE id = ?;";
-
-        try {
-            stmt = conn.prepareStatement(getBan);
-            stmt.setString(1, userId);
-            rs = stmt.executeQuery();
-
-            return rs.next();
-        } catch (SQLException e) {
-            throw new GameServerException(ErrorCode.DATABASE_ERROR);
-        } finally {
-            SqliteManager.closeStatement(stmt);
-            SqliteManager.closeResultSet(rs);
-        }
-    }
-
-    @Override
     public void updatePassword(String newPass) throws GameServerException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -119,42 +96,6 @@ public class AdminDAOSqlite implements AdminDAO {
         } finally {
             SqliteManager.closeStatement(stmt);
             SqliteManager.closeResultSet(rs);
-        }
-    }
-
-    @Override
-    public void banUser(String userId) throws GameServerException {
-        PreparedStatement stmt = null;
-
-        String banUser = "INSERT INTO banned (id) " +
-                "VALUES (?);";
-
-        try {
-            stmt = conn.prepareStatement(banUser);
-            stmt.setString(1, userId);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new GameServerException(ErrorCode.DATABASE_ERROR);
-        } finally {
-            SqliteManager.closeStatement(stmt);
-        }
-    }
-
-    @Override
-    public void unbanUser(String userId) throws GameServerException {
-        PreparedStatement stmt = null;
-
-        String unbanUser = "DELETE FROM banned " +
-                "WHERE id = ?;";
-
-        try {
-            stmt = conn.prepareStatement(unbanUser);
-            stmt.setString(1, userId);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new GameServerException(ErrorCode.DATABASE_ERROR);
-        } finally {
-            SqliteManager.closeStatement(stmt);
         }
     }
 }

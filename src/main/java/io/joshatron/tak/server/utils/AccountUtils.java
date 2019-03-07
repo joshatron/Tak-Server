@@ -1,21 +1,19 @@
 package io.joshatron.tak.server.utils;
 
 import io.joshatron.tak.server.database.AccountDAO;
-import io.joshatron.tak.server.database.AdminDAO;
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.Auth;
 import io.joshatron.tak.server.request.Text;
+import io.joshatron.tak.server.response.State;
 import io.joshatron.tak.server.response.User;
 
 public class AccountUtils {
 
     private AccountDAO accountDAO;
-    private AdminDAO adminDAO;
 
-    public AccountUtils(AccountDAO accountDAO, AdminDAO adminDAO) {
+    public AccountUtils(AccountDAO accountDAO) {
         this.accountDAO = accountDAO;
-        this.adminDAO = adminDAO;
     }
 
     public boolean isAuthenticated(Auth auth) throws GameServerException {
@@ -23,7 +21,7 @@ public class AccountUtils {
 
         try {
             String id = accountDAO.getUserFromUsername(auth.getUsername()).getUserId();
-            return accountDAO.isAuthenticated(auth) && !adminDAO.isUserBanned(id);
+            return accountDAO.isAuthenticated(auth) && accountDAO.getUserFromId(id).getState() == State.NORMAL;
         }
         catch(GameServerException e) {
             return false;

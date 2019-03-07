@@ -9,4 +9,5 @@ public class User {
     private String username;
     private String userId;
     private int rating;
+    private State state;
 }

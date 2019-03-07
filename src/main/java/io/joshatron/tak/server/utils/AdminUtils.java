@@ -6,6 +6,7 @@ import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.Auth;
 import io.joshatron.tak.server.request.Text;
+import io.joshatron.tak.server.response.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
@@ -76,7 +77,7 @@ public class AdminUtils {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
 
-        adminDAO.banUser(userToBan.getText());
+        accountDAO.updateState(userToBan.getText(), State.BANNED);
     }
 
     public void unbanUser(Auth auth, Text userToUnban) throws GameServerException {
@@ -90,6 +91,6 @@ public class AdminUtils {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
 
-        adminDAO.unbanUser(userToUnban.getText());
+        accountDAO.updateState(userToUnban.getText(), State.NORMAL);
     }
 }
