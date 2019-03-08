@@ -40,7 +40,11 @@ public class AccountDAOSqlite implements AccountDAO {
             stmt.setString(1, auth.getUsername());
             rs = stmt.executeQuery();
 
-            boolean authorized = (rs.next() && auth.getUsername().equals(rs.getString("username")) &&
+            if(!rs.next()) {
+                return false;
+            }
+
+            boolean authorized = (auth.getUsername().equals(rs.getString("username")) &&
                                   BCrypt.checkpw(auth.getPassword(), rs.getString("auth")));
 
             State state = State.valueOf(rs.getString("state"));
@@ -52,7 +56,10 @@ public class AccountDAOSqlite implements AccountDAO {
                 throw new GameServerException(ErrorCode.BANNED);
             }
 
-            int maxFailed = Integer.parseInt(env.getProperty("login.attempts"));
+            int maxFailed = 0;
+            if(env.containsProperty("login.attempts")) {
+                maxFailed = Integer.parseInt(env.getProperty("login.attempts"));
+            }
 
             if(authorized) {
                 updateLast(rs.getString("id"));
@@ -136,8 +143,8 @@ public class AccountDAOSqlite implements AccountDAO {
         PreparedStatement stmt = null;
 
         //insert new user if it isn't
-        String insertUser = "INSERT INTO  users (username, auth, id, rating, last) " +
-                "VALUES (?,?,?,1000,?);";
+        String insertUser = "INSERT INTO  users (username, auth, id, last, rating, failed, state) " +
+                "VALUES (?,?,?,?,1000,0,\"NORMAL\");";
 
         try {
             int rounds = env.containsProperty("bcrypt.rounds") ? Integer.parseInt(env.getProperty("bcrypt.rounds")) : 10;
