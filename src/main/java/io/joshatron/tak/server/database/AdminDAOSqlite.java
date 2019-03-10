@@ -54,7 +54,7 @@ public class AdminDAOSqlite implements AdminDAO {
             stmt = conn.prepareStatement(getAuth);
             rs = stmt.executeQuery();
 
-            return (rs.next() && auth.getUsername().equals(rs.getString("admin")) &&
+            return (rs.next() && auth.getUsername().equals("admin") &&
                     BCrypt.checkpw(auth.getPassword(), rs.getString("value")));
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
@@ -89,7 +89,7 @@ public class AdminDAOSqlite implements AdminDAO {
             stmt.close();
 
             stmt = conn.prepareStatement(addAuth);
-            stmt.setString(1, newPass);
+            stmt.setString(1, BCrypt.hashpw(newPass, BCrypt.gensalt()));
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
