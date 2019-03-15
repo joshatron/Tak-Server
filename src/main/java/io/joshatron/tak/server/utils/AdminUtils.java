@@ -76,6 +76,9 @@ public class AdminUtils {
         if(!adminDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
+        if(accountDAO.getUserFromId(userToBan.getText()).getState() == State.BANNED) {
+            throw new GameServerException(ErrorCode.ALREADY_BANNED);
+        }
 
         accountDAO.updateState(userToBan.getText(), State.BANNED);
     }

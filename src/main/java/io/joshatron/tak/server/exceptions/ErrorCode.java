@@ -37,6 +37,7 @@ public enum ErrorCode {
     ADMIN_PASSWORD_NOT_INITIALIZED(HttpStatus.FORBIDDEN),
     LOCKED_OUT(HttpStatus.FORBIDDEN),
     BANNED(HttpStatus.FORBIDDEN),
+    ALREADY_BANNED(HttpStatus.FORBIDDEN),
 
     //Bad Auth
     INCORRECT_AUTH(HttpStatus.UNAUTHORIZED),
