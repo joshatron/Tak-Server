@@ -11,8 +11,8 @@ A summary of the methods are described below:
 | Call                                      | Type      | Description                                                               |
 |-------------------------------------------|-----------|---------------------------------------------------------------------------|
 | /account/register                         | POST      | Register a new user                                                       |
-| /account/changepass                       | POST      | Change your password                                                      |
-| /account/changename                       | POST      | Change your username                                                      |
+| /account/change-pass                      | POST      | Change your password                                                      |
+| /account/change-name                      | POST      | Change your username                                                      |
 | /account/authenticate                     | GET       | Check if the given credentials are valid                                  |
 | /account/user                             | GET       | Get the username and ID from the username or ID                           |
 | /social/request/create/{id}               | POST      | Create a friend request                                                   |
@@ -28,7 +28,7 @@ A summary of the methods are described below:
 | /social/user/blocking                     | GET       | Get a list for users you are blocking                                     |
 | /social/message/send/{id}                 | POST      | Send a message to a user                                                  |
 | /social/message/search                    | GET       | Search through your messages                                              |
-| /social/message/markread                  | POST      | Mark a message as read                                                    |
+| /social/message/mark-read                 | POST      | Mark a message as read                                                    |
 | /social/notifications                     | GET       | Get the number of incoming friend requests and unread messages            |
 | /games/request/create/{id}                | POST      | Create a request for a game                                               |
 | /games/request/cancel/{id}                | DELETE    | Delete a game request                                                     |
@@ -43,4 +43,9 @@ A summary of the methods are described below:
 | /games/game/{id}/possible                 | GET       | Get all the next possible moves for a game                                |
 | /games/game/{id}/play                     | POST      | Play a move on a game                                                     |
 | /games/notifications                      | GET       | Get the number of incoming game requests and games where it is your turn  |
+| /admin/initialize                         | POST      | Initializes admin with accound and password, specified in logs            |
+| /admin/change-pass                        | POST      | Changes the password of the admin user                                    |
+| /admin/reset-user                         | POST      | Resets the password for a user and return it                              |
+| /admin/ban-user                           | POST      | Bans a user from logging in                                               |
+| /admin/unban-user                         | POST      | Lifts the ban on a user                                                   |
 
