@@ -45,7 +45,8 @@ A summary of the methods are described below:
 | /games/notifications                      | GET       | Get the number of incoming game requests and games where it is your turn  |
 | /admin/initialize                         | POST      | Initializes admin with accound and password, specified in logs            |
 | /admin/change-pass                        | POST      | Changes the password of the admin user                                    |
-| /admin/reset-user                         | POST      | Resets the password for a user and return it                              |
-| /admin/ban-user                           | POST      | Bans a user from logging in                                               |
-| /admin/unban-user                         | POST      | Lifts the ban on a user                                                   |
+| /admin/user/{id}/reset                    | POST      | Resets the password for a user and return it                              |
+| /admin/user/{id}/ban                      | POST      | Bans a user from logging in                                               |
+| /admin/user/{id}/unban                    | POST      | Lifts the ban on a user                                                   |
+| /admin/user/{id}/unlock                   | POST      | Unlocks user that got locked out from too many password attempts          |
 

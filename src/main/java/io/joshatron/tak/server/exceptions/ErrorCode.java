@@ -38,6 +38,8 @@ public enum ErrorCode {
     LOCKED_OUT(HttpStatus.FORBIDDEN),
     BANNED(HttpStatus.FORBIDDEN),
     ALREADY_BANNED(HttpStatus.FORBIDDEN),
+    USER_NOT_BANNED(HttpStatus.FORBIDDEN),
+    USER_NOT_LOCKED(HttpStatus.FORBIDDEN),
 
     //Bad Auth
     INCORRECT_AUTH(HttpStatus.UNAUTHORIZED),

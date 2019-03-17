@@ -48,8 +48,8 @@ public class AdminController {
         }
     }
 
-    @PostMapping(value = "/reset-user", consumes = "application/json", produces = "application/json")
-    public ResponseEntity resetUserPassword(@RequestHeader(value="Authorization") String auth, @RequestBody Text userToChange) {
+    @PostMapping(value = "/user/{id}/reset", produces = "application/json")
+    public ResponseEntity resetUserPassword(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String userToChange) {
         try {
             logger.info("Resetting user password");
             String newPass = adminUtils.resetUserPassword(new Auth(auth), userToChange);
@@ -60,8 +60,8 @@ public class AdminController {
         }
     }
 
-    @PostMapping(value = "/ban-user", consumes = "application/json", produces = "application/json")
-    public ResponseEntity banUser(@RequestHeader(value="Authorization") String auth, @RequestBody Text userToBan) {
+    @PostMapping(value = "/user/{id}/ban", produces = "application/json")
+    public ResponseEntity banUser(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String userToBan) {
         try {
             logger.info("Banning user");
             adminUtils.banUser(new Auth(auth), userToBan);
@@ -72,12 +72,24 @@ public class AdminController {
         }
     }
 
-    @PostMapping(value = "/unban-user", consumes = "application/json", produces = "application/json")
-    public ResponseEntity unbanUser(@RequestHeader(value="Authorization") String auth, @RequestBody Text userToUnban) {
+    @PostMapping(value = "/user/{id}/unban", produces = "application/json")
+    public ResponseEntity unbanUser(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String userToUnban) {
         try {
             logger.info("Unbanning user");
             adminUtils.unbanUser(new Auth(auth), userToUnban);
             logger.info("User successfully unbanned");
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return ControllerUtils.handleExceptions(e, logger);
+        }
+    }
+
+    @PostMapping(value = "/user/{id}/unlock", produces = "application/json")
+    public ResponseEntity unlockUser(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String userToUnlock) {
+        try {
+            logger.info("Unlocking user");
+            adminUtils.unlockUser(new Auth(auth), userToUnlock);
+            logger.info("User successfully unlocked");
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return ControllerUtils.handleExceptions(e, logger);
