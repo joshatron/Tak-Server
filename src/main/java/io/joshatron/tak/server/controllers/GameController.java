@@ -1,13 +1,11 @@
 package io.joshatron.tak.server.controllers;
 
-import io.joshatron.tak.server.config.SqliteConfig;
 import io.joshatron.tak.server.request.*;
 import io.joshatron.tak.server.response.*;
 import io.joshatron.tak.server.utils.GameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,17 +14,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/games")
 public class GameController {
 
+    @Autowired
     private GameUtils gameUtils;
     private Logger logger = LoggerFactory.getLogger(AccountController.class);
-
-    public GameController() {
-        ApplicationContext context = new AnnotationConfigApplicationContext(SqliteConfig.class);
-        gameUtils = context.getBean(GameUtils.class);
-    }
-
-    public GameController(GameUtils gameUtils) {
-        this.gameUtils = gameUtils;
-    }
 
     @PostMapping(value = "/request/create/{id}", produces = "application/json")
     public ResponseEntity requestGame(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String other, @RequestBody GameRequest gameRequest) {

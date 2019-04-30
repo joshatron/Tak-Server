@@ -1,6 +1,5 @@
 package io.joshatron.tak.server.controllers;
 
-import io.joshatron.tak.server.config.SqliteConfig;
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.*;
@@ -8,29 +7,18 @@ import io.joshatron.tak.server.response.*;
 import io.joshatron.tak.server.utils.SocialUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
 
 @RestController
 @RequestMapping("/social")
 public class SocialController {
 
+    @Autowired
     private SocialUtils socialUtils;
     private Logger logger = LoggerFactory.getLogger(SocialController.class);
-
-    public SocialController() {
-        ApplicationContext context = new AnnotationConfigApplicationContext(SqliteConfig.class);
-        socialUtils = context.getBean(SocialUtils.class);
-    }
-
-    public SocialController(SocialUtils socialUtils) {
-        this.socialUtils = socialUtils;
-    }
 
     @PostMapping(value = "/request/create/{id}", produces = "application/json")
     public ResponseEntity requestFriend(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String other) {

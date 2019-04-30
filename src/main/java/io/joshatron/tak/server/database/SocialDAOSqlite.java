@@ -9,6 +9,8 @@ import io.joshatron.tak.server.response.SocialNotifications;
 import io.joshatron.tak.server.response.State;
 import io.joshatron.tak.server.response.User;
 import io.joshatron.tak.server.utils.IdUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,13 +20,11 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 
+@Component
 public class SocialDAOSqlite implements SocialDAO {
 
+    @Autowired
     private Connection conn;
-
-    public SocialDAOSqlite(Connection conn) {
-        this.conn = conn;
-    }
 
     @Override
     public boolean friendRequestExists(String requester, String other) throws GameServerException {

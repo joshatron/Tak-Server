@@ -8,20 +8,20 @@ import io.joshatron.tak.server.request.*;
 import io.joshatron.tak.server.response.Message;
 import io.joshatron.tak.server.response.SocialNotifications;
 import io.joshatron.tak.server.response.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+@Component
 public class SocialUtils {
 
     public static final int MESSAGE_ID_LENGTH = 20;
 
+    @Autowired
     private SocialDAO socialDAO;
+    @Autowired
     private AccountDAO accountDAO;
-
-    public SocialUtils(SocialDAO socialDAO, AccountDAO accountDAO) {
-        this.accountDAO = accountDAO;
-        this.socialDAO = socialDAO;
-    }
 
     public void createFriendRequest(Auth auth, String other) throws GameServerException {
         Validator.validateAuth(auth);

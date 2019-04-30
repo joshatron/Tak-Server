@@ -1,6 +1,5 @@
 package io.joshatron.tak.server.controllers;
 
-import io.joshatron.tak.server.config.SqliteConfig;
 import io.joshatron.tak.server.exceptions.*;
 import io.joshatron.tak.server.request.Auth;
 import io.joshatron.tak.server.request.Text;
@@ -8,8 +7,7 @@ import io.joshatron.tak.server.response.User;
 import io.joshatron.tak.server.utils.AccountUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,17 +17,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/account", produces = "application/json")
 public class AccountController {
 
+    @Autowired
     private AccountUtils accountUtils;
     private Logger logger = LoggerFactory.getLogger(AccountController.class);
-
-    public AccountController() {
-        ApplicationContext context = new AnnotationConfigApplicationContext(SqliteConfig.class);
-        accountUtils = context.getBean(AccountUtils.class);
-    }
-
-    public AccountController(AccountUtils accountUtils) {
-        this.accountUtils = accountUtils;
-    }
 
     @PostMapping(value = "/register", consumes = "application/json", produces = "application/json")
     public ResponseEntity register(@RequestBody Auth auth) {

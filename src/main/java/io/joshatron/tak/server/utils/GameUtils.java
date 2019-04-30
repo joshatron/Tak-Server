@@ -15,25 +15,24 @@ import io.joshatron.tak.server.request.*;
 import io.joshatron.tak.server.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
+@Component
 public class GameUtils {
 
     @Autowired
     private Environment env;
 
+    @Autowired
     private GameDAO gameDAO;
+    @Autowired
     private SocialDAO socialDAO;
+    @Autowired
     private AccountDAO accountDAO;
-
-    public GameUtils(GameDAO gameDAO, SocialDAO socialDAO, AccountDAO accountDAO) {
-        this.gameDAO = gameDAO;
-        this.socialDAO = socialDAO;
-        this.accountDAO = accountDAO;
-    }
 
     public void requestGame(Auth auth, String other,GameRequest gameRequest) throws GameServerException {
         Validator.validateAuth(auth);

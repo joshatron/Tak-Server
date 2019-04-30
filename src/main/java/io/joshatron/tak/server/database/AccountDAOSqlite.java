@@ -8,6 +8,7 @@ import io.joshatron.tak.server.utils.IdUtils;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,16 +16,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
 
+@Component
 public class AccountDAOSqlite implements AccountDAO {
 
     @Autowired
     private Environment env;
 
+    @Autowired
     private Connection conn;
-
-    public AccountDAOSqlite(Connection conn) {
-        this.conn = conn;
-    }
 
     @Override
     public boolean isAuthenticated(Auth auth) throws GameServerException {

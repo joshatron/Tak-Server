@@ -2,6 +2,7 @@ package io.joshatron.tak.server.database;
 
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
+import org.springframework.context.annotation.Bean;
 
 import java.sql.*;
 
@@ -11,6 +12,7 @@ public class SqliteManager {
         throw new IllegalStateException("This is a utility class");
     }
 
+    @Bean
     public static Connection getConnection() throws GameServerException {
         String database = "server.db";
 

@@ -1,13 +1,11 @@
 package io.joshatron.tak.server.controllers;
 
-import io.joshatron.tak.server.config.SqliteConfig;
 import io.joshatron.tak.server.request.Auth;
 import io.joshatron.tak.server.request.Text;
 import io.joshatron.tak.server.utils.AdminUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +14,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/admin", produces = "application/json")
 public class AdminController {
 
+    @Autowired
     private AdminUtils adminUtils;
     private Logger logger = LoggerFactory.getLogger(AccountController.class);
-
-    public AdminController() {
-        ApplicationContext context = new AnnotationConfigApplicationContext(SqliteConfig.class);
-        adminUtils = context.getBean(AdminUtils.class);
-    }
 
     @PostMapping(value = "/initialize")
     public ResponseEntity initialize() {

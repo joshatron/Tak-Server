@@ -9,19 +9,18 @@ import io.joshatron.tak.server.request.Text;
 import io.joshatron.tak.server.response.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AdminUtils {
 
     @Autowired
     private Environment env;
 
+    @Autowired
     private AdminDAO adminDAO;
+    @Autowired
     private AccountDAO accountDAO;
-
-    public AdminUtils(AdminDAO adminDAO, AccountDAO accountDAO) {
-        this.adminDAO = adminDAO;
-        this.accountDAO = accountDAO;
-    }
 
     public String initializeAccount() throws GameServerException {
         if(adminDAO.isInitialized()) {

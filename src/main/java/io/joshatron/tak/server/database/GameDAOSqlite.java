@@ -12,19 +12,19 @@ import io.joshatron.tak.server.response.RandomRequestInfo;
 import io.joshatron.tak.server.response.RequestInfo;
 import io.joshatron.tak.server.utils.GameUtils;
 import io.joshatron.tak.server.utils.IdUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.sql.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 
+@Component
 public class GameDAOSqlite implements GameDAO {
 
+    @Autowired
     private Connection conn;
-
-    public GameDAOSqlite(Connection conn) {
-        this.conn = conn;
-    }
 
     @Override
     public void createGameRequest(String requester, String other, int size, Player requesterColor, Player first) throws GameServerException {

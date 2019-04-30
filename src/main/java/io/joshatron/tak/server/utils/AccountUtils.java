@@ -7,14 +7,14 @@ import io.joshatron.tak.server.request.Auth;
 import io.joshatron.tak.server.request.Text;
 import io.joshatron.tak.server.response.State;
 import io.joshatron.tak.server.response.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AccountUtils {
 
+    @Autowired
     private AccountDAO accountDAO;
-
-    public AccountUtils(AccountDAO accountDAO) {
-        this.accountDAO = accountDAO;
-    }
 
     public boolean isAuthenticated(Auth auth) throws GameServerException {
         Validator.validateAuth(auth);
