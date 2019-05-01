@@ -25,6 +25,14 @@ public class AccountDAOSqlite implements AccountDAO {
     @Autowired
     private Connection conn;
 
+    private int bcryptRounds;
+    private int maxFailed;
+
+    public AccountDAOSqlite() {
+        bcryptRounds = env.containsProperty("user.bcrypt-rounds") ? Integer.parseInt(env.getProperty("user.bcrypt-rounds")) : 10;
+        maxFailed = env.containsProperty("user.login-attempts") ? Integer.parseInt(env.getProperty("user.login-attempts")) : 0;
+    }
+
     @Override
     public boolean isAuthenticated(Auth auth) throws GameServerException {
         PreparedStatement stmt = null;
@@ -53,11 +61,6 @@ public class AccountDAOSqlite implements AccountDAO {
             }
             else if(state == State.BANNED) {
                 throw new GameServerException(ErrorCode.BANNED);
-            }
-
-            int maxFailed = 0;
-            if(env.containsProperty("user.login-attempts")) {
-                maxFailed = Integer.parseInt(env.getProperty("user.login-attempts"));
             }
 
             if(authorized) {
@@ -146,10 +149,9 @@ public class AccountDAOSqlite implements AccountDAO {
                 "VALUES (?,?,?,?,1000,0,\"NORMAL\");";
 
         try {
-            int rounds = env.containsProperty("user.bcrypt-rounds") ? Integer.parseInt(env.getProperty("user.bcrypt-rounds")) : 10;
             stmt = conn.prepareStatement(insertUser);
             stmt.setString(1, auth.getUsername());
-            stmt.setString(2, BCrypt.hashpw(auth.getPassword(), BCrypt.gensalt(rounds)));
+            stmt.setString(2, BCrypt.hashpw(auth.getPassword(), BCrypt.gensalt(bcryptRounds)));
             stmt.setString(3, IdUtils.generateId(idLength));
             stmt.setLong(4, Instant.now().toEpochMilli());
             stmt.executeUpdate();
@@ -169,9 +171,8 @@ public class AccountDAOSqlite implements AccountDAO {
                 "WHERE username = ?;";
 
         try {
-            int rounds = env.containsProperty("user.bcrypt-rounds") ? Integer.parseInt(env.getProperty("user.bcrypt-rounds")) : 10;
             stmt = conn.prepareStatement(changePass);
-            stmt.setString(1, BCrypt.hashpw(password, BCrypt.gensalt(rounds)));
+            stmt.setString(1, BCrypt.hashpw(password, BCrypt.gensalt(bcryptRounds)));
             stmt.setString(2, username);
             stmt.executeUpdate();
         } catch (SQLException e) {

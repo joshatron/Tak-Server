@@ -34,6 +34,12 @@ public class GameUtils {
     @Autowired
     private AccountDAO accountDAO;
 
+    private int daysToForfeit;
+
+    public GameUtils() {
+        daysToForfeit = env.containsProperty("game.forfeit-days") ? Integer.parseInt(env.getProperty("game.forfeit-days")) : 0;
+    }
+
     public void requestGame(Auth auth, String other,GameRequest gameRequest) throws GameServerException {
         Validator.validateAuth(auth);
         Validator.validateId(other, IdUtils.USER_LENGTH);
@@ -375,16 +381,13 @@ public class GameUtils {
     }
 
     private void checkForForfeits(String userId) throws GameServerException {
-        if(env.containsProperty("game.forfeit-days")) {
-            int days = Integer.parseInt(env.getProperty("game.forfeit-days"));
-            if(days > 0) {
-                GameInfo[] openGames = gameDAO.listGames(userId, null, null, null, Complete.INCOMPLETE, null, null, null, null);
+        if(daysToForfeit > 0) {
+            GameInfo[] openGames = gameDAO.listGames(userId, null, null, null, Complete.INCOMPLETE, null, null, null, null);
 
-                for(GameInfo game : openGames) {
-                    //check if it has been enough days
-                    if(Instant.now().toEpochMilli() - game.getLast() > days * (1000 * 60 * 60 * 24)) {
-                        gameDAO.finishGame(game.getGameId(), game.getCurrent().opposite());
-                    }
+            for(GameInfo game : openGames) {
+                //check if it has been enough days
+                if(Instant.now().toEpochMilli() - game.getLast() > daysToForfeit * (1000 * 60 * 60 * 24)) {
+                    gameDAO.finishGame(game.getGameId(), game.getCurrent().opposite());
                 }
             }
         }
