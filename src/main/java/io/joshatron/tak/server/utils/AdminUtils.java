@@ -27,7 +27,7 @@ public class AdminUtils {
             throw new GameServerException(ErrorCode.ADMIN_PASSWORD_INITIALIZED);
         }
 
-        String pass = env.containsProperty("initial.admin.password") ? env.getProperty("initial.admin.password") : IdUtils.generateId(30);
+        String pass = env.containsProperty("admin.initial-password") ? env.getProperty("admin.initial-password") : IdUtils.generateId(30);
 
         adminDAO.updatePassword(pass);
 

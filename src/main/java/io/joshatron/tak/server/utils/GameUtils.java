@@ -375,8 +375,8 @@ public class GameUtils {
     }
 
     private void checkForForfeits(String userId) throws GameServerException {
-        if(env.getProperty("game.forfeit.days") != null) {
-            int days = Integer.parseInt(env.getProperty("game.forfeit.days"));
+        if(env.containsProperty("game.forfeit-days")) {
+            int days = Integer.parseInt(env.getProperty("game.forfeit-days"));
             if(days > 0) {
                 GameInfo[] openGames = gameDAO.listGames(userId, null, null, null, Complete.INCOMPLETE, null, null, null, null);
 
