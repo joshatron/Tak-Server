@@ -8,26 +8,26 @@ import io.joshatron.tak.server.request.Auth;
 import io.joshatron.tak.server.request.Text;
 import io.joshatron.tak.server.response.State;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AdminUtils {
 
     @Autowired
-    private Environment env;
-
-    @Autowired
     private AdminDAO adminDAO;
     @Autowired
     private AccountDAO accountDAO;
+
+    @Value("${admin.initial-password}")
+    private String initialPassword;
 
     public String initializeAccount() throws GameServerException {
         if(adminDAO.isInitialized()) {
             throw new GameServerException(ErrorCode.ADMIN_PASSWORD_INITIALIZED);
         }
 
-        String pass = env.containsProperty("admin.initial-password") ? env.getProperty("admin.initial-password") : IdUtils.generateId(30);
+        String pass = initialPassword != null && !initialPassword.isEmpty() ? initialPassword : IdUtils.generateId(30);
 
         adminDAO.updatePassword(pass);
 

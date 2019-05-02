@@ -14,7 +14,7 @@ import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.*;
 import io.joshatron.tak.server.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -25,20 +25,14 @@ import java.util.List;
 public class GameUtils {
 
     @Autowired
-    private Environment env;
-
-    @Autowired
     private GameDAO gameDAO;
     @Autowired
     private SocialDAO socialDAO;
     @Autowired
     private AccountDAO accountDAO;
 
-    private int daysToForfeit;
-
-    public GameUtils() {
-        daysToForfeit = env.containsProperty("game.forfeit-days") ? Integer.parseInt(env.getProperty("game.forfeit-days")) : 0;
-    }
+    @Value("${game.forfeit-days:0}")
+    private Integer daysToForfeit;
 
     public void requestGame(Auth auth, String other,GameRequest gameRequest) throws GameServerException {
         Validator.validateAuth(auth);

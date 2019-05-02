@@ -7,7 +7,7 @@ import io.joshatron.tak.server.response.User;
 import io.joshatron.tak.server.utils.IdUtils;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -20,18 +20,12 @@ import java.time.Instant;
 public class AccountDAOSqlite implements AccountDAO {
 
     @Autowired
-    private Environment env;
-
-    @Autowired
     private Connection conn;
 
-    private int bcryptRounds;
-    private int maxFailed;
-
-    public AccountDAOSqlite() {
-        bcryptRounds = env.containsProperty("user.bcrypt-rounds") ? Integer.parseInt(env.getProperty("user.bcrypt-rounds")) : 10;
-        maxFailed = env.containsProperty("user.login-attempts") ? Integer.parseInt(env.getProperty("user.login-attempts")) : 0;
-    }
+    @Value("${user.bcrypt-rounds:10}")
+    private Integer bcryptRounds;
+    @Value("${user.login-attempts:0}")
+    private Integer maxFailed;
 
     @Override
     public boolean isAuthenticated(Auth auth) throws GameServerException {
