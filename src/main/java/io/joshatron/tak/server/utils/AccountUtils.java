@@ -19,13 +19,7 @@ public class AccountUtils {
     public boolean isAuthenticated(Auth auth) throws GameServerException {
         Validator.validateAuth(auth);
 
-        try {
-            String id = accountDAO.getUserFromUsername(auth.getUsername()).getUserId();
-            return accountDAO.isAuthenticated(auth) && accountDAO.getUserFromId(id).getState() == State.NORMAL;
-        }
-        catch(GameServerException e) {
-            return false;
-        }
+        return accountDAO.isAuthenticated(auth);
     }
 
     public void registerUser(Auth auth) throws GameServerException {

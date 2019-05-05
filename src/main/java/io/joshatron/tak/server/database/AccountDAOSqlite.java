@@ -45,9 +45,6 @@ public class AccountDAOSqlite implements AccountDAO {
                 return false;
             }
 
-            boolean authorized = (auth.getUsername().equals(rs.getString("username")) &&
-                                  BCrypt.checkpw(auth.getPassword(), rs.getString("auth")));
-
             State state = State.valueOf(rs.getString("state"));
 
             if(state == State.LOCKED) {
@@ -56,6 +53,9 @@ public class AccountDAOSqlite implements AccountDAO {
             else if(state == State.BANNED) {
                 throw new GameServerException(ErrorCode.BANNED);
             }
+
+            boolean authorized = (auth.getUsername().equals(rs.getString("username")) &&
+                    BCrypt.checkpw(auth.getPassword(), rs.getString("auth")));
 
             if(authorized) {
                 updateLast(rs.getString("id"));
