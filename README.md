@@ -27,7 +27,6 @@ A summary of the methods are described below:
 | /social/user/blocking                     | GET       | Get a list for users you are blocking                                     |
 | /social/message/send/{id}                 | POST      | Send a message to a user                                                  |
 | /social/message/search                    | GET       | Search through your messages                                              |
-| /social/message/mark-read                 | POST      | Mark a message as read                                                    |
 | /social/notifications                     | GET       | Get the number of incoming friend requests and unread messages            |
 | /games/request/create/{id}                | POST      | Create a request for a game                                               |
 | /games/request/cancel/{id}                | DELETE    | Delete a game request                                                     |

@@ -236,11 +236,11 @@ public class SocialUtils {
         Validator.validateAuth(auth);
         Date start = null;
         if(startTime != null) {
-            start = new Date(startTime.longValue());
+            start = new Date(startTime);
         }
         Date end = null;
         if(endTime != null) {
-            end = new Date(endTime.longValue());
+            end = new Date(endTime);
         }
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
@@ -259,62 +259,15 @@ public class SocialUtils {
         }
         From frm = Validator.validateFrom(from);
 
-        return socialDAO.listMessages(user.getUserId(), users, start, end, rd, frm);
-    }
-
-    public void markMessagesRead(Auth auth, MarkRead markRead) throws GameServerException {
-        Validator.validateAuth(auth);
-        Validator.validateMarkRead(markRead);
-        if(!accountDAO.isAuthenticated(auth)) {
-            throw new GameServerException(ErrorCode.INCORRECT_AUTH);
-        }
-        User user = accountDAO.getUserFromUsername(auth.getUsername());
-
-        boolean notFound = false;
-        boolean forbidden = false;
-        if(markRead.getIds() != null) {
-            for(String id : markRead.getIds()) {
-                try {
-                    Message message = socialDAO.getMessage(id);
-                    if(!message.getRecipient().equalsIgnoreCase(user.getUserId())) {
-                        forbidden = true;
-                    }
-                    else {
-                        socialDAO.markMessageRead(id);
-                    }
-                }
-                catch (GameServerException e) {
-                    if(e.getCode() == ErrorCode.MESSAGE_NOT_FOUND) {
-                        notFound = true;
-                    }
-                    else {
-                        throw e;
-                    }
-                }
+        Message[] messages = socialDAO.listMessages(user.getUserId(), users, start, end, rd, frm);
+        for(Message message : messages) {
+            if(message.getRecipient().equalsIgnoreCase(user.getUserId())) {
+                socialDAO.markMessageRead(message.getId());
+                message.setOpened(true);
             }
         }
 
-        if(markRead.getSenders() != null) {
-            for(String sender : markRead.getSenders()) {
-                if(!accountDAO.userExists(sender)) {
-                    notFound = true;
-                }
-                else {
-                    socialDAO.markMessagesFromSenderRead(user.getUserId(), sender);
-                }
-            }
-        }
-
-        if(markRead.getIds() == null && markRead.getSenders() == null) {
-            socialDAO.markAllRead(user.getUserId());
-        }
-
-        if(forbidden) {
-            throw new GameServerException(ErrorCode.NOT_YOUR_MESSAGE);
-        }
-        if(notFound) {
-            throw new GameServerException(ErrorCode.MESSAGE_NOT_FOUND);
-        }
+        return messages;
     }
 
     public SocialNotifications getNotifications(Auth auth) throws GameServerException {

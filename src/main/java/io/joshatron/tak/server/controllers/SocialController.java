@@ -184,18 +184,6 @@ public class SocialController {
         }
     }
 
-    @PostMapping(value = "/message/mark-read", consumes = "application/json", produces = "application/json")
-    public ResponseEntity markMessagesRead(@RequestHeader(value="Authorization") String auth, @RequestBody MarkRead markRead) {
-        try {
-            logger.info("Marking messages as read");
-            socialUtils.markMessagesRead(new Auth(auth), markRead);
-            logger.info("Successfully marked messages");
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return ControllerUtils.handleExceptions(e, logger);
-        }
-    }
-
     @GetMapping(value = "/notifications", produces = "application/json")
     public ResponseEntity getNotifications(@RequestHeader(value="Authorization") String auth) {
         try {

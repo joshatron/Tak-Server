@@ -44,7 +44,7 @@ public class SocialDAOSqlite implements SocialDAO {
             rs = stmt.executeQuery();
 
             return rs.next();
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -70,7 +70,7 @@ public class SocialDAOSqlite implements SocialDAO {
             rs = stmt.executeQuery();
 
             return rs.next();
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -94,7 +94,7 @@ public class SocialDAOSqlite implements SocialDAO {
             rs = stmt.executeQuery();
 
             return rs.next();
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -114,7 +114,7 @@ public class SocialDAOSqlite implements SocialDAO {
             stmt.setString(1, requester);
             stmt.setString(2, other);
             stmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -133,7 +133,7 @@ public class SocialDAOSqlite implements SocialDAO {
             stmt.setString(1, requester);
             stmt.setString(2, other);
             stmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -152,7 +152,7 @@ public class SocialDAOSqlite implements SocialDAO {
             stmt.setString(1, user1);
             stmt.setString(2, user2);
             stmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -173,7 +173,7 @@ public class SocialDAOSqlite implements SocialDAO {
             stmt.setString(3, other);
             stmt.setString(4, requester);
             stmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -192,7 +192,7 @@ public class SocialDAOSqlite implements SocialDAO {
             stmt.setString(1, requester);
             stmt.setString(2, other);
             stmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -211,7 +211,7 @@ public class SocialDAOSqlite implements SocialDAO {
             stmt.setString(1, requester);
             stmt.setString(2, other);
             stmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -234,7 +234,7 @@ public class SocialDAOSqlite implements SocialDAO {
             stmt.setString(5, IdUtils.generateId(IdUtils.MESSAGE_LENGTH));
             stmt.executeUpdate();
 
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -253,46 +253,7 @@ public class SocialDAOSqlite implements SocialDAO {
             stmt = conn.prepareStatement(markRead);
             stmt.setString(1, id);
             stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new GameServerException(ErrorCode.DATABASE_ERROR);
-        } finally {
-            SqliteManager.closeStatement(stmt);
-        }
-    }
-
-    @Override
-    public void markMessagesFromSenderRead(String requester, String other) throws GameServerException {
-        PreparedStatement stmt = null;
-
-        String markRead = "UPDATE messages " +
-                "SET opened = 1 " +
-                "WHERE sender = ? AND recipient = ?;";
-
-        try {
-            stmt = conn.prepareStatement(markRead);
-            stmt.setString(1, other);
-            stmt.setString(2, requester);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new GameServerException(ErrorCode.DATABASE_ERROR);
-        } finally {
-            SqliteManager.closeStatement(stmt);
-        }
-    }
-
-    @Override
-    public void markAllRead(String user) throws GameServerException {
-        PreparedStatement stmt = null;
-
-        String markRead = "UPDATE messages " +
-                "SET opened = 1 " +
-                "WHERE recipient = ?;";
-
-        try {
-            stmt = conn.prepareStatement(markRead);
-            stmt.setString(1, user);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -320,7 +281,7 @@ public class SocialDAOSqlite implements SocialDAO {
             }
 
             return users.toArray(new User[0]);
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -349,7 +310,7 @@ public class SocialDAOSqlite implements SocialDAO {
             }
 
             return users.toArray(new User[0]);
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -392,7 +353,7 @@ public class SocialDAOSqlite implements SocialDAO {
             }
 
             return users.toArray(new User[0]);
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -422,7 +383,7 @@ public class SocialDAOSqlite implements SocialDAO {
             }
 
             return users.toArray(new User[0]);
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -471,7 +432,7 @@ public class SocialDAOSqlite implements SocialDAO {
             }
 
             return messages.toArray(new Message[0]);
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
@@ -479,99 +440,64 @@ public class SocialDAOSqlite implements SocialDAO {
         }
     }
 
-   private String generateMessageQuery(String[] users, Date start, Date end, Read read, From from) {
-       StringBuilder getMessage = new StringBuilder();
-       getMessage.append("SELECT id, sender, recipient, message, time, opened ");
-       getMessage.append("FROM messages ");
-       if(from == From.ME) {
-           getMessage.append("WHERE sender = ? ");
-       }
-       else if(from == From.THEM) {
-           getMessage.append("WHERE recipient = ? ");
-       }
-       else {
-           getMessage.append("WHERE (sender = ? OR recipient = ?) ");
-       }
-
-       if (users != null && users.length > 0) {
-           getMessage.append(" AND (");
-           boolean first = true;
-           for (int i = 0; i < users.length; i++) {
-               if (first) {
-                   if(from == From.ME) {
-                       getMessage.append("recipient = ?");
-                   }
-                   else if(from == From.THEM) {
-                       getMessage.append("sender = ?");
-                   }
-                   else {
-                       getMessage.append("(sender = ? OR recipient = ?)");
-                   }
-                   first = false;
-               } else {
-                   if(from == From.ME) {
-                       getMessage.append(" OR recipient = ?");
-                   }
-                   else if(from == From.THEM) {
-                       getMessage.append(" OR sender = ?");
-                   }
-                   else {
-                       getMessage.append(" OR (sender = ? OR recipient = ?)");
-                   }
-               }
-           }
-           getMessage.append(")");
-       }
-
-       if (start != null) {
-           getMessage.append(" AND time > ?");
-       }
-
-       if (end != null) {
-           getMessage.append(" AND time < ?");
-       }
-
-       if (read != Read.BOTH) {
-           if (read == Read.READ) {
-               getMessage.append(" AND opened = 1");
-           } else {
-               getMessage.append(" AND opened = 0");
-           }
-       }
-
-       getMessage.append(" ORDER BY time");
-       getMessage.append(";");
-
-       return getMessage.toString();
-   }
-
-    @Override
-    public Message getMessage(String messageId) throws GameServerException {
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        String checkUsername = "SELECT id, sender, recipient, message, time, opened " +
-                "FROM messages " +
-                "WHERE id = ?;";
-
-        try {
-            stmt = conn.prepareStatement(checkUsername);
-            stmt.setString(1, messageId);
-            rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return new Message(rs.getString("sender"), rs.getString("recipient"), rs.getLong("time"),
-                                   rs.getString("message"), rs.getString("id"), (rs.getInt("opened") != 0));
-            }
-            else {
-                throw new GameServerException(ErrorCode.MESSAGE_NOT_FOUND);
-            }
-        } catch (SQLException e) {
-            throw new GameServerException(ErrorCode.DATABASE_ERROR);
-        } finally {
-            SqliteManager.closeStatement(stmt);
-            SqliteManager.closeResultSet(rs);
+    private String generateMessageQuery(String[] users, Date start, Date end, Read read, From from) {
+        StringBuilder getMessage = new StringBuilder();
+        getMessage.append("SELECT id, sender, recipient, message, time, opened ");
+        getMessage.append("FROM messages ");
+        if(from == From.ME) {
+            getMessage.append("WHERE sender = ? ");
+        } else if(from == From.THEM) {
+            getMessage.append("WHERE recipient = ? ");
+        } else {
+            getMessage.append("WHERE (sender = ? OR recipient = ?) ");
         }
+
+        if(users != null && users.length > 0) {
+            getMessage.append(" AND (");
+            boolean first = true;
+            for(int i = 0; i < users.length; i++) {
+                if(first) {
+                    if(from == From.ME) {
+                        getMessage.append("recipient = ?");
+                    } else if(from == From.THEM) {
+                        getMessage.append("sender = ?");
+                    } else {
+                        getMessage.append("(sender = ? OR recipient = ?)");
+                    }
+                    first = false;
+                } else {
+                    if(from == From.ME) {
+                        getMessage.append(" OR recipient = ?");
+                    } else if(from == From.THEM) {
+                        getMessage.append(" OR sender = ?");
+                    } else {
+                        getMessage.append(" OR (sender = ? OR recipient = ?)");
+                    }
+                }
+            }
+            getMessage.append(")");
+        }
+
+        if(start != null) {
+            getMessage.append(" AND time > ?");
+        }
+
+        if(end != null) {
+            getMessage.append(" AND time < ?");
+        }
+
+        if(read != Read.BOTH) {
+            if(read == Read.READ) {
+                getMessage.append(" AND opened = 1");
+            } else {
+                getMessage.append(" AND opened = 0");
+            }
+        }
+
+        getMessage.append(" ORDER BY time");
+        getMessage.append(";");
+
+        return getMessage.toString();
     }
 
     @Override
@@ -599,7 +525,7 @@ public class SocialDAOSqlite implements SocialDAO {
             int messages = rs.getInt("total");
 
             return new SocialNotifications(requests, messages);
-        } catch (SQLException e) {
+        } catch(SQLException e) {
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);
