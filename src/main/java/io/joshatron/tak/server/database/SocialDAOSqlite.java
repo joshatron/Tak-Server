@@ -222,8 +222,8 @@ public class SocialDAOSqlite implements SocialDAO {
     public void sendMessage(String requester, String other, String text) throws GameServerException {
         PreparedStatement stmt = null;
 
-        String insertRequest = "INSERT INTO messages (sender, recipient, message, time, opened, id) " +
-                "VALUES (?,?,?,?,0,?);";
+        String insertRequest = "INSERT INTO messages (sender, recipient, recipientType, message, time, opened, id) " +
+                "VALUES (?,?,'PLAYER',?,?,0,?);";
 
         try {
             stmt = conn.prepareStatement(insertRequest);

@@ -142,6 +142,18 @@ public class GameController {
         }
     }
 
+    @PostMapping(value = "/game/{id}/send-message", produces = "application/json")
+    public ResponseEntity sendGameMessage(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String gameId) {
+        try {
+            logger.info("Sending message to game");
+            //logic to send message
+            logger.info("Game message sent");
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return ControllerUtils.handleExceptions(e, logger);
+        }
+    }
+
     @GetMapping(value = "/game/{id}/possible", produces = "application/json")
     public ResponseEntity getPossibleTurns(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String gameId) {
         try {

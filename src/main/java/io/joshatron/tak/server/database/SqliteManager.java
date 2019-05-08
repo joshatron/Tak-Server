@@ -75,6 +75,8 @@ public class SqliteManager {
                 "sender text NOT NULL," +
                 //ID of the the recipient
                 "recipient text NOT NULL," +
+                //What type the message was sent to, either PLAYER or GAME
+                "recipientType text NOT NULL," +
                 //Content of the message
                 "message text NOT NULL," +
                 //Timestamp when it was sent
