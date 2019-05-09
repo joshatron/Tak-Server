@@ -560,7 +560,7 @@ public class GameDAOSqlite implements GameDAO {
             int i = 1;
             stmt.setString(i, userId);
             i++;
-            if(color == Player.NONE) {
+            if(color == null || color == Player.NONE) {
                 stmt.setString(i, userId);
                 i++;
             }
@@ -582,7 +582,7 @@ public class GameDAOSqlite implements GameDAO {
                 stmt.setLong(i, end.getTime());
                 i++;
             }
-            if (pending != Pending.BOTH) {
+            if (pending != null && pending != Pending.BOTH) {
                 stmt.setString(i, userId);
                 i++;
                 stmt.setString(i, userId);
@@ -594,7 +594,7 @@ public class GameDAOSqlite implements GameDAO {
                     i++;
                 }
             }
-            if(winner != Winner.BOTH) {
+            if(pending != null && winner != Winner.BOTH) {
                 stmt.setString(i, userId);
                 i++;
                 stmt.setString(i, userId);
@@ -681,7 +681,7 @@ public class GameDAOSqlite implements GameDAO {
             }
         }
 
-        if (pending != Pending.BOTH) {
+        if (pending != null && pending != Pending.BOTH) {
             if(pending == Pending.PENDING) {
                 getGames.append(" AND ((white = ? AND current = 'WHITE') OR (black = ? AND current = 'BLACK'))");
             }
@@ -704,7 +704,7 @@ public class GameDAOSqlite implements GameDAO {
            getGames.append(")");
         }
 
-        if (winner != Winner.BOTH) {
+        if (winner != null && winner != Winner.BOTH) {
             if (winner == Winner.ME) {
                 getGames.append(" AND ((winner = 'WHITE' AND white = ?) OR (winner = 'BLACK' AND black = ?))");
             } else {
