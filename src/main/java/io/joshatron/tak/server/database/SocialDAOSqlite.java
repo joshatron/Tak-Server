@@ -4,6 +4,7 @@ import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.request.From;
 import io.joshatron.tak.server.request.Read;
+import io.joshatron.tak.server.request.RecipientType;
 import io.joshatron.tak.server.response.Message;
 import io.joshatron.tak.server.response.SocialNotifications;
 import io.joshatron.tak.server.response.State;
@@ -392,14 +393,14 @@ public class SocialDAOSqlite implements SocialDAO {
     }
 
     @Override
-    public Message[] listMessages(String userId, String[] users, Date start, Date end, Read read, From from) throws GameServerException {
+    public Message[] listMessages(String userId, String[] users, Date start, Date end, Read read, From from, RecipientType recipient) throws GameServerException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
             ArrayList<Message> messages = new ArrayList<>();
 
-            stmt = conn.prepareStatement(generateMessageQuery(users, start, end, read, from));
+            stmt = conn.prepareStatement(generateMessageQuery(users, start, end, read, from, recipient));
             int i = 1;
             stmt.setString(i, userId);
             i++;
@@ -440,7 +441,7 @@ public class SocialDAOSqlite implements SocialDAO {
         }
     }
 
-    private String generateMessageQuery(String[] users, Date start, Date end, Read read, From from) {
+    private String generateMessageQuery(String[] users, Date start, Date end, Read read, From from, RecipientType recipient) {
         StringBuilder getMessage = new StringBuilder();
         getMessage.append("SELECT id, sender, recipient, message, time, opened ");
         getMessage.append("FROM messages ");
@@ -450,6 +451,13 @@ public class SocialDAOSqlite implements SocialDAO {
             getMessage.append("WHERE recipient = ? ");
         } else {
             getMessage.append("WHERE (sender = ? OR recipient = ?) ");
+        }
+
+        if(recipient == RecipientType.PLAYER) {
+            getMessage.append(" AND recipientType = 'PLAYER'");
+        }
+        else if(recipient == RecipientType.GAME) {
+            getMessage.append(" AND recipientType = 'GAME'");
         }
 
         if(users != null && users.length > 0) {
