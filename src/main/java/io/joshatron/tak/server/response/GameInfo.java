@@ -1,10 +1,9 @@
 package io.joshatron.tak.server.response;
 
+import io.joshatron.tak.engine.game.GameState;
 import io.joshatron.tak.engine.game.Player;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -21,4 +20,5 @@ public class GameInfo {
     private Player winner;
     private boolean done;
     private String[] turns;
+    private GameState fullState;
 }

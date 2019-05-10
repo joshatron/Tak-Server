@@ -131,10 +131,10 @@ public class GameController {
     }
 
     @GetMapping(value = "/game/{id}", produces = "application/json")
-    public ResponseEntity getGameInfo(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String gameId) {
+    public ResponseEntity getGameInfo(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String gameId, @RequestParam(value = "full", required = false) Boolean fullState) {
         try {
             logger.info("Getting game info");
-            GameInfo info = gameUtils.getGameInfo(new Auth(auth), gameId);
+            GameInfo info = gameUtils.getGameInfo(new Auth(auth), gameId, fullState);
             logger.info("Game info found");
             return new ResponseEntity<>(info, HttpStatus.OK);
         } catch (Exception e) {

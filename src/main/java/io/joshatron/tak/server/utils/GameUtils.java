@@ -182,7 +182,7 @@ public class GameUtils {
         return gameDAO.getOutgoingRandomRequestSize(user.getUserId());
     }
 
-    public GameInfo getGameInfo(Auth auth, String gameId) throws GameServerException {
+    public GameInfo getGameInfo(Auth auth, String gameId, Boolean fullState) throws GameServerException {
         Validator.validateAuth(auth);
         Validator.validateId(gameId, IdUtils.GAME_LENGTH);
         if(!accountDAO.isAuthenticated(auth)) {
@@ -197,7 +197,25 @@ public class GameUtils {
             throw new GameServerException(ErrorCode.GAME_NOT_FOUND);
         }
 
-        return gameDAO.getGameInfo(gameId);
+        GameInfo info = gameDAO.getGameInfo(gameId);
+
+        if(fullState == null || !fullState) {
+            return info;
+        }
+        else {
+            try {
+                GameState state = new GameState(info.getFirst(), info.getSize());
+                for(String turn : info.getTurns()) {
+                    state.executeTurn(TurnUtils.turnFromString(turn));
+                }
+
+                info.setFullState(state);
+
+                return info;
+            } catch(TakEngineException e) {
+                throw new GameServerException(ErrorCode.GAME_ENGINE_ERROR);
+            }
+        }
     }
 
     public GameInfo[] findGames(Auth auth, String opponents, Long startTime, Long endTime, String complete, String pending, String sizes, String winner, String color) throws GameServerException {
