@@ -229,7 +229,7 @@ public class SocialUtils {
             throw new GameServerException(ErrorCode.MESSAGE_TOO_LONG);
         }
 
-        socialDAO.sendMessage(user.getUserId(), other, sendMessage.getText());
+        socialDAO.sendMessage(user.getUserId(), other, sendMessage.getText(), RecipientType.PLAYER);
     }
 
     public Message[] listMessages(Auth auth, String senders, Long startTime, Long endTime, String read, String from) throws GameServerException {

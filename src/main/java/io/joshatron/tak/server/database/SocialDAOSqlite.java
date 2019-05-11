@@ -220,19 +220,20 @@ public class SocialDAOSqlite implements SocialDAO {
     }
 
     @Override
-    public void sendMessage(String requester, String other, String text) throws GameServerException {
+    public void sendMessage(String requester, String other, String text, RecipientType recipientType) throws GameServerException {
         PreparedStatement stmt = null;
 
         String insertRequest = "INSERT INTO messages (sender, recipient, recipientType, message, time, opened, id) " +
-                "VALUES (?,?,'PLAYER',?,?,0,?);";
+                "VALUES (?,?,?,?,?,0,?);";
 
         try {
             stmt = conn.prepareStatement(insertRequest);
             stmt.setString(1, requester);
             stmt.setString(2, other);
-            stmt.setString(3, text);
-            stmt.setLong(4, Instant.now().toEpochMilli());
-            stmt.setString(5, IdUtils.generateId(IdUtils.MESSAGE_LENGTH));
+            stmt.setString(3, recipientType.name());
+            stmt.setString(4, text);
+            stmt.setLong(5, Instant.now().toEpochMilli());
+            stmt.setString(6, IdUtils.generateId(IdUtils.MESSAGE_LENGTH));
             stmt.executeUpdate();
 
         } catch(SQLException e) {

@@ -297,7 +297,7 @@ public class GameUtils {
             throw new GameServerException(ErrorCode.GAME_IS_COMPLETE);
         }
 
-        socialDAO.sendMessage(user.getUserId(), gameId, message.getText());
+        socialDAO.sendMessage(user.getUserId(), gameId, message.getText(), RecipientType.GAME);
     }
 
     public String[] getPossibleTurns(Auth auth, String gameId) throws GameServerException {
