@@ -3,6 +3,7 @@ package io.joshatron.tak.server.controllers;
 import io.joshatron.tak.server.request.*;
 import io.joshatron.tak.server.response.*;
 import io.joshatron.tak.server.utils.GameUtils;
+import io.joshatron.tak.server.utils.SocialUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,10 +144,11 @@ public class GameController {
     }
 
     @PostMapping(value = "/game/{id}/send-message", produces = "application/json")
-    public ResponseEntity sendGameMessage(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String gameId) {
+    public ResponseEntity sendGameMessage(@RequestHeader(value="Authorization") String auth, @PathVariable("id") String gameId, @RequestBody Text message) {
         try {
             logger.info("Sending message to game");
             //logic to send message
+            gameUtils.sendGameMessage(new Auth(auth), gameId, message);
             logger.info("Game message sent");
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         } catch (Exception e) {

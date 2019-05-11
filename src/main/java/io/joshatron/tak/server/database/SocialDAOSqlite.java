@@ -404,7 +404,7 @@ public class SocialDAOSqlite implements SocialDAO {
             int i = 1;
             stmt.setString(i, userId);
             i++;
-            if(from == From.BOTH) {
+            if(from == null || from == From.BOTH) {
                 stmt.setString(i, userId);
                 i++;
             }
@@ -412,7 +412,7 @@ public class SocialDAOSqlite implements SocialDAO {
                 for(String user : users) {
                     stmt.setString(i, user);
                     i++;
-                    if(from == From.BOTH) {
+                    if(from == null || from == From.BOTH) {
                         stmt.setString(i, user);
                         i++;
                     }
@@ -434,6 +434,7 @@ public class SocialDAOSqlite implements SocialDAO {
 
             return messages.toArray(new Message[0]);
         } catch(SQLException e) {
+            e.printStackTrace();
             throw new GameServerException(ErrorCode.DATABASE_ERROR);
         } finally {
             SqliteManager.closeStatement(stmt);

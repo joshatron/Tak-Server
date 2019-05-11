@@ -31,7 +31,6 @@ public enum ErrorCode {
     NOT_YOUR_TURN(HttpStatus.FORBIDDEN),
     REQUESTING_SELF(HttpStatus.FORBIDDEN),
     BLOCKING_SELF(HttpStatus.FORBIDDEN),
-    NOT_YOUR_MESSAGE(HttpStatus.FORBIDDEN),
     ILLEGAL_MOVE(HttpStatus.FORBIDDEN),
     ADMIN_PASSWORD_INITIALIZED(HttpStatus.FORBIDDEN),
     ADMIN_PASSWORD_NOT_INITIALIZED(HttpStatus.FORBIDDEN),
@@ -40,6 +39,7 @@ public enum ErrorCode {
     ALREADY_BANNED(HttpStatus.FORBIDDEN),
     USER_NOT_BANNED(HttpStatus.FORBIDDEN),
     USER_NOT_LOCKED(HttpStatus.FORBIDDEN),
+    GAME_IS_COMPLETE(HttpStatus.FORBIDDEN),
 
     //Bad Auth
     INCORRECT_AUTH(HttpStatus.UNAUTHORIZED),
@@ -48,7 +48,6 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND),
     FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND),
     REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND),
-    MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND),
     GAME_NOT_FOUND(HttpStatus.NOT_FOUND),
     NOT_BLOCKED(HttpStatus.NOT_FOUND),
 

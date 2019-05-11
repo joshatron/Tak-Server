@@ -198,6 +198,13 @@ public class GameUtils {
         }
 
         GameInfo info = gameDAO.getGameInfo(gameId);
+        info.setMessages(socialDAO.listMessages(user.getUserId(), new String[]{gameId}, null, null, null, null, RecipientType.GAME));
+        for(Message message : info.getMessages()) {
+            if(!message.getSender().equalsIgnoreCase(user.getUserId())) {
+                socialDAO.markMessageRead(message.getId());
+                message.setOpened(true);
+            }
+        }
 
         if(fullState == null || !fullState) {
             return info;
@@ -269,6 +276,28 @@ public class GameUtils {
         Player clr = Validator.validatePlayer(color);
 
         return gameDAO.listGames(user.getUserId(), users, start, end, cpt, pnd, szs, wnr, clr);
+    }
+
+    public void sendGameMessage(Auth auth, String gameId, Text message) throws GameServerException {
+        Validator.validateAuth(auth);
+        Validator.validateId(gameId, IdUtils.GAME_LENGTH);
+        Validator.validateText(message);
+        if(!accountDAO.isAuthenticated(auth)) {
+            throw new GameServerException(ErrorCode.INCORRECT_AUTH);
+        }
+        User user = accountDAO.getUserFromUsername(auth.getUsername());
+        checkForForfeits(user.getUserId());
+        if(!gameDAO.gameExists(gameId)) {
+            throw new GameServerException(ErrorCode.GAME_NOT_FOUND);
+        }
+        if(!gameDAO.userAuthorizedForGame(user.getUserId(), gameId)) {
+            throw new GameServerException(ErrorCode.GAME_NOT_FOUND);
+        }
+        if(gameDAO.getGameInfo(gameId).isDone()) {
+            throw new GameServerException(ErrorCode.GAME_IS_COMPLETE);
+        }
+
+        socialDAO.sendMessage(user.getUserId(), gameId, message.getText());
     }
 
     public String[] getPossibleTurns(Auth auth, String gameId) throws GameServerException {
