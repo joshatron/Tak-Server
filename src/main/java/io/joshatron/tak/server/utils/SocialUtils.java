@@ -261,7 +261,7 @@ public class SocialUtils {
 
         Message[] messages = socialDAO.listMessages(user.getUserId(), users, start, end, rd, frm, RecipientType.PLAYER);
         for(Message message : messages) {
-            if(message.getRecipient().equalsIgnoreCase(user.getUserId())) {
+            if(!message.getSender().equalsIgnoreCase(user.getUserId())) {
                 socialDAO.markMessageRead(message.getId());
                 message.setOpened(true);
             }
