@@ -64,14 +64,22 @@ public class AccountUtils {
     }
 
     public User getUserFromId(String id) throws GameServerException {
-        Validator.validateId(id, IdUtils.USER_LENGTH);
-
-        return accountDAO.getUserFromId(id);
+        if(AiUtils.isAi(id)) {
+            return new User(id.toUpperCase(), id.toUpperCase(), 0, State.NORMAL);
+        }
+        else {
+            Validator.validateId(id, IdUtils.USER_LENGTH);
+            return accountDAO.getUserFromId(id);
+        }
     }
 
     public User getUserFromUsername(String username) throws GameServerException {
-        Validator.validateUsername(username);
-
-        return accountDAO.getUserFromUsername(username);
+        if(AiUtils.isAi(username)) {
+            return new User(username.toUpperCase(), username.toUpperCase(), 0, State.NORMAL);
+        }
+        else {
+            Validator.validateUsername(username);
+            return accountDAO.getUserFromUsername(username);
+        }
     }
 }

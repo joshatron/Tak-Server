@@ -36,7 +36,10 @@ public class GameUtils {
 
     public void requestGame(Auth auth, String other,GameRequest gameRequest) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(other, IdUtils.USER_LENGTH);
+        boolean ai = AiUtils.isAi(other);
+        if(!ai) {
+            Validator.validateId(other, IdUtils.USER_LENGTH);
+        }
         Validator.validateGameBoardSize(gameRequest.getSize());
         Player requesterColor = Validator.validatePlayer(gameRequest.getRequesterColor());
         Player first = Validator.validatePlayer(gameRequest.getFirst());
@@ -44,20 +47,25 @@ public class GameUtils {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
         User user = accountDAO.getUserFromUsername(auth.getUsername());
-        if(!accountDAO.userExists(other)) {
+        if(!ai && !accountDAO.userExists(other)) {
             throw new GameServerException(ErrorCode.USER_NOT_FOUND);
         }
-        if(!socialDAO.areFriends(user.getUserId(), other)) {
+        if(!ai && !socialDAO.areFriends(user.getUserId(), other)) {
             throw new GameServerException(ErrorCode.ALREADY_FRIENDS);
         }
-        if(gameDAO.playingGame(user.getUserId(), other)) {
+        if(!ai && gameDAO.playingGame(user.getUserId(), other)) {
             throw new GameServerException(ErrorCode.GAME_EXISTS);
         }
-        if(gameDAO.gameRequestExists(user.getUserId(), other)) {
+        if(!ai && gameDAO.gameRequestExists(user.getUserId(), other)) {
             throw new GameServerException(ErrorCode.GAME_REQUEST_EXISTS);
         }
 
-        gameDAO.createGameRequest(user.getUserId(), other, gameRequest.getSize(), requesterColor, first);
+        if(ai) {
+            gameDAO.startGame(user.getUserId(), other.toUpperCase(), gameRequest.getSize(), requesterColor, first);
+        }
+        else {
+            gameDAO.createGameRequest(user.getUserId(), other, gameRequest.getSize(), requesterColor, first);
+        }
     }
 
     public void deleteRequest(Auth auth, String other) throws GameServerException {
@@ -351,12 +359,17 @@ public class GameUtils {
             throw new GameServerException(ErrorCode.NOT_YOUR_TURN);
         }
 
-        GameState state = getStateFromId(gameId);
-        Turn proposed = TurnUtils.turnFromString(turn.getText());
+        Turn proposed;
+        try {
+            proposed = TurnUtils.turnFromString(turn.getText());
+        } catch(TakEngineException e) {
+            throw new GameServerException(ErrorCode.INVALID_FORMATTING);
+        }
         if(proposed == null) {
             throw new GameServerException(ErrorCode.INVALID_FORMATTING);
         }
 
+        GameState state = getStateFromId(gameId);
         try {
             state.executeTurn(proposed);
         }
@@ -366,16 +379,19 @@ public class GameUtils {
 
         gameDAO.addTurn(gameId, turn.getText());
 
+        GameInfo info = gameDAO.getGameInfo(gameId);
         GameResult result = state.checkForWinner();
         if(result.isFinished()) {
             gameDAO.finishGame(gameId, result.getWinner());
-            GameInfo info = gameDAO.getGameInfo(gameId);
             if(info.getWinner() == Player.WHITE) {
                 updateRatings(info.getWhite(), info.getBlack());
             }
             else {
                 updateRatings(info.getBlack(), info.getWhite());
             }
+        }
+        else if(AiUtils.isAi(info.getBlack()) || AiUtils.isAi(info.getWhite())) {
+            AiUtils.playTurn(state, info, gameDAO);
         }
     }
 
