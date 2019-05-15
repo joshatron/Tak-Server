@@ -383,10 +383,10 @@ public class GameUtils {
         GameResult result = state.checkForWinner();
         if(result.isFinished()) {
             gameDAO.finishGame(gameId, result.getWinner());
-            if(info.getWinner() == Player.WHITE) {
+            if(result.getWinner() == Player.WHITE) {
                 updateRatings(info.getWhite(), info.getBlack());
             }
-            else {
+            else if(result.getWinner() == Player.BLACK) {
                 updateRatings(info.getBlack(), info.getWhite());
             }
         }
