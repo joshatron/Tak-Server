@@ -12,6 +12,7 @@ import io.joshatron.tak.server.database.GameDAO;
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
 import io.joshatron.tak.server.response.GameInfo;
+import org.springframework.scheduling.annotation.Async;
 
 public class AiUtils {
 
@@ -35,6 +36,7 @@ public class AiUtils {
         return false;
     }
 
+    @Async
     public static void playTurn(GameState state, GameInfo info, GameDAO gameDAO) throws GameServerException {
         try {
             TakPlayer player = AIFactory.createPlayer(AI.DEFENSIVE_MINIMAX, state.getBoardSize(), state.getCurrentPlayer(), state.getFirstPlayer());
