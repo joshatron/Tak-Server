@@ -62,6 +62,16 @@ public class GameUtils {
 
         if(ai) {
             gameDAO.startGame(user.getUserId(), other.toUpperCase(), gameRequest.getSize(), requesterColor, first);
+            if(requesterColor != first) {
+                GameInfo[] games = gameDAO.listGames(user.getUserId(), new String[]{other.toUpperCase()}, null, null, Complete.INCOMPLETE, null, new int[]{gameRequest.getSize()}, null, requesterColor);
+                if(games.length == 1) {
+                    try {
+                        AiUtils.playTurn(new GameState(first, gameRequest.getSize(), true), games[0].getGameId(), gameDAO);
+                    } catch(TakEngineException e) {
+                        throw new GameServerException(ErrorCode.GAME_ENGINE_ERROR);
+                    }
+                }
+            }
         }
         else {
             gameDAO.createGameRequest(user.getUserId(), other, gameRequest.getSize(), requesterColor, first);
@@ -206,7 +216,7 @@ public class GameUtils {
         }
 
         GameInfo info = gameDAO.getGameInfo(gameId);
-        info.setMessages(socialDAO.listMessages(user.getUserId(), new String[]{gameId}, null, null, null, null, RecipientType.GAME));
+        info.setMessages(socialDAO.listMessages(gameId, null, null, null, null, null, RecipientType.GAME));
         for(Message message : info.getMessages()) {
             if(!message.getSender().equalsIgnoreCase(user.getUserId())) {
                 socialDAO.markMessageRead(message.getId());
@@ -259,9 +269,11 @@ public class GameUtils {
         if(opponents != null && opponents.length() > 0) {
             users = opponents.split(",");
             for (String u : users) {
-                Validator.validateId(u, IdUtils.USER_LENGTH);
-                if (!accountDAO.userExists(u)) {
-                    throw new GameServerException(ErrorCode.USER_NOT_FOUND);
+                if(!AiUtils.isAi(u)) {
+                    Validator.validateId(u, IdUtils.USER_LENGTH);
+                    if (!accountDAO.userExists(u)) {
+                        throw new GameServerException(ErrorCode.USER_NOT_FOUND);
+                    }
                 }
             }
         }
@@ -391,7 +403,7 @@ public class GameUtils {
             }
         }
         else if(AiUtils.isAi(info.getBlack()) || AiUtils.isAi(info.getWhite())) {
-            AiUtils.playTurn(state, info, gameDAO);
+            AiUtils.playTurn(state, info.getGameId(), gameDAO);
         }
     }
 
