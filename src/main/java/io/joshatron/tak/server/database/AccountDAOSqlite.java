@@ -135,7 +135,7 @@ public class AccountDAOSqlite implements AccountDAO {
     }
 
     @Override
-    public void addUser(Auth auth, int idLength) throws GameServerException {
+    public void addUser(Auth auth) throws GameServerException {
         PreparedStatement stmt = null;
 
         //insert new user if it isn't
@@ -146,7 +146,7 @@ public class AccountDAOSqlite implements AccountDAO {
             stmt = conn.prepareStatement(insertUser);
             stmt.setString(1, auth.getUsername());
             stmt.setString(2, BCrypt.hashpw(auth.getPassword(), BCrypt.gensalt(bcryptRounds)));
-            stmt.setString(3, IdUtils.generateId(idLength));
+            stmt.setString(3, IdUtils.generateId());
             stmt.setLong(4, Instant.now().toEpochMilli());
             stmt.executeUpdate();
         } catch (SQLException e) {

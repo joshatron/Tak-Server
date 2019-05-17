@@ -233,7 +233,7 @@ public class SocialDAOSqlite implements SocialDAO {
             stmt.setString(3, recipientType.name());
             stmt.setString(4, text);
             stmt.setLong(5, Instant.now().toEpochMilli());
-            stmt.setString(6, IdUtils.generateId(IdUtils.MESSAGE_LENGTH));
+            stmt.setString(6, IdUtils.generateId());
             stmt.executeUpdate();
 
         } catch(SQLException e) {

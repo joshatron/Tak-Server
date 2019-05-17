@@ -25,7 +25,7 @@ public class SocialUtils {
 
     public void createFriendRequest(Auth auth, String other) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(other, IdUtils.USER_LENGTH);
+        Validator.validateId(other);
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -54,7 +54,7 @@ public class SocialUtils {
 
     public void deleteFriendRequest(Auth auth, String other) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(other, IdUtils.USER_LENGTH);
+        Validator.validateId(other);
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -71,7 +71,7 @@ public class SocialUtils {
 
     public void respondToFriendRequest(Auth auth, String other, Text answer) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(other, IdUtils.USER_LENGTH);
+        Validator.validateId(other);
         Validator.validateText(answer);
         Answer response = Validator.validateAnswer(answer.getText());
         if(!accountDAO.isAuthenticated(auth)) {
@@ -113,7 +113,7 @@ public class SocialUtils {
 
     public void unfriend(Auth auth, String other) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(other, IdUtils.USER_LENGTH);
+        Validator.validateId(other);
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -130,7 +130,7 @@ public class SocialUtils {
 
     public void blockUser(Auth auth, String other) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(other, IdUtils.USER_LENGTH);
+        Validator.validateId(other);
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -159,7 +159,7 @@ public class SocialUtils {
 
     public void unblockUser(Auth auth, String other) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(other, IdUtils.USER_LENGTH);
+        Validator.validateId(other);
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -176,7 +176,7 @@ public class SocialUtils {
 
     public boolean isBlocked(Auth auth, String other) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(other, IdUtils.USER_LENGTH);
+        Validator.validateId(other);
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
         }
@@ -210,7 +210,7 @@ public class SocialUtils {
 
     public void sendMessage(Auth auth, String other, Text sendMessage) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(other, IdUtils.USER_LENGTH);
+        Validator.validateId(other);
         Validator.validateText(sendMessage);
         if(!accountDAO.isAuthenticated(auth)) {
             throw new GameServerException(ErrorCode.INCORRECT_AUTH);
@@ -251,7 +251,7 @@ public class SocialUtils {
         if(senders != null && senders.length() > 0) {
             users = senders.split(",");
             for (String u : users) {
-                Validator.validateId(u, IdUtils.USER_LENGTH);
+                Validator.validateId(u);
             }
         }
         if(start != null && end != null && start.after(end)) {

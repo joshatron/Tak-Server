@@ -2,18 +2,14 @@ package io.joshatron.tak.server.utils;
 
 import io.joshatron.tak.ai.player.AI;
 import io.joshatron.tak.ai.player.AIFactory;
-import io.joshatron.tak.engine.board.PieceType;
 import io.joshatron.tak.engine.exception.TakEngineException;
 import io.joshatron.tak.engine.game.GameResult;
 import io.joshatron.tak.engine.game.GameState;
-import io.joshatron.tak.engine.game.Player;
 import io.joshatron.tak.engine.player.TakPlayer;
-import io.joshatron.tak.engine.turn.PlaceTurn;
 import io.joshatron.tak.engine.turn.Turn;
 import io.joshatron.tak.server.database.GameDAO;
 import io.joshatron.tak.server.exceptions.ErrorCode;
 import io.joshatron.tak.server.exceptions.GameServerException;
-import io.joshatron.tak.server.response.GameInfo;
 import org.springframework.scheduling.annotation.Async;
 
 public class AiUtils {

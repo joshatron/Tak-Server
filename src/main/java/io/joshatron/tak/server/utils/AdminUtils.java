@@ -27,7 +27,7 @@ public class AdminUtils {
             throw new GameServerException(ErrorCode.ADMIN_PASSWORD_INITIALIZED);
         }
 
-        String pass = initialPassword != null && !initialPassword.isEmpty() ? initialPassword : IdUtils.generateId(30);
+        String pass = initialPassword != null && !initialPassword.isEmpty() ? initialPassword : IdUtils.generateId();
 
         adminDAO.updatePassword(pass);
 
@@ -50,7 +50,7 @@ public class AdminUtils {
 
     public String resetUserPassword(Auth auth, String userToChange) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(userToChange, IdUtils.USER_LENGTH);
+        Validator.validateId(userToChange);
         if(!adminDAO.isInitialized()) {
             throw new GameServerException(ErrorCode.ADMIN_PASSWORD_NOT_INITIALIZED);
         }
@@ -61,7 +61,7 @@ public class AdminUtils {
             throw new GameServerException(ErrorCode.USER_NOT_FOUND);
         }
 
-        String newPass = IdUtils.generateId(30);
+        String newPass = IdUtils.generateId();
         accountDAO.updatePassword(accountDAO.getUserFromId(userToChange).getUsername(), newPass);
 
         return newPass;
@@ -69,7 +69,7 @@ public class AdminUtils {
 
     public void banUser(Auth auth, String userToBan) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(userToBan, IdUtils.USER_LENGTH);
+        Validator.validateId(userToBan);
         if(!adminDAO.isInitialized()) {
             throw new GameServerException(ErrorCode.ADMIN_PASSWORD_NOT_INITIALIZED);
         }
@@ -85,7 +85,7 @@ public class AdminUtils {
 
     public void unbanUser(Auth auth, String userToSet) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(userToSet, IdUtils.USER_LENGTH);
+        Validator.validateId(userToSet);
         if(!adminDAO.isInitialized()) {
             throw new GameServerException(ErrorCode.ADMIN_PASSWORD_NOT_INITIALIZED);
         }
@@ -104,7 +104,7 @@ public class AdminUtils {
 
     public void unlockUser(Auth auth, String userToSet) throws GameServerException {
         Validator.validateAuth(auth);
-        Validator.validateId(userToSet, IdUtils.USER_LENGTH);
+        Validator.validateId(userToSet);
         if(!adminDAO.isInitialized()) {
             throw new GameServerException(ErrorCode.ADMIN_PASSWORD_NOT_INITIALIZED);
         }

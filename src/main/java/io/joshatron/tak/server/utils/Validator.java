@@ -43,17 +43,17 @@ public class Validator {
         }
     }
 
-    public static void validateId(String id, int length) throws GameServerException {
+    public static void validateId(String id) throws GameServerException {
         if(id == null || id.length() == 0) {
             throw new GameServerException(ErrorCode.EMPTY_FIELD);
         }
 
-        if(id.length() != length) {
+        if(id.length() != 36) {
             throw new GameServerException(ErrorCode.INVALID_LENGTH);
         }
 
-        if(id.matches("^.*[^A-Z0-9 ].*$")) {
-            throw new GameServerException(ErrorCode.ALPHANUMERIC_ONLY);
+        if(id.matches("/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/")) {
+            throw new GameServerException(ErrorCode.INVALID_FORMATTING);
         }
     }
 
@@ -169,13 +169,13 @@ public class Validator {
 
         if(markRead.getSenders() != null) {
             for (String sender : markRead.getSenders()) {
-                validateId(sender, IdUtils.USER_LENGTH);
+                validateId(sender);
             }
         }
 
         if(markRead.getIds() != null) {
             for (String id : markRead.getIds()) {
-                validateId(id, SocialUtils.MESSAGE_ID_LENGTH);
+                validateId(id);
             }
         }
     }
